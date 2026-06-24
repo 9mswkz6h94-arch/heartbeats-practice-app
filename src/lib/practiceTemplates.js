@@ -1,106 +1,17 @@
-// Practice step templates for different instrument types
-export const practiceTemplates = {
-  Piano: [
-    {
-      step_number: 1,
-      title: "Clap rhythm first",
-      description: "Clap out the rhythm without playing the notes",
-    },
-    {
-      step_number: 2,
-      title: "Say note names",
-      description: "Say the note names out loud in rhythm",
-    },
-    {
-      step_number: 3,
-      title: "Play hands together",
-      description: "Play the full piece with both hands",
-    },
-    {
-      step_number: 4,
-      title: "Full performance",
-      description: "Play through the entire piece at performance tempo",
-    },
-  ],
-  Violin: [
-    {
-      step_number: 1,
-      title: "Bow hold review",
-      description: "Check bow hold and position",
-    },
-    {
-      step_number: 2,
-      title: "Practice open strings",
-      description: "Practice the open strings needed for this piece",
-    },
-    {
-      step_number: 3,
-      title: "Play with reference",
-      description: "Play along with reference recording at tempo",
-    },
-    {
-      step_number: 4,
-      title: "Full performance",
-      description: "Play through cleanly without reference",
-    },
-  ],
-  Guitar: [
-    {
-      step_number: 1,
-      title: "Learn chord shapes",
-      description: "Practice each chord shape separately",
-    },
-    {
-      step_number: 2,
-      title: "Chord transitions",
-      description: "Practice smooth transitions between chords",
-    },
-    {
-      step_number: 3,
-      title: "Play with strumming pattern",
-      description: "Add the strumming pattern to the chords",
-    },
-    {
-      step_number: 4,
-      title: "Full performance",
-      description: "Play through the entire song smoothly",
-    },
-  ],
-  Voice: [
-    {
-      step_number: 1,
-      title: "Warm up",
-      description: "Do vocal warm-ups and scales",
-    },
-    {
-      step_number: 2,
-      title: "Learn the melody",
-      description: "Learn the melody line note by note",
-    },
-    {
-      step_number: 3,
-      title: "Add lyrics",
-      description: "Combine melody with lyrics",
-    },
-    {
-      step_number: 4,
-      title: "Full performance",
-      description: "Perform the song with expression and dynamics",
-    },
-  ],
-  Custom: [
-    {
-      step_number: 1,
-      title: "Step 1",
-      description: "Add your own practice steps",
-    },
-  ],
-};
+// Instrument types
+export const instrumentTypes = ["Piano", "Guitar", "Ukulele", "Voice", "Custom"];
 
-export const instrumentTypes = [
-  "Piano",
-  "Violin",
-  "Guitar",
-  "Voice",
-  "Custom",
+// Assignment categories
+export const assignmentCategories = [
+  { id: "warmup", label: "Warmup", color: "#ff6b6b" },
+  { id: "technique", label: "Technique", color: "#ffd93d" },
+  { id: "theory", label: "Theory", color: "#6bcf7f" },
+  { id: "pieces", label: "Pieces", color: "#4a90e2" },
+  { id: "performance", label: "Performance", color: "#b85cff" },
 ];
+
+// Get color for category
+export const getCategoryColor = (categoryId) => {
+  const category = assignmentCategories.find((c) => c.id === categoryId);
+  return category?.color || "#667eea";
+};

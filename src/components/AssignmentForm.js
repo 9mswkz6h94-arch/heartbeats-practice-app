@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { practiceTemplates, instrumentTypes } from "../lib/practiceTemplates";
+import {
+  instrumentTypes,
+  assignmentCategories,
+  getCategoryColor,
+} from "../lib/practiceTemplates";
 import "./AssignmentForm.css";
 
 export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
   const [title, setTitle] = useState("");
   const [instrumentType, setInstrumentType] = useState("Piano");
+  const [category, setCategory] = useState("pieces");
   const [description, setDescription] = useState("");
   const [selectedStudent, setSelectedStudent] = useState("");
   const [deadline, setDeadline] = useState("");
   const [badgeReward, setBadgeReward] = useState("none");
   const [students, setStudents] = useState([]);
-  const [practiceSteps, setPracticeSteps] = useState(
-    practiceTemplates.Piano
-  );
-  const [customSteps, setCustomSteps] = useState([]);
+  const [practiceSteps, setPracticeSteps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -37,31 +39,24 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
     fetchStudents();
   }, [teacherId]);
 
-  // Update practice steps when instrument changes
-  useEffect(() => {
-    const template = practiceTemplates[instrumentType] || [];
-    setPracticeSteps(template);
-    setCustomSteps([]);
-  }, [instrumentType]);
-
-  const handleAddCustomStep = () => {
+  const handleAddStep = () => {
     const newStep = {
-      step_number: practiceSteps.length + customSteps.length + 1,
+      id: Date.now(),
       title: "",
       description: "",
-      isCustom: true,
     };
-    setCustomSteps([...customSteps, newStep]);
+    setPracticeSteps([...practiceSteps, newStep]);
   };
 
-  const handleCustomStepChange = (index, field, value) => {
-    const updated = [...customSteps];
-    updated[index][field] = value;
-    setCustomSteps(updated);
+  const handleStepChange = (id, field, value) => {
+    const updated = practiceSteps.map((step) =>
+      step.id === id ? { ...step, [field]: value } : step
+    );
+    setPracticeSteps(updated);
   };
 
-  const handleRemoveCustomStep = (index) => {
-    setCustomSteps(customSteps.filter((_, i) => i !== index));
+  const handleRemoveStep = (id) => {
+    setPracticeSteps(practiceSteps.filter((step) => step.id !== id));
   };
 
   const handleSubmit = async (e) => {
@@ -75,6 +70,15 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
         throw new Error("Please fill in title and select a student");
       }
 
+      if (practiceSteps.length === 0) {
+        throw new Error("Please add at least one practice step");
+      }
+
+      // Validate all steps have titles
+      if (practiceSteps.some((step) => !step.title.trim())) {
+        throw new Error("All practice steps must have a title");
+      }
+
       // Create assignment
       const { data: assignmentData, error: assignmentError } = await supabase
         .from("assignments")
@@ -85,6 +89,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
             title,
             description,
             instrument_type: instrumentType,
+            category,
             deadline: deadline || null,
           },
         ])
@@ -94,36 +99,29 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
 
       const assignmentId = assignmentData[0].id;
 
-      // Prepare all practice steps (template + custom)
-      const allSteps = [
-        ...practiceSteps.map((step, index) => ({
-          ...step,
-          assignment_id: assignmentId,
-          sequence_order: index + 1,
-        })),
-        ...customSteps.map((step, index) => ({
-          assignment_id: assignmentId,
-          step_number: practiceSteps.length + index + 1,
-          title: step.title,
-          description: step.description,
-          sequence_order: practiceSteps.length + index + 1,
-        })),
-      ];
+      // Prepare practice steps
+      const stepsToInsert = practiceSteps.map((step, index) => ({
+        assignment_id: assignmentId,
+        step_number: index + 1,
+        title: step.title,
+        description: step.description,
+        sequence_order: index + 1,
+      }));
 
       // Insert practice steps
       const { error: stepsError } = await supabase
         .from("practice_steps")
-        .insert(allSteps);
+        .insert(stepsToInsert);
 
       if (stepsError) throw stepsError;
 
-      // Reset form
+      // Reset form (but keep student selected for quick multi-assign workflow)
       setTitle("");
       setDescription("");
-      setSelectedStudent("");
       setDeadline("");
+      setCategory("pieces");
       setBadgeReward("none");
-      setCustomSteps([]);
+      setPracticeSteps([]);
       setSuccess(true);
 
       // Notify parent
@@ -138,9 +136,33 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
     }
   };
 
+  const categoryColor = getCategoryColor(category);
+
   return (
     <div className="assignment-form-container">
       <h2>Create New Assignment</h2>
+
+      {/* Sticky Student Selector */}
+      <div className="student-selector-sticky">
+        <div className="form-group">
+          <label htmlFor="student">Student *</label>
+          <select
+            id="student"
+            value={selectedStudent}
+            onChange={(e) => setSelectedStudent(e.target.value)}
+            required
+            disabled={loading}
+            className="sticky-select"
+          >
+            <option value="">Select a student...</option>
+            {students.map((student) => (
+              <option key={student.id} value={student.id}>
+                {student.name} ({student.email})
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="assignment-form">
         <div className="form-section">
@@ -161,6 +183,27 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
 
           <div className="form-row">
             <div className="form-group">
+              <label htmlFor="category">Category *</label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                disabled={loading}
+                style={{
+                  borderLeftColor: categoryColor,
+                  borderLeftWidth: "4px",
+                  paddingLeft: "10px",
+                }}
+              >
+                {assignmentCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
               <label htmlFor="instrument">Instrument Type</label>
               <select
                 id="instrument"
@@ -171,24 +214,6 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
                 {instrumentTypes.map((type) => (
                   <option key={type} value={type}>
                     {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="student">Assign To Student *</label>
-              <select
-                id="student"
-                value={selectedStudent}
-                onChange={(e) => setSelectedStudent(e.target.value)}
-                required
-                disabled={loading}
-              >
-                <option value="">Select a student...</option>
-                {students.map((student) => (
-                  <option key={student.id} value={student.id}>
-                    {student.name} ({student.email})
                   </option>
                 ))}
               </select>
@@ -239,53 +264,43 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
         <div className="form-section">
           <h3>Practice Steps</h3>
           <p className="section-info">
-            {instrumentType === "Custom"
-              ? "Add your own practice steps"
-              : `Auto-generated for ${instrumentType}. Add custom steps below or modify as needed.`}
+            Add the practice steps for this assignment. You'll enter them manually.
           </p>
 
-          <div className="steps-preview">
-            {practiceSteps.map((step, index) => (
-              <div key={index} className="step-item">
-                <div className="step-number">{step.step_number}</div>
-                <div className="step-content">
-                  <div className="step-title">{step.title}</div>
-                  <div className="step-description">{step.description}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {customSteps.length > 0 && (
-            <div className="custom-steps">
-              <h4>Custom Steps</h4>
-              {customSteps.map((step, index) => (
-                <div key={index} className="custom-step-form">
-                  <input
-                    type="text"
-                    placeholder="Step title"
-                    value={step.title}
-                    onChange={(e) =>
-                      handleCustomStepChange(index, "title", e.target.value)
-                    }
-                    disabled={loading}
-                  />
-                  <textarea
-                    placeholder="Step description"
-                    value={step.description}
-                    onChange={(e) =>
-                      handleCustomStepChange(index, "description", e.target.value)
-                    }
-                    disabled={loading}
-                    rows="2"
-                  />
+          {practiceSteps.length > 0 && (
+            <div className="practice-steps-list">
+              {practiceSteps.map((step, index) => (
+                <div key={step.id} className="practice-step-item">
+                  <div className="step-number-badge">{index + 1}</div>
+                  <div className="step-inputs">
+                    <input
+                      type="text"
+                      placeholder="Step title (e.g., Clap rhythm)"
+                      value={step.title}
+                      onChange={(e) =>
+                        handleStepChange(step.id, "title", e.target.value)
+                      }
+                      disabled={loading}
+                      className="step-title-input"
+                    />
+                    <textarea
+                      placeholder="Step description (optional)"
+                      value={step.description}
+                      onChange={(e) =>
+                        handleStepChange(step.id, "description", e.target.value)
+                      }
+                      disabled={loading}
+                      rows="2"
+                      className="step-description-input"
+                    />
+                  </div>
                   <button
                     type="button"
-                    onClick={() => handleRemoveCustomStep(index)}
-                    className="btn-remove"
+                    onClick={() => handleRemoveStep(step.id)}
+                    className="btn-remove-step"
                     disabled={loading}
                   >
-                    Remove
+                    ✕
                   </button>
                 </div>
               ))}
@@ -294,11 +309,11 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
 
           <button
             type="button"
-            onClick={handleAddCustomStep}
+            onClick={handleAddStep}
             className="btn-add-step"
             disabled={loading}
           >
-            + Add Custom Step
+            + Add Practice Step
           </button>
         </div>
 
@@ -310,11 +325,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
         )}
 
         <div className="form-actions">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-submit"
-          >
+          <button type="submit" disabled={loading} className="btn-submit">
             {loading ? "Creating..." : "Create Assignment"}
           </button>
         </div>

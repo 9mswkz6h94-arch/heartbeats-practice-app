@@ -60,6 +60,29 @@
   cursor: not-allowed;
 }
 
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background: rgba(50, 50, 80, 0.6);
+  color: white;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-group select option {
+  background: #1a1a2e;
+  color: white;
+}
+
+.form-group select:focus {
+  outline: none;
+  background: rgba(50, 50, 80, 0.8);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
 .btn-submit {
   width: 100%;
   padding: 12px;
