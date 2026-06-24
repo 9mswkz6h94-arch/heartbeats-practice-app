@@ -54,7 +54,7 @@ export default function PracticeCardDetail({
 
         <div className="detail-actions">
           <button className="btn-complete" onClick={handleComplete}>
-            ✓ Complete
+            ✓ I Practiced This
           </button>
           <button className="btn-skip" onClick={onSkip}>
             ⏭ Skip Today

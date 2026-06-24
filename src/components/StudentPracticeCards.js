@@ -29,7 +29,7 @@ export default function StudentPracticeCards({ studentId }) {
     try {
       const today = getTodayDate();
 
-      // Fetch all assignments with practice steps
+      // Fetch all assignments with practice steps AND category
       const { data: assignments, error: assignError } = await supabase
         .from("assignments")
         .select(
@@ -37,6 +37,7 @@ export default function StudentPracticeCards({ studentId }) {
           id,
           title,
           instrument_type,
+          category,
           student_id,
           practice_steps(
             id,
@@ -69,22 +70,47 @@ export default function StudentPracticeCards({ studentId }) {
         statusMap[item.practice_step_id] = item.status;
       });
 
-      setDailyStatus(statusMap);
-
       // Ensure all steps have today's record (create if missing)
       const allSteps = [];
+      const assignmentMap = {};
       assignments?.forEach((assignment) => {
+        assignmentMap[assignment.id] = assignment;
         assignment.practice_steps?.forEach((step) => {
           allSteps.push({
             ...step,
             assignment_id: assignment.id,
             assignment_title: assignment.title,
             instrument_type: assignment.instrument_type,
+            category: assignment.category,
           });
         });
       });
 
-      // Create missing daily status records
+      // Handle daily resets for non-theory assignments
+      const theoryCategory = "theory";
+      const oldStatus = await supabase
+        .from("daily_practice_status")
+        .select("practice_step_id, status")
+        .eq("student_id", studentId)
+        .lt("date", today);
+
+      // For non-theory assignments from previous days, reset to pending
+      if (oldStatus.data) {
+        for (const record of oldStatus.data) {
+          const step = allSteps.find((s) => s.id === record.practice_step_id);
+          if (step && step.category !== theoryCategory && record.status !== "pending") {
+            // Reset this non-theory assignment for today
+            await supabase
+              .from("daily_practice_status")
+              .delete()
+              .eq("practice_step_id", record.practice_step_id)
+              .eq("student_id", studentId)
+              .lt("date", today);
+          }
+        }
+      }
+
+      // Create missing daily status records for today
       for (const step of allSteps) {
         if (!statusMap[step.id]) {
           await supabase.from("daily_practice_status").insert([
@@ -134,7 +160,7 @@ export default function StudentPracticeCards({ studentId }) {
     try {
       const today = getTodayDate();
 
-      // Insert completion record
+      // Insert completion record (accumulates across all days, never resets)
       await supabase.from("completions").insert([
         {
           student_id: studentId,
@@ -144,7 +170,7 @@ export default function StudentPracticeCards({ studentId }) {
         },
       ]);
 
-      // Update daily status to completed
+      // Update daily status to completed (for non-theory, this resets tomorrow)
       await supabase
         .from("daily_practice_status")
         .update({ status: "completed" })
@@ -157,7 +183,7 @@ export default function StudentPracticeCards({ studentId }) {
       newStatus[step.id] = "completed";
       setDailyStatus(newStatus);
 
-      // Check badges and refresh streak
+      // Check badges and refresh streak (based on total completions, not daily)
       setTimeout(async () => {
         await checkAndAwardBadges(studentId);
         await fetchStreak();
