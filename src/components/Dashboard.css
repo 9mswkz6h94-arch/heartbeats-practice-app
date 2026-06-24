@@ -1,0 +1,137 @@
+.dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.btn-logout {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+  align-content: start;
+}
+
+.status-card,
+.next-steps {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.status-card h2 {
+  margin-top: 0;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.status-card p {
+  margin: 10px 0;
+  opacity: 0.95;
+  font-size: 14px;
+}
+
+.status-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0 0;
+}
+
+.status-card li {
+  padding: 8px 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.status-card li:before {
+  content: "• ";
+  margin-right: 10px;
+}
+
+.next-steps h3 {
+  margin-top: 0;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.next-steps p {
+  margin: 10px 0;
+  opacity: 0.95;
+  font-size: 14px;
+}
+
+.next-steps ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0 0;
+}
+
+.next-steps li {
+  padding: 8px 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.next-steps li:before {
+  content: "✓ ";
+  margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 24px;
+  }
+
+  .dashboard-content {
+    padding: 20px;
+    grid-template-columns: 1fr;
+  }
+
+  .status-card,
+  .next-steps {
+    padding: 20px;
+  }
+}

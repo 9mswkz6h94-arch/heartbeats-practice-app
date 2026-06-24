@@ -1,43 +1,179 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { supabase } from "./lib/supabaseClient";
+import TeacherLogin from "./components/TeacherLogin";
+import StudentLogin from "./components/StudentLogin";
+import TeacherDashboard from "./components/TeacherDashboard";
+import StudentDashboard from "./components/StudentDashboard";
 import "./App.css";
 
 function App() {
+  const [screen, setScreen] = useState("selection");
   const [userType, setUserType] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [studentId, setStudentId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        const { data: userData } = await supabase
+          .from("users")
+          .select("user_type")
+          .eq("id", session.user.id)
+          .single();
+
+        if (userData) {
+          setUserType(userData.user_type);
+          setUserId(session.user.id);
+
+          if (userData.user_type === "student") {
+            const { data: studentData } = await supabase
+              .from("students")
+              .select("id")
+              .eq("email", session.user.email)
+              .single();
+
+            if (studentData) {
+              setStudentId(studentData.id);
+            }
+            setScreen("student-dashboard");
+          } else {
+            setScreen("teacher-dashboard");
+          }
+        }
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session) {
+        setUserType(null);
+        setUserId(null);
+        setStudentId(null);
+        setScreen("selection");
+      }
+    });
+
+    return () => subscription?.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="App">
+        <div className="loading">
+          <h1>Heart Beats Practice App</h1>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleTeacherLogin = (type, id) => {
+    setUserType(type);
+    setUserId(id);
+    setScreen("teacher-dashboard");
+  };
+
+  const handleStudentLogin = (type, id, authId) => {
+    setUserType(type);
+    setStudentId(id);
+    setUserId(authId);
+    setScreen("student-dashboard");
+  };
+
+  const handleLogout = () => {
+    setUserType(null);
+    setUserId(null);
+    setStudentId(null);
+    setScreen("selection");
+  };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>ðŸŽµ Heart Beats Practice App</h1>
-        <p>Sprint 1: Authentication System</p>
-      </header>
+      {screen === "selection" && (
+        <>
+          <header className="App-header">
+            <h1>Heart Beats Practice App</h1>
+            <p>Sprint 1: Authentication System</p>
+          </header>
 
-      <main>
-        {!userType ? (
-          <div className="auth-selection">
-            <h2>Welcome!</h2>
-            <p>Are you a teacher or student?</p>
-            <button onClick={() => setUserType("teacher")} className="btn btn-teacher">
-              ðŸ« Teacher
-            </button>
-            <button onClick={() => setUserType("student")} className="btn btn-student">
-              ðŸŽ“ Student
-            </button>
-          </div>
-        ) : (
-          <div className="auth-form">
-            <h2>{userType === "teacher" ? "Teacher" : "Student"} Login</h2>
-            <p>Email: (coming soon)</p>
-            <p>Password: (coming soon)</p>
-            <button onClick={() => setUserType(null)} className="btn btn-back">
-              â† Back
-            </button>
-          </div>
-        )}
-      </main>
+          <main>
+            <div className="auth-selection">
+              <h2>Welcome!</h2>
+              <p>Are you a teacher or student?</p>
+              <button
+                onClick={() => setScreen("teacher-login")}
+                className="btn btn-teacher"
+              >
+                Teacher
+              </button>
+              <button
+                onClick={() => setScreen("student-login")}
+                className="btn btn-student"
+              >
+                Student
+              </button>
+            </div>
+          </main>
 
-      <footer>
-        <p>Phase 1: Setting up auth and database schema</p>
-      </footer>
+          <footer>
+            <p>Phase 1: Authentication & Database Integration</p>
+          </footer>
+        </>
+      )}
+
+      {screen === "teacher-login" && (
+        <>
+          <header className="App-header">
+            <h1>Heart Beats Practice App</h1>
+            <button
+              onClick={() => setScreen("selection")}
+              className="btn-back-header"
+            >
+              Back
+            </button>
+          </header>
+
+          <main>
+            <TeacherLogin onLoginSuccess={handleTeacherLogin} />
+          </main>
+        </>
+      )}
+
+      {screen === "student-login" && (
+        <>
+          <header className="App-header">
+            <h1>Heart Beats Practice App</h1>
+            <button
+              onClick={() => setScreen("selection")}
+              className="btn-back-header"
+            >
+              Back
+            </button>
+          </header>
+
+          <main>
+            <StudentLogin onLoginSuccess={handleStudentLogin} />
+          </main>
+        </>
+      )}
+
+      {screen === "teacher-dashboard" && (
+        <TeacherDashboard userId={userId} onLogout={handleLogout} />
+      )}
+
+      {screen === "student-dashboard" && (
+        <StudentDashboard studentId={studentId} onLogout={handleLogout} />
+      )}
     </div>
   );
 }
