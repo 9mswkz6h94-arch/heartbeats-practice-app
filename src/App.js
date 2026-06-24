@@ -14,12 +14,66 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    let isMounted = true;
 
-      if (session) {
+    const checkAuth = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!isMounted) return;
+
+        if (session) {
+          const { data: userData, error } = await supabase
+            .from("users")
+            .select("user_type")
+            .eq("id", session.user.id)
+            .single();
+
+          if (error) {
+            console.log("User not in database yet, showing login");
+            setLoading(false);
+            return;
+          }
+
+          if (userData) {
+            setUserType(userData.user_type);
+            setUserId(session.user.id);
+
+            if (userData.user_type === "student") {
+              const { data: studentData } = await supabase
+                .from("students")
+                .select("id")
+                .eq("email", session.user.email)
+                .single();
+
+              if (studentData) {
+                setStudentId(studentData.id);
+                setScreen("student-dashboard");
+              }
+            } else {
+              setScreen("teacher-dashboard");
+            }
+          }
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Auth check error:", err);
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    // Subscribe to auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return;
+
+      if (event === "SIGNED_IN" && session) {
         const { data: userData } = await supabase
           .from("users")
           .select("user_type")
@@ -39,23 +93,13 @@ function App() {
 
             if (studentData) {
               setStudentId(studentData.id);
+              setScreen("student-dashboard");
             }
-            setScreen("student-dashboard");
           } else {
             setScreen("teacher-dashboard");
           }
         }
-      }
-
-      setLoading(false);
-    };
-
-    checkAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session) {
+      } else if (event === "SIGNED_OUT") {
         setUserType(null);
         setUserId(null);
         setStudentId(null);
@@ -63,7 +107,10 @@ function App() {
       }
     });
 
-    return () => subscription?.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
   }, []);
 
   if (loading) {

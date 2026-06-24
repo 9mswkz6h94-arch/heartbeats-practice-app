@@ -17,15 +17,22 @@ export default function TeacherLogin({ onLoginSuccess }) {
     try {
       if (isSignUp) {
         // Sign up
+        console.log("Starting signup...");
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
         });
 
-        if (signUpError) throw signUpError;
+        if (signUpError) {
+          console.error("SignUp error:", signUpError);
+          throw signUpError;
+        }
+
+        console.log("SignUp successful, user ID:", data.user.id);
 
         // Create user record in users table
-        const { error: insertError } = await supabase
+        console.log("Inserting user record...");
+        const { data: insertData, error: insertError } = await supabase
           .from("users")
           .insert([
             {
@@ -33,40 +40,63 @@ export default function TeacherLogin({ onLoginSuccess }) {
               email: data.user.email,
               user_type: "teacher",
             },
-          ]);
+          ])
+          .select();
 
-        if (insertError) throw insertError;
+        console.log("Insert response:", { insertData, insertError });
 
-        setError("Sign up successful! Please check your email to confirm.");
+        if (insertError) {
+          console.error("Insert error:", insertError);
+          throw new Error(`Failed to create user record: ${insertError.message}`);
+        }
+
+        setError("Sign up successful! You can now sign in with your credentials.");
         setIsSignUp(false);
         setEmail("");
         setPassword("");
       } else {
         // Sign in
+        console.log("Starting signin...");
         const { data, error: signInError } =
           await supabase.auth.signInWithPassword({
             email,
             password,
           });
 
-        if (signInError) throw signInError;
+        if (signInError) {
+          console.error("SignIn error:", signInError);
+          throw signInError;
+        }
+
+        console.log("SignIn successful, user ID:", data.user.id);
 
         // Verify user is a teacher
+        console.log("Fetching user type...");
         const { data: userData, error: fetchError } = await supabase
           .from("users")
           .select("user_type")
           .eq("id", data.user.id)
           .single();
 
-        if (fetchError || userData?.user_type !== "teacher") {
+        console.log("Fetch response:", { userData, fetchError });
+
+        if (fetchError) {
+          console.error("Fetch error:", fetchError);
+          await supabase.auth.signOut();
+          throw new Error(`User record not found: ${fetchError.message}`);
+        }
+
+        if (userData?.user_type !== "teacher") {
           await supabase.auth.signOut();
           throw new Error("Not authorized as a teacher");
         }
 
+        console.log("Auth successful!");
         onLoginSuccess("teacher", data.user.id);
       }
     } catch (err) {
-      setError(err.message);
+      console.error("Full error:", err);
+      setError(err.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -75,7 +105,7 @@ export default function TeacherLogin({ onLoginSuccess }) {
   return (
     <div className="auth-form-container">
       <div className="auth-form">
-        <h2>🏫 Teacher {isSignUp ? "Sign Up" : "Login"}</h2>
+        <h2>Teacher {isSignUp ? "Sign Up" : "Login"}</h2>
 
         <form onSubmit={handleAuth}>
           <div className="form-group">
