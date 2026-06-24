@@ -1,43 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import AssignmentForm from "./AssignmentForm";
+import AssignmentList from "./AssignmentList";
 import "./Dashboard.css";
+import "./TeacherDashboard.css";
 
 export default function TeacherDashboard({ userId, onLogout }) {
+  const [refresh, setRefresh] = useState(0);
+  const [showForm, setShowForm] = useState(false);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     onLogout();
   };
 
+  const handleAssignmentCreated = () => {
+    setRefresh((prev) => prev + 1);
+    setShowForm(false);
+  };
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>🏫 Teacher Dashboard</h1>
+        <h1>Teacher Dashboard</h1>
         <button onClick={handleLogout} className="btn-logout">
           Logout
         </button>
       </header>
 
-      <main className="dashboard-content">
-        <div className="status-card">
-          <h2>✅ Auth Connected!</h2>
-          <p>Teacher ID: {userId.substring(0, 8)}...</p>
-          <p>Your dashboard is loading. Check back soon for:</p>
-          <ul>
-            <li>📝 Create assignments</li>
-            <li>👥 Manage students</li>
-            <li>📊 View progress</li>
-            <li>🏆 Assign badges</li>
-          </ul>
-        </div>
+      <main className="teacher-dashboard-content">
+        <div className="dashboard-section">
+          <div className="section-header">
+            <h2>Create Assignment</h2>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="btn-toggle-form"
+            >
+              {showForm ? "Hide Form" : "New Assignment"}
+            </button>
+          </div>
 
-        <div className="next-steps">
-          <h3>🚀 Next Steps</h3>
-          <p>Sprint 2 will add:</p>
-          <ul>
-            <li>Assignment creation form</li>
-            <li>Student management</li>
-            <li>Lesson prep dashboard</li>
-          </ul>
+          {showForm ? (
+            <AssignmentForm
+              teacherId={userId}
+              onAssignmentCreated={handleAssignmentCreated}
+            />
+          ) : (
+            <div className="form-placeholder">
+              <p>Click "New Assignment" to create an assignment for your students.</p>
+            </div>
+          )}
+
+          <AssignmentList teacherId={userId} refresh={refresh} />
         </div>
       </main>
     </div>
