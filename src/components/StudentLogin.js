@@ -86,7 +86,8 @@ export default function StudentLogin({ onLoginSuccess }) {
         </form>
 
         <div className="student-note">
-          <p>📝 Your teacher will give you your login credentials.</p>
+          <p>Your teacher creates your account and assigns practice goals.</p>
+          <p>Once logged in, you'll see practice cards to work through!</p>
         </div>
       </div>
     </div>
