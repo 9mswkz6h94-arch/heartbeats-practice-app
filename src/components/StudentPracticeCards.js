@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { checkAndAwardBadges } from "../lib/badgeLogic";
 import PracticeCard from "./PracticeCard";
 import "./StudentPracticeCards.css";
 
@@ -119,8 +120,11 @@ export default function StudentPracticeCards({ studentId }) {
   };
 
   const handleComplete = () => {
-    // Refresh streak after completion
-    setTimeout(() => fetchStreak(), 1000);
+    // Check for new badges
+    setTimeout(async () => {
+      await checkAndAwardBadges(studentId);
+      fetchStreak();
+    }, 1000);
   };
 
   if (loading) {
