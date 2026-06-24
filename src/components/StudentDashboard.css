@@ -1,0 +1,14 @@
+.student-dashboard-content {
+  flex: 1;
+  padding: 40px 20px;
+  overflow-y: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .student-dashboard-content {
+    padding: 20px 10px;
+  }
+}
