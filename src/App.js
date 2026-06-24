@@ -77,30 +77,27 @@ function App() {
 
   // Resolve a Supabase session into app state
   async function resolveSession(session, isMounted) {
-    // Try to find user in our users table
-    let { data: userData, error } = await supabase
-      .from("users")
-      .select("user_type")
-      .eq("id", session.user.id)
-      .single();
+    if (!isMounted) return;
 
-    // If not found but they came in as a student (via rainbowheart.studio SSO),
-    // auto-create their users row now
-    if (error && session.user.user_metadata?.role === "student") {
-      const { data: inserted } = await supabase
+    // Use JWT metadata role first (set at signup on rainbowheart.studio).
+    // Fall back to DB lookup for teacher accounts created before this field existed.
+    let resolvedType = session.user.user_metadata?.role;
+
+    if (!resolvedType) {
+      const { data: userData } = await supabase
         .from("users")
-        .insert([{ id: session.user.id, email: session.user.email, user_type: "student" }])
-        .select()
+        .select("user_type")
+        .eq("id", session.user.id)
         .single();
-      userData = inserted;
+      resolvedType = userData?.user_type || "teacher";
     }
 
-    if (!userData || !isMounted) return;
+    if (!isMounted) return;
 
-    setUserType(userData.user_type);
+    setUserType(resolvedType);
     setUserId(session.user.id);
 
-    if (userData.user_type === "student") {
+    if (resolvedType === "student") {
       // Match student record by email (teacher creates these manually)
       const { data: studentData } = await supabase
         .from("students")
@@ -119,6 +116,7 @@ function App() {
         setStudentId(studentData.id);
         setScreen("student-dashboard");
       }
+      // If no students record yet, teacher hasn't added them — stay on selection
     } else {
       setScreen("teacher-dashboard");
     }
