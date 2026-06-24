@@ -1,28 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { checkAndAwardBadges } from "../lib/badgeLogic";
-import PracticeCard from "./PracticeCard";
+import PracticeCardDetail from "./PracticeCardDetail";
 import "./StudentPracticeCards.css";
 
 export default function StudentPracticeCards({ studentId }) {
-  const [practiceSteps, setPracticeSteps] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [assignments, setAssignments] = useState([]);
+  const [dailyStatus, setDailyStatus] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [streak, setStreak] = useState(0);
+  const [selectedStep, setSelectedStep] = useState(null);
   const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
-    fetchPracticeSteps();
+    fetchAssignmentsAndStatus();
     fetchStreak();
   }, [studentId, refresh]);
 
-  const fetchPracticeSteps = async () => {
+  const getTodayDate = () => {
+    return new Date().toISOString().split("T")[0];
+  };
+
+  const fetchAssignmentsAndStatus = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Fetch all assignments for this student with their practice steps
+      const today = getTodayDate();
+
+      // Fetch all assignments with practice steps
       const { data: assignments, error: assignError } = await supabase
         .from("assignments")
         .select(
@@ -45,13 +52,31 @@ export default function StudentPracticeCards({ studentId }) {
 
       if (assignError) throw assignError;
 
-      // Flatten the structure to get all practice steps with assignment info
+      setAssignments(assignments || []);
+
+      // Fetch today's status for all steps
+      const { data: statusData, error: statusError } = await supabase
+        .from("daily_practice_status")
+        .select("practice_step_id, status")
+        .eq("student_id", studentId)
+        .eq("date", today);
+
+      if (statusError && statusError.code !== "PGRST116") throw statusError;
+
+      // Create a map of step IDs to their status
+      const statusMap = {};
+      statusData?.forEach((item) => {
+        statusMap[item.practice_step_id] = item.status;
+      });
+
+      setDailyStatus(statusMap);
+
+      // Ensure all steps have today's record (create if missing)
       const allSteps = [];
       assignments?.forEach((assignment) => {
         assignment.practice_steps?.forEach((step) => {
           allSteps.push({
             ...step,
-            student_id: studentId,
             assignment_id: assignment.id,
             assignment_title: assignment.title,
             instrument_type: assignment.instrument_type,
@@ -59,11 +84,25 @@ export default function StudentPracticeCards({ studentId }) {
         });
       });
 
-      setPracticeSteps(allSteps);
-      setCurrentIndex(0);
+      // Create missing daily status records
+      for (const step of allSteps) {
+        if (!statusMap[step.id]) {
+          await supabase.from("daily_practice_status").insert([
+            {
+              student_id: studentId,
+              practice_step_id: step.id,
+              date: today,
+              status: "pending",
+            },
+          ]);
+          statusMap[step.id] = "pending";
+        }
+      }
+
+      setDailyStatus(statusMap);
     } catch (err) {
       setError(err.message);
-      console.error("Error fetching practice steps:", err);
+      console.error("Error fetching assignments/status:", err);
     } finally {
       setLoading(false);
     }
@@ -71,21 +110,6 @@ export default function StudentPracticeCards({ studentId }) {
 
   const fetchStreak = async () => {
     try {
-      // Get today's date
-      const today = new Date().toISOString().split("T")[0];
-      const yesterday = new Date(Date.now() - 86400000)
-        .toISOString()
-        .split("T")[0];
-
-      // Check if student practiced today
-      const { data: todayData } = await supabase
-        .from("completions")
-        .select("id")
-        .eq("student_id", studentId)
-        .gte("completed_at", today)
-        .limit(1);
-
-      // Calculate streak (simplified: just count consecutive days with practice)
       const { data: completions } = await supabase
         .from("completions")
         .select("completed_at")
@@ -94,7 +118,6 @@ export default function StudentPracticeCards({ studentId }) {
         .limit(365);
 
       if (completions && completions.length > 0) {
-        // For MVP, just count unique days practiced
         const uniqueDays = new Set(
           completions.map((c) => c.completed_at.split("T")[0])
         );
@@ -107,24 +130,66 @@ export default function StudentPracticeCards({ studentId }) {
     }
   };
 
-  const handleNext = () => {
-    if (currentIndex < practiceSteps.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+  const handleStepComplete = async (step) => {
+    try {
+      const today = getTodayDate();
+
+      // Insert completion record
+      await supabase.from("completions").insert([
+        {
+          student_id: studentId,
+          practice_step_id: step.id,
+          assignment_id: step.assignment_id,
+          completed_at: today,
+        },
+      ]);
+
+      // Update daily status to completed
+      await supabase
+        .from("daily_practice_status")
+        .update({ status: "completed" })
+        .eq("student_id", studentId)
+        .eq("practice_step_id", step.id)
+        .eq("date", today);
+
+      // Update local status
+      const newStatus = { ...dailyStatus };
+      newStatus[step.id] = "completed";
+      setDailyStatus(newStatus);
+
+      // Check badges and refresh streak
+      setTimeout(async () => {
+        await checkAndAwardBadges(studentId);
+        await fetchStreak();
+      }, 1000);
+
+      setSelectedStep(null);
+    } catch (err) {
+      console.error("Error completing step:", err);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
+  const handleStepSkip = async (step) => {
+    try {
+      const today = getTodayDate();
 
-  const handleComplete = () => {
-    // Check for new badges
-    setTimeout(async () => {
-      await checkAndAwardBadges(studentId);
-      fetchStreak();
-    }, 1000);
+      // Update daily status to skipped (removes from today's view)
+      await supabase
+        .from("daily_practice_status")
+        .update({ status: "skipped" })
+        .eq("student_id", studentId)
+        .eq("practice_step_id", step.id)
+        .eq("date", today);
+
+      // Update local status
+      const newStatus = { ...dailyStatus };
+      newStatus[step.id] = "skipped";
+      setDailyStatus(newStatus);
+
+      setSelectedStep(null);
+    } catch (err) {
+      console.error("Error skipping step:", err);
+    }
   };
 
   if (loading) {
@@ -143,7 +208,25 @@ export default function StudentPracticeCards({ studentId }) {
     );
   }
 
-  if (practiceSteps.length === 0) {
+  // Count remaining (pending) steps for today
+  const allSteps = [];
+  assignments?.forEach((assignment) => {
+    assignment.practice_steps?.forEach((step) => {
+      allSteps.push({
+        ...step,
+        assignment_id: assignment.id,
+        assignment_title: assignment.title,
+        instrument_type: assignment.instrument_type,
+      });
+    });
+  });
+
+  const remainingCount = allSteps.filter(
+    (step) => dailyStatus[step.id] === "pending"
+  ).length;
+  const totalCount = allSteps.length;
+
+  if (allSteps.length === 0) {
     return (
       <div className="practice-container">
         <div className="empty-state">
@@ -154,62 +237,69 @@ export default function StudentPracticeCards({ studentId }) {
     );
   }
 
-  const currentStep = practiceSteps[currentIndex];
-
   return (
     <div className="practice-container">
       <div className="practice-header">
-        <div className="streak-badge">
-          <span className="flame">🔥</span>
-          <span className="streak-count">{streak} day streak</span>
-        </div>
+        <div className="header-top">
+          <div className="streak-badge">
+            <span className="flame">🔥</span>
+            <span className="streak-count">{streak} day streak</span>
+          </div>
 
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{
-              width: `${((currentIndex + 1) / practiceSteps.length) * 100}%`,
-            }}
-          />
+          <div className="counter">
+            <span className="remaining">{remainingCount}</span>
+            <span className="remaining-label">of {totalCount} remaining today</span>
+          </div>
         </div>
-        <p className="progress-text">
-          Card {currentIndex + 1} of {practiceSteps.length}
-        </p>
       </div>
 
-      <div className="card-display">
-        <PracticeCard
-          step={currentStep}
+      {remainingCount === 0 && totalCount > 0 && (
+        <div className="celebration-message">
+          🎉 You've completed all today's practice! Great work! 🎉
+        </div>
+      )}
+
+      <div className="practice-grid">
+        {allSteps.map((step) => {
+          const status = dailyStatus[step.id];
+          const isVisible = status === "pending";
+
+          if (!isVisible) return null;
+
+          return (
+            <div
+              key={step.id}
+              className="practice-card-tile"
+              onClick={() => setSelectedStep(step)}
+            >
+              <div className="tile-header">
+                <h3>{step.assignment_title}</h3>
+                <span className="instrument-tag">{step.instrument_type}</span>
+              </div>
+              <div className="tile-body">
+                <p className="step-title">{step.title}</p>
+                <p className="step-number">Step {step.step_number}</p>
+              </div>
+              <div className="tile-action">
+                <span className="tap-hint">Tap to practice →</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {selectedStep && (
+        <PracticeCardDetail
+          step={selectedStep}
           assignment={{
-            title: currentStep.assignment_title,
-            instrument_type: currentStep.instrument_type,
+            title: selectedStep.assignment_title,
+            instrument_type: selectedStep.instrument_type,
           }}
-          onComplete={handleComplete}
-          onNext={handleNext}
+          onComplete={() => handleStepComplete(selectedStep)}
+          onSkip={() => handleStepSkip(selectedStep)}
+          onClose={() => setSelectedStep(null)}
         />
-      </div>
-
-      <div className="navigation">
-        <button
-          onClick={handlePrevious}
-          disabled={currentIndex === 0}
-          className="nav-btn"
-        >
-          Previous
-        </button>
-
-        <span className="nav-info">
-          {currentIndex + 1} / {practiceSteps.length}
-        </span>
-
-        <button
-          onClick={handleNext}
-          disabled={currentIndex === practiceSteps.length - 1}
-          className="nav-btn"
-        >
-          Next
-        </button>
-      </div>
+      )}
     </div>
   );
 }
