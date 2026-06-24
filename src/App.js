@@ -6,6 +6,20 @@ import TeacherDashboard from "./components/TeacherDashboard";
 import StudentDashboard from "./components/StudentDashboard";
 import "./App.css";
 
+// Read SSO tokens from URL hash (passed by rainbowheart.studio)
+async function applySSOTokenFromURL() {
+  const hash = window.location.hash;
+  if (!hash || !hash.includes("access_token=")) return;
+  const params = new URLSearchParams(hash.slice(1));
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token") || "";
+  if (accessToken) {
+    await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+    // Clean up URL so tokens aren't visible / re-applied on refresh
+    window.history.replaceState(null, "", window.location.pathname);
+  }
+}
+
 function App() {
   const [screen, setScreen] = useState("selection");
   const [userType, setUserType] = useState(null);
@@ -18,6 +32,9 @@ function App() {
 
     const checkAuth = async () => {
       try {
+        // Apply SSO token from URL before checking session
+        await applySSOTokenFromURL();
+
         const {
           data: { session },
         } = await supabase.auth.getSession();
@@ -25,37 +42,7 @@ function App() {
         if (!isMounted) return;
 
         if (session) {
-          const { data: userData, error } = await supabase
-            .from("users")
-            .select("user_type")
-            .eq("id", session.user.id)
-            .single();
-
-          if (error) {
-            console.log("User not in database yet, showing login");
-            setLoading(false);
-            return;
-          }
-
-          if (userData) {
-            setUserType(userData.user_type);
-            setUserId(session.user.id);
-
-            if (userData.user_type === "student") {
-              const { data: studentData } = await supabase
-                .from("students")
-                .select("id")
-                .eq("email", session.user.email)
-                .single();
-
-              if (studentData) {
-                setStudentId(studentData.id);
-                setScreen("student-dashboard");
-              }
-            } else {
-              setScreen("teacher-dashboard");
-            }
-          }
+          await resolveSession(session, isMounted);
         }
 
         setLoading(false);
@@ -67,38 +54,13 @@ function App() {
 
     checkAuth();
 
-    // Subscribe to auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
 
       if (event === "SIGNED_IN" && session) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("user_type")
-          .eq("id", session.user.id)
-          .single();
-
-        if (userData) {
-          setUserType(userData.user_type);
-          setUserId(session.user.id);
-
-          if (userData.user_type === "student") {
-            const { data: studentData } = await supabase
-              .from("students")
-              .select("id")
-              .eq("email", session.user.email)
-              .single();
-
-            if (studentData) {
-              setStudentId(studentData.id);
-              setScreen("student-dashboard");
-            }
-          } else {
-            setScreen("teacher-dashboard");
-          }
-        }
+        await resolveSession(session, isMounted);
       } else if (event === "SIGNED_OUT") {
         setUserType(null);
         setUserId(null);
@@ -112,6 +74,55 @@ function App() {
       subscription?.unsubscribe();
     };
   }, []);
+
+  // Resolve a Supabase session into app state
+  async function resolveSession(session, isMounted) {
+    // Try to find user in our users table
+    let { data: userData, error } = await supabase
+      .from("users")
+      .select("user_type")
+      .eq("id", session.user.id)
+      .single();
+
+    // If not found but they came in as a student (via rainbowheart.studio SSO),
+    // auto-create their users row now
+    if (error && session.user.user_metadata?.role === "student") {
+      const { data: inserted } = await supabase
+        .from("users")
+        .insert([{ id: session.user.id, email: session.user.email, user_type: "student" }])
+        .select()
+        .single();
+      userData = inserted;
+    }
+
+    if (!userData || !isMounted) return;
+
+    setUserType(userData.user_type);
+    setUserId(session.user.id);
+
+    if (userData.user_type === "student") {
+      // Match student record by email (teacher creates these manually)
+      const { data: studentData } = await supabase
+        .from("students")
+        .select("id")
+        .eq("email", session.user.email)
+        .single();
+
+      if (studentData && isMounted) {
+        // Link auth_user_id if not already set
+        await supabase
+          .from("students")
+          .update({ auth_user_id: session.user.id })
+          .eq("id", studentData.id)
+          .is("auth_user_id", null);
+
+        setStudentId(studentData.id);
+        setScreen("student-dashboard");
+      }
+    } else {
+      setScreen("teacher-dashboard");
+    }
+  }
 
   if (loading) {
     return (
