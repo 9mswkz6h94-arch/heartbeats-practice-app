@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import AssignmentForm from "./AssignmentForm";
-import AssignmentList from "./AssignmentList";
+import TeacherLessonPrepDashboard from "./TeacherLessonPrepDashboard";
 import "./Dashboard.css";
 import "./TeacherDashboard.css";
 
 export default function TeacherDashboard({ userId, onLogout }) {
+  const [activeTab, setActiveTab] = useState("prep");
   const [refresh, setRefresh] = useState(0);
-  const [showForm, setShowForm] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -16,7 +16,6 @@ export default function TeacherDashboard({ userId, onLogout }) {
 
   const handleAssignmentCreated = () => {
     setRefresh((prev) => prev + 1);
-    setShowForm(false);
   };
 
   return (
@@ -29,29 +28,34 @@ export default function TeacherDashboard({ userId, onLogout }) {
       </header>
 
       <main className="teacher-dashboard-content">
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2>Create Assignment</h2>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="btn-toggle-form"
-            >
-              {showForm ? "Hide Form" : "New Assignment"}
-            </button>
-          </div>
+        <div className="dashboard-tabs">
+          <button
+            className={`tab-btn ${activeTab === "prep" ? "active" : ""}`}
+            onClick={() => setActiveTab("prep")}
+          >
+            Lesson Prep
+          </button>
+          <button
+            className={`tab-btn ${activeTab === "create" ? "active" : ""}`}
+            onClick={() => setActiveTab("create")}
+          >
+            Create Assignment
+          </button>
+        </div>
 
-          {showForm ? (
-            <AssignmentForm
-              teacherId={userId}
-              onAssignmentCreated={handleAssignmentCreated}
-            />
-          ) : (
-            <div className="form-placeholder">
-              <p>Click "New Assignment" to create an assignment for your students.</p>
-            </div>
+        <div className="tab-content">
+          {activeTab === "prep" && (
+            <TeacherLessonPrepDashboard teacherId={userId} key={refresh} />
           )}
 
-          <AssignmentList teacherId={userId} refresh={refresh} />
+          {activeTab === "create" && (
+            <div className="create-assignment-section">
+              <AssignmentForm
+                teacherId={userId}
+                onAssignmentCreated={handleAssignmentCreated}
+              />
+            </div>
+          )}
         </div>
       </main>
     </div>
