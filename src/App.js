@@ -86,10 +86,10 @@ function App() {
     if (!resolvedType) {
       const { data: userData } = await supabase
         .from("users")
-        .select("user_type")
+        .select("type")
         .eq("id", session.user.id)
         .single();
-      resolvedType = userData?.user_type || "teacher";
+      resolvedType = userData?.type || "teacher";
     }
 
     if (!isMounted) return;
