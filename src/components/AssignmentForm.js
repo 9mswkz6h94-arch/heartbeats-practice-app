@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
 import {
   instrumentTypes,
@@ -6,6 +6,8 @@ import {
   getCategoryColor,
 } from "../lib/practiceTemplates";
 import "./AssignmentForm.css";
+
+const BUCKET = "assignment-attachments";
 
 export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
   const [title, setTitle] = useState("");
@@ -17,11 +19,12 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
   const [badgeReward, setBadgeReward] = useState("none");
   const [students, setStudents] = useState([]);
   const [practiceSteps, setPracticeSteps] = useState([]);
+  const [attachmentFile, setAttachmentFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef(null);
 
-  // Fetch students for this teacher
   useEffect(() => {
     const fetchStudents = async () => {
       const { data, error: fetchError } = await supabase
@@ -40,23 +43,25 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
   }, [teacherId]);
 
   const handleAddStep = () => {
-    const newStep = {
-      id: Date.now(),
-      title: "",
-      description: "",
-    };
-    setPracticeSteps([...practiceSteps, newStep]);
+    setPracticeSteps([...practiceSteps, { id: Date.now(), title: "", description: "" }]);
   };
 
   const handleStepChange = (id, field, value) => {
-    const updated = practiceSteps.map((step) =>
-      step.id === id ? { ...step, [field]: value } : step
-    );
-    setPracticeSteps(updated);
+    setPracticeSteps(practiceSteps.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   };
 
   const handleRemoveStep = (id) => {
-    setPracticeSteps(practiceSteps.filter((step) => step.id !== id));
+    setPracticeSteps(practiceSteps.filter((s) => s.id !== id));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setAttachmentFile(file);
+  };
+
+  const handleRemoveFile = () => {
+    setAttachmentFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = async (e) => {
@@ -69,14 +74,24 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
       if (!title || !selectedStudent) {
         throw new Error("Please fill in title and select a student");
       }
-
       if (practiceSteps.length === 0) {
         throw new Error("Please add at least one practice step");
       }
-
-      // Validate all steps have titles
-      if (practiceSteps.some((step) => !step.title.trim())) {
+      if (practiceSteps.some((s) => !s.title.trim())) {
         throw new Error("All practice steps must have a title");
+      }
+
+      // Upload attachment if provided
+      let attachmentUrl = null;
+      if (attachmentFile) {
+        const ext = attachmentFile.name.split(".").pop();
+        const path = `${teacherId}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from(BUCKET)
+          .upload(path, attachmentFile, { upsert: false });
+        if (uploadError) throw new Error("File upload failed: " + uploadError.message);
+        const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
+        attachmentUrl = urlData.publicUrl;
       }
 
       // Create assignment
@@ -91,6 +106,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
             instrument_type: instrumentType,
             category,
             deadline: deadline || null,
+            attachment_url: attachmentUrl,
           },
         ])
         .select();
@@ -99,7 +115,6 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
 
       const assignmentId = assignmentData[0].id;
 
-      // Prepare practice steps
       const stepsToInsert = practiceSteps.map((step, index) => ({
         assignment_id: assignmentId,
         step_number: index + 1,
@@ -108,26 +123,20 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
         sequence_order: index + 1,
       }));
 
-      // Insert practice steps
-      const { error: stepsError } = await supabase
-        .from("practice_steps")
-        .insert(stepsToInsert);
-
+      const { error: stepsError } = await supabase.from("practice_steps").insert(stepsToInsert);
       if (stepsError) throw stepsError;
 
-      // Reset form (but keep student selected for quick multi-assign workflow)
+      // Reset form (keep student selected)
       setTitle("");
       setDescription("");
       setDeadline("");
       setCategory("pieces");
       setBadgeReward("none");
       setPracticeSteps([]);
+      setAttachmentFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       setSuccess(true);
-
-      // Notify parent
       onAssignmentCreated?.();
-
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err.message);
@@ -142,7 +151,6 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
     <div className="assignment-form-container">
       <h2>Create New Assignment</h2>
 
-      {/* Sticky Student Selector */}
       <div className="student-selector-sticky">
         <div className="form-group">
           <label htmlFor="student">Student *</label>
@@ -169,7 +177,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
           <h3>Assignment Details</h3>
 
           <div className="form-group">
-            <label htmlFor="title">Song/Item Name *</label>
+            <label htmlFor="title">Song / Item Name *</label>
             <input
               id="title"
               type="text"
@@ -189,11 +197,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 disabled={loading}
-                style={{
-                  borderLeftColor: categoryColor,
-                  borderLeftWidth: "4px",
-                  paddingLeft: "10px",
-                }}
+                style={{ borderLeftColor: categoryColor, borderLeftWidth: "5px" }}
               >
                 {assignmentCategories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
@@ -259,6 +263,40 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
               </select>
             </div>
           </div>
+
+          <div className="form-group">
+            <label>Attachment — Image or PDF (optional)</label>
+            <div className={`file-upload-area${attachmentFile ? " has-file" : ""}`}>
+              <label className="file-upload-label" htmlFor="attachment">
+                <span className="file-upload-icon">{attachmentFile ? "📎" : "📄"}</span>
+                <span className="file-upload-text">
+                  {attachmentFile ? "Change file" : "Tap to attach an image or PDF"}
+                </span>
+                <span className="file-upload-hint">JPG, PNG, GIF, or PDF</span>
+              </label>
+              <input
+                id="attachment"
+                type="file"
+                accept="image/*,.pdf"
+                onChange={handleFileChange}
+                disabled={loading}
+                ref={fileInputRef}
+              />
+            </div>
+            {attachmentFile && (
+              <div className="file-selected">
+                <span className="file-selected-name">{attachmentFile.name}</span>
+                <button
+                  type="button"
+                  className="btn-remove-file"
+                  onClick={handleRemoveFile}
+                  disabled={loading}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="form-section">
@@ -277,18 +315,14 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
                       type="text"
                       placeholder="Step title (e.g., Clap rhythm)"
                       value={step.title}
-                      onChange={(e) =>
-                        handleStepChange(step.id, "title", e.target.value)
-                      }
+                      onChange={(e) => handleStepChange(step.id, "title", e.target.value)}
                       disabled={loading}
                       className="step-title-input"
                     />
                     <textarea
                       placeholder="Step description (optional)"
                       value={step.description}
-                      onChange={(e) =>
-                        handleStepChange(step.id, "description", e.target.value)
-                      }
+                      onChange={(e) => handleStepChange(step.id, "description", e.target.value)}
                       disabled={loading}
                       rows="2"
                       className="step-description-input"
@@ -307,22 +341,13 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={handleAddStep}
-            className="btn-add-step"
-            disabled={loading}
-          >
+          <button type="button" onClick={handleAddStep} className="btn-add-step" disabled={loading}>
             + Add Practice Step
           </button>
         </div>
 
         {error && <div className="error-message">{error}</div>}
-        {success && (
-          <div className="success-message">
-            Assignment created successfully!
-          </div>
-        )}
+        {success && <div className="success-message">Assignment created successfully!</div>}
 
         <div className="form-actions">
           <button type="submit" disabled={loading} className="btn-submit">

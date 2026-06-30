@@ -2,41 +2,50 @@ import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import "./AuthForms.css";
 
-export default function StudentLogin({ onLoginSuccess }) {
+export default function StudentLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [info, setInfo] = useState(null);
 
-  const handleSignIn = async (e) => {
+  // Role/profile resolution happens centrally in App.js's onAuthStateChange
+  // listener — this form only triggers the Supabase auth call.
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setInfo(null);
     setLoading(true);
 
     try {
-      const { data, error: signInError } =
-        await supabase.auth.signInWithPassword({
+      if (isSignUp) {
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { role: "student" } },
+        });
+
+        if (signUpError) throw signUpError;
+
+        if (!data.session) {
+          // Email confirmation is required before a session is issued
+          setInfo("Account created! Check your email to confirm it, then sign in below.");
+          setIsSignUp(false);
+          setPassword("");
+        }
+        // If a session came back immediately, App.js's auth listener takes it from here.
+      } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
-      if (signInError) throw signInError;
-
-      // Fetch student record
-      const { data: studentData, error: fetchError } = await supabase
-        .from("students")
-        .select("id")
-        .eq("email", email)
-        .single();
-
-      if (fetchError) {
-        await supabase.auth.signOut();
-        throw new Error("Student profile not found. Contact your teacher.");
+        if (signInError) throw signInError;
+        // App.js's auth listener resolves the student profile and routes to the dashboard.
       }
-
-      onLoginSuccess("student", studentData.id, data.user.id);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -45,9 +54,9 @@ export default function StudentLogin({ onLoginSuccess }) {
   return (
     <div className="auth-form-container">
       <div className="auth-form">
-        <h2>🎓 Student Login</h2>
+        <h2>🎓 {isSignUp ? "Create Student Account" : "Student Sign In"}</h2>
 
-        <form onSubmit={handleSignIn}>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -71,23 +80,47 @@ export default function StudentLogin({ onLoginSuccess }) {
               placeholder="••••••••"
               required
               disabled={loading}
+              minLength={6}
             />
           </div>
 
           {error && <div className="error-message">{error}</div>}
+          {info && <div className="success-message">{info}</div>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-submit"
-          >
-            {loading ? "Loading..." : "Sign In"}
+          <button type="submit" disabled={loading} className="btn-submit">
+            {loading ? "Loading..." : isSignUp ? "Create Account" : "Sign In"}
           </button>
         </form>
 
+        <div className="toggle-auth">
+          <p>
+            {isSignUp ? "Already have an account?" : "New here?"}
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError(null);
+                setInfo(null);
+              }}
+              className="toggle-btn"
+            >
+              {isSignUp ? "Sign In" : "Create Account"}
+            </button>
+          </p>
+        </div>
+
         <div className="student-note">
-          <p>Your teacher creates your account and assigns practice goals.</p>
-          <p>Once logged in, you'll see practice cards to work through!</p>
+          {isSignUp ? (
+            <>
+              <p>Parents: create the account here using the email your teacher has on file.</p>
+              <p>Once it's set up, hand the device to your student to start practicing!</p>
+            </>
+          ) : (
+            <>
+              <p>Your teacher creates your account and assigns practice goals.</p>
+              <p>Once logged in, you'll see practice cards to work through!</p>
+            </>
+          )}
         </div>
       </div>
     </div>

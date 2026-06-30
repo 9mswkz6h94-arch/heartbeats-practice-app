@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { isDevUser } from "../lib/devConfig";
 import AssignmentForm from "./AssignmentForm";
 import TeacherLessonPrepDashboard from "./TeacherLessonPrepDashboard";
+import StudentManager from "./StudentManager";
+import DevStudentPreview from "./DevStudentPreview";
 import "./Dashboard.css";
 import "./TeacherDashboard.css";
 
-export default function TeacherDashboard({ userId, onLogout }) {
+export default function TeacherDashboard({ userId, userEmail, onLogout }) {
   const [activeTab, setActiveTab] = useState("prep");
   const [refresh, setRefresh] = useState(0);
+  const devMode = isDevUser(userEmail);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -41,6 +45,20 @@ export default function TeacherDashboard({ userId, onLogout }) {
           >
             Create Assignment
           </button>
+          <button
+            className={`tab-btn ${activeTab === "students" ? "active" : ""}`}
+            onClick={() => setActiveTab("students")}
+          >
+            Students
+          </button>
+          {devMode && (
+            <button
+              className={`tab-btn ${activeTab === "dev" ? "active" : ""}`}
+              onClick={() => setActiveTab("dev")}
+            >
+              🛠 Dev Mode
+            </button>
+          )}
         </div>
 
         <div className="tab-content">
@@ -55,6 +73,14 @@ export default function TeacherDashboard({ userId, onLogout }) {
                 onAssignmentCreated={handleAssignmentCreated}
               />
             </div>
+          )}
+
+          {activeTab === "students" && (
+            <StudentManager teacherId={userId} />
+          )}
+
+          {activeTab === "dev" && devMode && (
+            <DevStudentPreview teacherId={userId} />
           )}
         </div>
       </main>

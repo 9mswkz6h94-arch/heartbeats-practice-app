@@ -4,7 +4,7 @@ import { checkAndAwardBadges } from "../lib/badgeLogic";
 import PracticeCardDetail from "./PracticeCardDetail";
 import "./StudentPracticeCards.css";
 
-export default function StudentPracticeCards({ studentId }) {
+export default function StudentPracticeCards({ studentId, readOnly = false }) {
   const [assignments, setAssignments] = useState([]);
   const [dailyStatus, setDailyStatus] = useState({});
   const [loading, setLoading] = useState(true);
@@ -38,6 +38,7 @@ export default function StudentPracticeCards({ studentId }) {
           title,
           instrument_type,
           category,
+          attachment_url,
           student_id,
           practice_steps(
             id,
@@ -82,46 +83,54 @@ export default function StudentPracticeCards({ studentId }) {
             assignment_title: assignment.title,
             instrument_type: assignment.instrument_type,
             category: assignment.category,
+            attachment_url: assignment.attachment_url,
           });
         });
       });
 
-      // Handle daily resets for non-theory assignments
-      const theoryCategory = "theory";
-      const oldStatus = await supabase
-        .from("daily_practice_status")
-        .select("practice_step_id, status")
-        .eq("student_id", studentId)
-        .lt("date", today);
+      if (!readOnly) {
+        // Handle daily resets for non-theory assignments
+        const theoryCategory = "theory";
+        const oldStatus = await supabase
+          .from("daily_practice_status")
+          .select("practice_step_id, status")
+          .eq("student_id", studentId)
+          .lt("date", today);
 
-      // For non-theory assignments from previous days, reset to pending
-      if (oldStatus.data) {
-        for (const record of oldStatus.data) {
-          const step = allSteps.find((s) => s.id === record.practice_step_id);
-          if (step && step.category !== theoryCategory && record.status !== "pending") {
-            // Reset this non-theory assignment for today
-            await supabase
-              .from("daily_practice_status")
-              .delete()
-              .eq("practice_step_id", record.practice_step_id)
-              .eq("student_id", studentId)
-              .lt("date", today);
+        // For non-theory assignments from previous days, reset to pending
+        if (oldStatus.data) {
+          for (const record of oldStatus.data) {
+            const step = allSteps.find((s) => s.id === record.practice_step_id);
+            if (step && step.category !== theoryCategory && record.status !== "pending") {
+              // Reset this non-theory assignment for today
+              await supabase
+                .from("daily_practice_status")
+                .delete()
+                .eq("practice_step_id", record.practice_step_id)
+                .eq("student_id", studentId)
+                .lt("date", today);
+            }
           }
         }
-      }
 
-      // Create missing daily status records for today
-      for (const step of allSteps) {
-        if (!statusMap[step.id]) {
-          await supabase.from("daily_practice_status").insert([
-            {
-              student_id: studentId,
-              practice_step_id: step.id,
-              date: today,
-              status: "pending",
-            },
-          ]);
-          statusMap[step.id] = "pending";
+        // Create missing daily status records for today
+        for (const step of allSteps) {
+          if (!statusMap[step.id]) {
+            await supabase.from("daily_practice_status").insert([
+              {
+                student_id: studentId,
+                practice_step_id: step.id,
+                date: today,
+                status: "pending",
+              },
+            ]);
+            statusMap[step.id] = "pending";
+          }
+        }
+      } else {
+        // Read-only preview: never write daily_practice_status, just default locally
+        for (const step of allSteps) {
+          if (!statusMap[step.id]) statusMap[step.id] = "pending";
         }
       }
 
@@ -157,6 +166,13 @@ export default function StudentPracticeCards({ studentId }) {
   };
 
   const handleStepComplete = async (step) => {
+    if (readOnly) {
+      // Preview mode: reflect the action visually, write nothing
+      setDailyStatus({ ...dailyStatus, [step.id]: "completed" });
+      setSelectedStep(null);
+      return;
+    }
+
     try {
       const today = getTodayDate();
 
@@ -196,6 +212,12 @@ export default function StudentPracticeCards({ studentId }) {
   };
 
   const handleStepSkip = async (step) => {
+    if (readOnly) {
+      setDailyStatus({ ...dailyStatus, [step.id]: "skipped" });
+      setSelectedStep(null);
+      return;
+    }
+
     try {
       const today = getTodayDate();
 
@@ -243,6 +265,7 @@ export default function StudentPracticeCards({ studentId }) {
         assignment_id: assignment.id,
         assignment_title: assignment.title,
         instrument_type: assignment.instrument_type,
+        attachment_url: assignment.attachment_url,
       });
     });
   });
@@ -320,10 +343,12 @@ export default function StudentPracticeCards({ studentId }) {
           assignment={{
             title: selectedStep.assignment_title,
             instrument_type: selectedStep.instrument_type,
+            attachment_url: selectedStep.attachment_url,
           }}
           onComplete={() => handleStepComplete(selectedStep)}
           onSkip={() => handleStepSkip(selectedStep)}
           onClose={() => setSelectedStep(null)}
+          readOnly={readOnly}
         />
       )}
     </div>

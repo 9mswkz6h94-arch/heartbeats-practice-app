@@ -7,6 +7,7 @@ export default function PracticeCardDetail({
   onComplete,
   onSkip,
   onClose,
+  readOnly = false,
 }) {
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -24,6 +25,10 @@ export default function PracticeCardDetail({
           ✕
         </button>
 
+        {readOnly && (
+          <div className="preview-banner">🔍 Preview mode — nothing here is saved</div>
+        )}
+
         <div className="detail-header">
           <div className="detail-assignment">
             <h2>{assignment.title}</h2>
@@ -36,6 +41,35 @@ export default function PracticeCardDetail({
           <h3 className="detail-step-title">{step.title}</h3>
           <p className="detail-step-description">{step.description}</p>
         </div>
+
+        {assignment.attachment_url && (() => {
+          const url = assignment.attachment_url;
+          const isPdf = url.toLowerCase().includes(".pdf");
+          return (
+            <div className="detail-attachment">
+              <div className="detail-attachment-label">
+                {isPdf ? "📄 Assignment Sheet (PDF)" : "🖼 Assignment Sheet"}
+              </div>
+              {isPdf ? (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="detail-attachment-pdf"
+                >
+                  <span className="detail-attachment-pdf-icon">📄</span>
+                  Open PDF assignment sheet
+                </a>
+              ) : (
+                <img
+                  src={url}
+                  alt="Assignment sheet"
+                  className="detail-attachment-img"
+                />
+              )}
+            </div>
+          );
+        })()}
 
         {showCelebration && (
           <div className="celebration-container">

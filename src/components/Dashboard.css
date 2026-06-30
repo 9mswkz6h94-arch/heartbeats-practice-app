@@ -1,7 +1,7 @@
 .dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--bg-subtle);
+  color: var(--text);
   display: flex;
   flex-direction: column;
 }
@@ -11,30 +11,33 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  background: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: var(--bg);
+  border-bottom: 3px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(108,92,231,0.08);
 }
 
 .dashboard-header h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 28px;
+  color: var(--primary);
 }
 
 .btn-logout {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: white;
+  background: var(--bg-subtle);
+  border: 2px solid var(--border);
+  color: var(--text-muted);
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .btn-logout:hover {
-  background: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-color: var(--danger-border);
+  color: var(--danger);
 }
 
 .dashboard-content {
@@ -48,23 +51,24 @@
 
 .status-card,
 .next-steps {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
   padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
 }
 
 .status-card h2 {
   margin-top: 0;
-  font-size: 24px;
+  font-size: 22px;
+  color: var(--primary);
   margin-bottom: 15px;
 }
 
 .status-card p {
   margin: 10px 0;
-  opacity: 0.95;
   font-size: 14px;
+  color: var(--text);
 }
 
 .status-card ul {
@@ -75,25 +79,33 @@
 
 .status-card li {
   padding: 8px 0;
-  opacity: 0.9;
   font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+.status-card li:last-child {
+  border-bottom: none;
 }
 
 .status-card li:before {
   content: "• ";
-  margin-right: 10px;
+  color: var(--primary);
+  margin-right: 8px;
+  font-weight: 700;
 }
 
 .next-steps h3 {
   margin-top: 0;
   font-size: 18px;
+  color: var(--primary);
   margin-bottom: 15px;
 }
 
 .next-steps p {
   margin: 10px 0;
-  opacity: 0.95;
   font-size: 14px;
+  color: var(--text);
 }
 
 .next-steps ul {
@@ -104,13 +116,20 @@
 
 .next-steps li {
   padding: 8px 0;
-  opacity: 0.9;
   font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+.next-steps li:last-child {
+  border-bottom: none;
 }
 
 .next-steps li:before {
   content: "✓ ";
-  margin-right: 10px;
+  color: var(--success);
+  margin-right: 8px;
+  font-weight: 700;
 }
 
 @media (max-width: 768px) {
@@ -122,7 +141,7 @@
   }
 
   .dashboard-header h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .dashboard-content {

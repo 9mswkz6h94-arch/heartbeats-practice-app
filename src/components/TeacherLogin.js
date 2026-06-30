@@ -16,37 +16,14 @@ export default function TeacherLogin({ onLoginSuccess }) {
 
     try {
       if (isSignUp) {
-        // Sign up
-        console.log("Starting signup...");
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+        if (signUpError) throw signUpError;
 
-        if (signUpError) {
-          console.error("SignUp error:", signUpError);
-          throw signUpError;
-        }
-
-        console.log("SignUp successful, user ID:", data.user.id);
-
-        // Create user record in users table
-        console.log("Inserting user record...");
-        const { data: insertData, error: insertError } = await supabase
+        const { error: insertError } = await supabase
           .from("users")
-          .insert([
-            {
-              id: data.user.id,
-              email: data.user.email,
-              user_type: "teacher",
-            },
-          ])
-          .select();
-
-        console.log("Insert response:", { insertData, insertError });
+          .insert([{ id: data.user.id, email: data.user.email, type: "teacher" }]);
 
         if (insertError) {
-          console.error("Insert error:", insertError);
           throw new Error(`Failed to create user record: ${insertError.message}`);
         }
 
@@ -55,44 +32,27 @@ export default function TeacherLogin({ onLoginSuccess }) {
         setEmail("");
         setPassword("");
       } else {
-        // Sign in
-        console.log("Starting signin...");
-        const { data, error: signInError } =
-          await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) throw signInError;
 
-        if (signInError) {
-          console.error("SignIn error:", signInError);
-          throw signInError;
-        }
-
-        console.log("SignIn successful, user ID:", data.user.id);
-
-        // Verify user is a teacher
-        console.log("Fetching user type...");
+        // Ensure user record exists in users table
         const { data: userData, error: fetchError } = await supabase
           .from("users")
-          .select("user_type")
+          .select("type")
           .eq("id", data.user.id)
           .single();
 
-        console.log("Fetch response:", { userData, fetchError });
-
         if (fetchError) {
-          console.error("Fetch error:", fetchError);
+          // No record yet — create one (first-time login for this account)
+          await supabase.from("users").upsert([
+            { id: data.user.id, email: data.user.email, type: "teacher" },
+          ]);
+        } else if (userData?.type !== "teacher") {
           await supabase.auth.signOut();
-          throw new Error(`User record not found: ${fetchError.message}`);
+          throw new Error("This account is not authorized as a teacher.");
         }
 
-        if (userData?.user_type !== "teacher") {
-          await supabase.auth.signOut();
-          throw new Error("Not authorized as a teacher");
-        }
-
-        console.log("Auth successful!");
-        onLoginSuccess("teacher", data.user.id);
+        onLoginSuccess("teacher", data.user.id, data.user.email);
       }
     } catch (err) {
       console.error("Full error:", err);

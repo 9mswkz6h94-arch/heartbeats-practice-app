@@ -24,8 +24,10 @@ function App() {
   const [screen, setScreen] = useState("selection");
   const [userType, setUserType] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
   const [studentId, setStudentId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -96,6 +98,7 @@ function App() {
 
     setUserType(resolvedType);
     setUserId(session.user.id);
+    setUserEmail(session.user.email);
 
     if (resolvedType === "student") {
       // Match student record by email (teacher creates these manually)
@@ -105,7 +108,9 @@ function App() {
         .eq("email", session.user.email)
         .single();
 
-      if (studentData && isMounted) {
+      if (!isMounted) return;
+
+      if (studentData) {
         // Link auth_user_id if not already set
         await supabase
           .from("students")
@@ -114,9 +119,17 @@ function App() {
           .is("auth_user_id", null);
 
         setStudentId(studentData.id);
+        setAuthError(null);
         setScreen("student-dashboard");
+      } else {
+        // Account exists but the teacher hasn't added this email as a student yet.
+        // Stay signed in (don't sign out) so it resolves automatically once they're added —
+        // just reload after the teacher adds you.
+        setAuthError(
+          "We couldn't find a student profile for this email yet. Ask your teacher to add you, then reload this page."
+        );
+        setScreen("selection");
       }
-      // If no students record yet, teacher hasn't added them — stay on selection
     } else {
       setScreen("teacher-dashboard");
     }
@@ -133,22 +146,17 @@ function App() {
     );
   }
 
-  const handleTeacherLogin = (type, id) => {
+  const handleTeacherLogin = (type, id, email) => {
     setUserType(type);
     setUserId(id);
+    setUserEmail(email);
     setScreen("teacher-dashboard");
-  };
-
-  const handleStudentLogin = (type, id, authId) => {
-    setUserType(type);
-    setStudentId(id);
-    setUserId(authId);
-    setScreen("student-dashboard");
   };
 
   const handleLogout = () => {
     setUserType(null);
     setUserId(null);
+    setUserEmail(null);
     setStudentId(null);
     setScreen("selection");
   };
@@ -159,31 +167,27 @@ function App() {
         <>
           <header className="App-header">
             <h1>Heart Beats Practice App</h1>
-            <p>Sprint 1: Authentication System</p>
           </header>
 
           <main>
             <div className="auth-selection">
               <h2>Welcome!</h2>
               <p>Are you a teacher or student?</p>
+              {authError && <div className="auth-banner-error">{authError}</div>}
               <button
-                onClick={() => setScreen("teacher-login")}
+                onClick={() => { setAuthError(null); setScreen("teacher-login"); }}
                 className="btn btn-teacher"
               >
                 Teacher
               </button>
               <button
-                onClick={() => setScreen("student-login")}
+                onClick={() => { setAuthError(null); setScreen("student-login"); }}
                 className="btn btn-student"
               >
                 Student
               </button>
             </div>
           </main>
-
-          <footer>
-            <p>Phase 1: Authentication & Database Integration</p>
-          </footer>
         </>
       )}
 
@@ -218,13 +222,13 @@ function App() {
           </header>
 
           <main>
-            <StudentLogin onLoginSuccess={handleStudentLogin} />
+            <StudentLogin />
           </main>
         </>
       )}
 
       {screen === "teacher-dashboard" && (
-        <TeacherDashboard userId={userId} onLogout={handleLogout} />
+        <TeacherDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} />
       )}
 
       {screen === "student-dashboard" && (
