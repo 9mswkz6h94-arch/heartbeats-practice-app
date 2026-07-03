@@ -45,7 +45,8 @@ export default function StudentLogin() {
         // App.js's auth listener resolves the student profile and routes to the dashboard.
       }
     } catch (err) {
-      setError(err.message || "An error occurred");
+      console.error("Auth error:", err);
+      setError(err.message || err.error_description || err.msg || JSON.stringify(err) || "An error occurred");
     } finally {
       setLoading(false);
     }
