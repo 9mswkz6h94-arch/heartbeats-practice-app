@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { fetchStudentStats } from "../lib/studentStats";
 import CommLog from "./CommLog";
 import RescheduleRequests from "./RescheduleRequests";
+import ParentPreviewModal from "./ParentPreviewModal";
 import "./TeacherLessonPrepDashboard.css";
 
 // Warm, no-shame triage — surfaces who to reach out to without ever reading as failure.
@@ -27,6 +28,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
   const [studentStats, setStudentStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [previewStudent, setPreviewStudent] = useState(null);
 
   useEffect(() => {
     fetchStudentsAndStats();
@@ -40,7 +42,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
     try {
       const { data: studentsData, error: studError } = await supabase
         .from("students")
-        .select("id, name, email, created_at, status")
+        .select("id, name, email, created_at, status, avatar, instrument, family_id")
         .eq("teacher_id", teacherId)
         .neq("status", "pending")
         .order("name");
@@ -204,6 +206,9 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
           <div className="student-detail">
             <div className="detail-head">
               <h3>{selectedStudent.name}</h3>
+              <button className="btn-preview-parent" onClick={() => setPreviewStudent(selectedStudent)}>
+                👀 Preview as Parent
+              </button>
               <button
                 className="detail-close"
                 onClick={() => setSelectedStudent(null)}
@@ -294,6 +299,8 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
           </div>
         )}
       </div>
+
+      <ParentPreviewModal student={previewStudent} onClose={() => setPreviewStudent(null)} />
     </div>
   );
 }

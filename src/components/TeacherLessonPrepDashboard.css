@@ -599,3 +599,23 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* --- Preview as Parent --- */
+.btn-preview-parent {
+  padding: 6px 14px;
+  margin-left: auto;
+  margin-right: 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-preview-parent:hover {
+  border-color: var(--primary);
+  background: var(--primary-light, #ede9fb);
+}
