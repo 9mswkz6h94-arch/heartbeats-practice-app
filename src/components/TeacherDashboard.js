@@ -5,8 +5,14 @@ import AssignmentForm from "./AssignmentForm";
 import TeacherLessonPrepDashboard from "./TeacherLessonPrepDashboard";
 import StudentManager from "./StudentManager";
 import DevStudentPreview from "./DevStudentPreview";
-import "./Dashboard.css";
 import "./TeacherDashboard.css";
+
+const VIEW_TITLES = {
+  prep: "Studio · today",
+  create: "New assignment",
+  students: "Students",
+  dev: "Student preview",
+};
 
 export default function TeacherDashboard({ userId, userEmail, onLogout }) {
   const [activeTab, setActiveTab] = useState("prep");
@@ -22,46 +28,54 @@ export default function TeacherDashboard({ userId, userEmail, onLogout }) {
     setRefresh((prev) => prev + 1);
   };
 
-  return (
-    <div className="dashboard">
-      <header className="dashboard-header">
-        <h1>Teacher Dashboard</h1>
-        <button onClick={handleLogout} className="btn-logout">
-          Logout
-        </button>
-      </header>
+  const navItems = [
+    { id: "prep", label: "Studio", icon: "🎹" },
+    { id: "create", label: "New assignment", icon: "＋" },
+    { id: "students", label: "Students", icon: "👥" },
+    ...(devMode ? [{ id: "dev", label: "Student preview", icon: "🛠" }] : []),
+  ];
 
-      <main className="teacher-dashboard-content">
-        <div className="dashboard-tabs">
-          <button
-            className={`tab-btn ${activeTab === "prep" ? "active" : ""}`}
-            onClick={() => setActiveTab("prep")}
-          >
-            Lesson Prep
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "create" ? "active" : ""}`}
-            onClick={() => setActiveTab("create")}
-          >
-            Create Assignment
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "students" ? "active" : ""}`}
-            onClick={() => setActiveTab("students")}
-          >
-            Students
-          </button>
-          {devMode && (
-            <button
-              className={`tab-btn ${activeTab === "dev" ? "active" : ""}`}
-              onClick={() => setActiveTab("dev")}
-            >
-              🛠 Dev Mode
-            </button>
-          )}
+  return (
+    <div className="hud">
+      <aside className="hud-sidebar">
+        <div className="hud-brand">
+          <span className="hud-brand-mark">🎵</span>
+          <span className="hud-brand-text">Heart Beats</span>
         </div>
 
-        <div className="tab-content">
+        <nav className="hud-nav">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              className={`hud-nav-item ${activeTab === item.id ? "active" : ""}`}
+              onClick={() => setActiveTab(item.id)}
+              aria-current={activeTab === item.id ? "page" : undefined}
+            >
+              <span className="hud-nav-icon" aria-hidden="true">{item.icon}</span>
+              <span className="hud-nav-label">{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="hud-side-foot">
+          <div className="hud-user" title={userEmail}>
+            <span className="hud-user-avatar" aria-hidden="true">
+              {(userEmail || "?").charAt(0).toUpperCase()}
+            </span>
+            <span className="hud-user-email">{userEmail}</span>
+          </div>
+          <button onClick={handleLogout} className="hud-logout">
+            Log out
+          </button>
+        </div>
+      </aside>
+
+      <div className="hud-main">
+        <header className="hud-topbar">
+          <h1 className="hud-view-title">{VIEW_TITLES[activeTab] || "Studio"}</h1>
+        </header>
+
+        <div className="hud-content">
           {activeTab === "prep" && (
             <TeacherLessonPrepDashboard teacherId={userId} key={refresh} />
           )}
@@ -75,15 +89,13 @@ export default function TeacherDashboard({ userId, userEmail, onLogout }) {
             </div>
           )}
 
-          {activeTab === "students" && (
-            <StudentManager teacherId={userId} />
-          )}
+          {activeTab === "students" && <StudentManager teacherId={userId} />}
 
           {activeTab === "dev" && devMode && (
             <DevStudentPreview teacherId={userId} />
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

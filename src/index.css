@@ -1,14 +1,23 @@
 :root {
+  /* Rainbow accents — rainbowheart.studio brand */
+  --red:    #FF6B6B;
+  --orange: #FF9F43;
+  --yellow: #FECA57;
+  --teal:   #1DD1A1;
+  --blue:   #54A0FF;
+  --purple: #A29BFE;
+  --pink:   #FD79A8;
+
   --primary:        #6C5CE7;
   --primary-dark:   #5849BE;
   --primary-light:  #ede9fb;
-  --text:           #1a1a1a;
-  --text-muted:     #4a4a6a;
+  --text:           #2D3436;   /* studio neutral (was #1a1a1a) */
+  --text-muted:     #636E72;   /* studio neutral (was #4a4a6a) */
   --bg:             #ffffff;
-  --bg-subtle:      #f7f6ff;
-  --border:         #d4d0f0;
-  --shadow:         0 2px 16px rgba(108,92,231,0.10);
-  --shadow-lg:      0 6px 28px rgba(108,92,231,0.15);
+  --bg-subtle:      #F8F9FA;   /* studio neutral (was purple-tinted) */
+  --border:         #E9ECEF;   /* studio neutral (was purple-tinted) */
+  --shadow:         0 4px 24px rgba(0,0,0,0.08);   /* studio shadow */
+  --shadow-lg:      0 8px 32px rgba(0,0,0,0.14);
   --radius:         12px;
   --radius-sm:      8px;
   --success:        #1b5e20;
@@ -32,15 +41,21 @@
 }
 
 body {
-  font-family: "OpenDyslexic", "OpenDyslexic3", Arial, sans-serif;
+  font-family: "Atkinson Hyperlegible", Arial, sans-serif;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1, h2, h3 {
+  font-family: "Fraunces", Georgia, serif;
+  line-height: 1.2;
+  color: var(--text);
+}
+
 code {
-  font-family: "OpenDyslexicMono", source-code-pro, Menlo, Monaco, Consolas, monospace;
+  font-family: "Space Mono", source-code-pro, Menlo, Monaco, Consolas, monospace;
 }
 
 html,
