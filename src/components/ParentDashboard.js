@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { randomPin } from "../lib/familyAuth";
 import { fetchStudentStats, dayStr } from "../lib/studentStats";
+import { buildGoogleCalendarUrl, dayName } from "../lib/calendarLink";
 import BadgeShowcase from "./BadgeShowcase";
 import CommLog from "./CommLog";
 import "./ParentDashboard.css";
@@ -100,9 +101,15 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
         .eq("student_id", kidId)
         .order("memorized_at", { ascending: false });
 
+      const { data: lesson } = await supabase
+        .from("lessons")
+        .select("day_of_week, start_time, duration_minutes, location")
+        .eq("student_id", kidId)
+        .maybeSingle();
+
       setKidData((prev) => ({
         ...prev,
-        [kidId]: { stats, assignments: assignments || [], todayStatus, repertoire: repertoire || [] },
+        [kidId]: { stats, assignments: assignments || [], todayStatus, repertoire: repertoire || [], lesson: lesson || null },
       }));
     } catch (err) {
       console.error("Kid detail fetch failed:", err);
@@ -252,6 +259,30 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
 
                 {detail && (
                   <>
+                    {detail.lesson && (
+                      <div className="lesson-info-row">
+                        <span>
+                          📅 Lessons every <strong>{dayName(detail.lesson.day_of_week)}</strong> at{" "}
+                          <strong>{detail.lesson.start_time.slice(0, 5)}</strong>
+                          {detail.lesson.location ? ` — ${detail.lesson.location}` : ""}
+                        </span>
+                        <a
+                          className="btn-add-calendar"
+                          href={buildGoogleCalendarUrl({
+                            studentName: selectedKid.name,
+                            dayOfWeek: detail.lesson.day_of_week,
+                            startTime: detail.lesson.start_time.slice(0, 5),
+                            durationMinutes: detail.lesson.duration_minutes,
+                            location: detail.lesson.location,
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          📆 Add to Google Calendar
+                        </a>
+                      </div>
+                    )}
+
                     <div className="week-stats">
                       <div className="week-stat">
                         <span className="week-stat-value">{detail.stats.thisWeek}</span>

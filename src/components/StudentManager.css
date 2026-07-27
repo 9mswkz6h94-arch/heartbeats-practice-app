@@ -262,3 +262,41 @@
 .btn-approve-student:hover {
   filter: brightness(0.92);
 }
+
+/* --- Lesson time editor --- */
+.btn-edit-lesson {
+  padding: 6px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-edit-lesson:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.lesson-editor {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.lesson-editor select,
+.lesson-editor input {
+  padding: 6px 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}

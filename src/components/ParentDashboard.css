@@ -422,3 +422,33 @@
   color: var(--text-muted);
   font-weight: 400;
 }
+
+/* --- Lesson calendar link --- */
+.lesson-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.btn-add-calendar {
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-add-calendar:hover {
+  background: var(--primary-dark);
+}

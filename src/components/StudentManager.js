@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { DAY_OPTIONS } from "../lib/calendarLink";
 import "./StudentManager.css";
 
 export default function StudentManager({ teacherId }) {
@@ -10,10 +11,51 @@ export default function StudentManager({ teacherId }) {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [lessons, setLessons] = useState({}); // studentId -> lesson row
+  const [editingLessonFor, setEditingLessonFor] = useState(null);
+  const [lessonDraft, setLessonDraft] = useState({ day_of_week: 1, start_time: "16:00", duration_minutes: 30, location: "" });
+  const [lessonSaving, setLessonSaving] = useState(false);
 
   useEffect(() => {
     fetchStudents();
+    fetchLessons();
   }, [teacherId]);
+
+  const fetchLessons = async () => {
+    const { data } = await supabase.from("lessons").select("*").eq("teacher_id", teacherId);
+    const byStudent = {};
+    (data || []).forEach((l) => { byStudent[l.student_id] = l; });
+    setLessons(byStudent);
+  };
+
+  const startEditLesson = (studentId) => {
+    const existing = lessons[studentId];
+    setLessonDraft(
+      existing
+        ? { day_of_week: existing.day_of_week, start_time: existing.start_time.slice(0, 5), duration_minutes: existing.duration_minutes, location: existing.location || "" }
+        : { day_of_week: 1, start_time: "16:00", duration_minutes: 30, location: "" }
+    );
+    setEditingLessonFor(studentId);
+  };
+
+  const saveLesson = async (studentId) => {
+    setLessonSaving(true);
+    const { error: saveError } = await supabase.from("lessons").upsert({
+      student_id: studentId,
+      teacher_id: teacherId,
+      day_of_week: Number(lessonDraft.day_of_week),
+      start_time: lessonDraft.start_time,
+      duration_minutes: Number(lessonDraft.duration_minutes),
+      location: lessonDraft.location.trim() || null,
+    }, { onConflict: "student_id" });
+    setLessonSaving(false);
+    if (saveError) {
+      setError(saveError.message);
+    } else {
+      setEditingLessonFor(null);
+      fetchLessons();
+    }
+  };
 
   const fetchStudents = async () => {
     setFetching(true);
@@ -195,6 +237,13 @@ export default function StudentManager({ teacherId }) {
                 >
                   {student.auth_user_id ? "✓ Account linked" : "Awaiting first login"}
                 </span>
+                {editingLessonFor !== student.id && (
+                  <button className="btn-edit-lesson" onClick={() => startEditLesson(student.id)}>
+                    {lessons[student.id]
+                      ? `📅 ${DAY_OPTIONS[lessons[student.id].day_of_week].name.slice(0, 3)} ${lessons[student.id].start_time.slice(0, 5)}`
+                      : "📅 Set lesson time"}
+                  </button>
+                )}
                 <button
                   className="btn-remove-student"
                   onClick={() => handleRemoveStudent(student.id)}
@@ -202,6 +251,39 @@ export default function StudentManager({ teacherId }) {
                 >
                   ✕
                 </button>
+                {editingLessonFor === student.id && (
+                  <div className="lesson-editor">
+                    <select
+                      value={lessonDraft.day_of_week}
+                      onChange={(e) => setLessonDraft({ ...lessonDraft, day_of_week: e.target.value })}
+                    >
+                      {DAY_OPTIONS.map((d) => <option key={d.value} value={d.value}>{d.name}</option>)}
+                    </select>
+                    <input
+                      type="time"
+                      value={lessonDraft.start_time}
+                      onChange={(e) => setLessonDraft({ ...lessonDraft, start_time: e.target.value })}
+                    />
+                    <select
+                      value={lessonDraft.duration_minutes}
+                      onChange={(e) => setLessonDraft({ ...lessonDraft, duration_minutes: e.target.value })}
+                    >
+                      <option value={30}>30 min</option>
+                      <option value={45}>45 min</option>
+                      <option value={60}>60 min</option>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="Location (optional)"
+                      value={lessonDraft.location}
+                      onChange={(e) => setLessonDraft({ ...lessonDraft, location: e.target.value })}
+                    />
+                    <button className="btn-approve-student" disabled={lessonSaving} onClick={() => saveLesson(student.id)}>
+                      {lessonSaving ? "Saving..." : "Save"}
+                    </button>
+                    <button className="btn-remove-student" onClick={() => setEditingLessonFor(null)}>Cancel</button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
