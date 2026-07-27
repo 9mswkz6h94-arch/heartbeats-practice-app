@@ -50,9 +50,9 @@ def main():
             print(f"OK ({source})")
             try:
                 parsed = json.loads(body)
-                print(json.dumps(parsed, indent=2, default=str)[:4000])
+                print(json.dumps(parsed, indent=2, default=str)[:200000])
             except json.JSONDecodeError:
-                print(body[:4000])
+                print(body[:200000])
     except urllib.error.HTTPError as e:
         print(f"HTTP {e.code} running {source}", file=sys.stderr)
         print(e.read().decode()[:3000], file=sys.stderr)
