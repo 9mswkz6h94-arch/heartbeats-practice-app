@@ -5,6 +5,7 @@ import { fetchStudentStats, dayStr } from "../lib/studentStats";
 import { buildGoogleCalendarUrl, dayName } from "../lib/calendarLink";
 import BadgeShowcase from "./BadgeShowcase";
 import CommLog from "./CommLog";
+import PetWidget from "./PetWidget";
 import "./ParentDashboard.css";
 
 const RESCHED_STATUS_LABEL = {
@@ -215,6 +216,8 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
 
       {detail && (
         <>
+          <PetWidget studentId={kid.id} compact />
+
           {detail.lesson && (
             <div className="lesson-info-row">
               <span>
