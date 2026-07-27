@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { randomPin } from "../lib/familyAuth";
 import { fetchStudentStats, dayStr } from "../lib/studentStats";
 import BadgeShowcase from "./BadgeShowcase";
+import CommLog from "./CommLog";
 import "./ParentDashboard.css";
 
 // Read-only parent view: per-kid weekly practice summary, current
@@ -309,6 +310,8 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
                         </span>
                       </div>
                     ))}
+
+                    <CommLog studentId={selectedKid.id} role="parent" />
                   </>
                 )}
               </section>

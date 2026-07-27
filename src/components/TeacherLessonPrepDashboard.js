@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { fetchStudentStats } from "../lib/studentStats";
+import CommLog from "./CommLog";
 import "./TeacherLessonPrepDashboard.css";
 
 // Warm, no-shame triage — surfaces who to reach out to without ever reading as failure.
@@ -263,6 +264,8 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
               ) : (
                 <p className="no-assignments">No assignments yet</p>
               )}
+
+              <CommLog studentId={selectedStudent.id} role="teacher" authorName="Jonathan" />
             </div>
           </div>
         ) : attentionList.length > 0 ? (
