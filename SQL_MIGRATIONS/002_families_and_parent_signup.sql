@@ -45,9 +45,12 @@ ALTER TABLE families ENABLE ROW LEVEL SECURITY;
 ALTER TABLE parent_students ENABLE ROW LEVEL SECURITY;
 
 -- ---------- Helpers ----------
--- Single-teacher studio: every new family's kids attach to the first teacher account.
+-- Single-teacher studio: every new family's kids attach to the teacher account
+-- that already owns students (deterministic tiebreak by id for a fresh DB).
 CREATE OR REPLACE FUNCTION default_teacher_id() RETURNS UUID AS $$
-  SELECT id FROM users WHERE type = 'teacher' LIMIT 1;
+  SELECT u.id FROM users u WHERE u.type = 'teacher'
+  ORDER BY (SELECT count(*) FROM students s WHERE s.teacher_id = u.id) DESC, u.id
+  LIMIT 1;
 $$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 CREATE OR REPLACE FUNCTION is_parent_of(sid UUID) RETURNS BOOLEAN AS $$

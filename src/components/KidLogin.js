@@ -49,12 +49,19 @@ export default function KidLogin({ onUseEmailInstead }) {
     }
   };
 
+  // Functional update so rapid taps never read stale state; the effect below
+  // fires the sign-in exactly once when the 4th digit lands.
   const handlePinDigit = (digit) => {
     if (busy) return;
-    const next = (pin + digit).slice(0, 4);
-    setPin(next);
-    if (next.length === 4) signInKid(next);
+    setPin((p) => (p + digit).slice(0, 4));
   };
+
+  useEffect(() => {
+    if (step === "pin" && selectedKid && pin.length === 4 && !busy) {
+      signInKid(pin);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin]);
 
   const signInKid = async (fullPin) => {
     setBusy(true);
