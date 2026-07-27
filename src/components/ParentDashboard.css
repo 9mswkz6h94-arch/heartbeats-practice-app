@@ -452,3 +452,70 @@
 .btn-add-calendar:hover {
   background: var(--primary-dark);
 }
+
+/* --- Reschedule requests --- */
+.btn-request-reschedule {
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-request-reschedule:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.reschedule-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  background: var(--bg-subtle);
+}
+
+.reschedule-editor label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: -4px;
+}
+
+.reschedule-editor input {
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.reschedule-editor-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.reschedule-pending-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border: 2px solid var(--yellow, #FECA57);
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.reschedule-status {
+  font-weight: 700;
+}

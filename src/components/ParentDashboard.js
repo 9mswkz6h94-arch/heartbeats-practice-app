@@ -24,6 +24,11 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
   const [resetPin, setResetPin] = useState("");
   const [resetBusy, setResetBusy] = useState(false);
   const [resetMsg, setResetMsg] = useState(null);
+  // Reschedule requests
+  const [reschedOpen, setReschedOpen] = useState(false);
+  const [reschedDraft, setReschedDraft] = useState({ proposed_date: "", proposed_time: "16:00", reason: "" });
+  const [reschedBusy, setReschedBusy] = useState(false);
+  const [reschedMsg, setReschedMsg] = useState(null);
 
   const fetchFamily = useCallback(async () => {
     setLoading(true);
@@ -107,9 +112,22 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
         .eq("student_id", kidId)
         .maybeSingle();
 
+      const { data: reschedules } = await supabase
+        .from("reschedule_requests")
+        .select("id, proposed_date, proposed_time, reason, status, teacher_note, created_at")
+        .eq("student_id", kidId)
+        .order("created_at", { ascending: false });
+
       setKidData((prev) => ({
         ...prev,
-        [kidId]: { stats, assignments: assignments || [], todayStatus, repertoire: repertoire || [], lesson: lesson || null },
+        [kidId]: {
+          stats,
+          assignments: assignments || [],
+          todayStatus,
+          repertoire: repertoire || [],
+          lesson: lesson || null,
+          reschedules: reschedules || [],
+        },
       }));
     } catch (err) {
       console.error("Kid detail fetch failed:", err);
@@ -150,8 +168,54 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
     }
   };
 
+  const openReschedule = () => {
+    setReschedDraft({ proposed_date: "", proposed_time: "16:00", reason: "" });
+    setReschedMsg(null);
+    setReschedOpen(true);
+  };
+
+  const submitReschedule = async (kid) => {
+    if (!reschedDraft.proposed_date) {
+      setReschedMsg({ ok: false, text: "Pick a proposed date" });
+      return;
+    }
+    setReschedBusy(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error: insertError } = await supabase.from("reschedule_requests").insert([
+        {
+          student_id: kid.id,
+          requested_by: userData.user.id,
+          proposed_date: reschedDraft.proposed_date,
+          proposed_time: reschedDraft.proposed_time,
+          reason: reschedDraft.reason.trim() || null,
+        },
+      ]);
+      if (insertError) throw insertError;
+      setReschedOpen(false);
+      setReschedMsg({ ok: true, text: "Request sent — your teacher will confirm soon." });
+      fetchKidDetail(kid.id);
+    } catch (err) {
+      setReschedMsg({ ok: false, text: err.message || "Could not send request" });
+    } finally {
+      setReschedBusy(false);
+    }
+  };
+
+  const cancelReschedule = async (requestId, kidId) => {
+    await supabase.from("reschedule_requests").update({ status: "cancelled" }).eq("id", requestId);
+    fetchKidDetail(kidId);
+  };
+
   const selectedKid = kids.find((k) => k.id === selectedKidId);
   const detail = selectedKidId ? kidData[selectedKidId] : null;
+
+  const RESCHED_STATUS_LABEL = {
+    pending: "⏳ Waiting for teacher",
+    approved: "✅ Confirmed",
+    declined: "❌ Declined",
+    cancelled: "Cancelled",
+  };
 
   const CATEGORY_COLORS = {
     Warmup: "var(--red, #FF6B6B)",
@@ -280,8 +344,63 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
                         >
                           📆 Add to Google Calendar
                         </a>
+                        {!reschedOpen && (
+                          <button type="button" className="btn-request-reschedule" onClick={openReschedule}>
+                            🔁 Request a different time
+                          </button>
+                        )}
                       </div>
                     )}
+
+                    {reschedOpen && (
+                      <div className="reschedule-editor">
+                        <label>New date</label>
+                        <input
+                          type="date"
+                          value={reschedDraft.proposed_date}
+                          onChange={(e) => setReschedDraft({ ...reschedDraft, proposed_date: e.target.value })}
+                          disabled={reschedBusy}
+                        />
+                        <label>New time</label>
+                        <input
+                          type="time"
+                          value={reschedDraft.proposed_time}
+                          onChange={(e) => setReschedDraft({ ...reschedDraft, proposed_time: e.target.value })}
+                          disabled={reschedBusy}
+                        />
+                        <label>Reason (optional)</label>
+                        <input
+                          type="text"
+                          placeholder="e.g., dentist appointment"
+                          value={reschedDraft.reason}
+                          onChange={(e) => setReschedDraft({ ...reschedDraft, reason: e.target.value })}
+                          disabled={reschedBusy}
+                        />
+                        <div className="reschedule-editor-actions">
+                          <button type="button" className="btn-pin-save" disabled={reschedBusy} onClick={() => submitReschedule(selectedKid)}>
+                            {reschedBusy ? "Sending..." : "Send Request"}
+                          </button>
+                          <button type="button" className="btn-pin-cancel" disabled={reschedBusy} onClick={() => setReschedOpen(false)}>
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {reschedMsg && (
+                      <p className={`pin-reset-msg ${reschedMsg.ok ? "ok" : "err"}`}>{reschedMsg.text}</p>
+                    )}
+                    {detail.reschedules?.filter((r) => r.status === "pending").map((r) => (
+                      <div key={r.id} className="reschedule-pending-row">
+                        <span>
+                          Requested {new Date(`${r.proposed_date}T00:00`).toLocaleDateString()} at {r.proposed_time.slice(0, 5)}
+                          {r.reason ? ` — ${r.reason}` : ""}
+                        </span>
+                        <span className="reschedule-status">{RESCHED_STATUS_LABEL[r.status]}</span>
+                        <button type="button" className="btn-pin-cancel" onClick={() => cancelReschedule(r.id, selectedKid.id)}>
+                          Cancel request
+                        </button>
+                      </div>
+                    ))}
 
                     <div className="week-stats">
                       <div className="week-stat">

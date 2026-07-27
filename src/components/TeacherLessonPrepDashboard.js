@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { fetchStudentStats } from "../lib/studentStats";
 import CommLog from "./CommLog";
+import RescheduleRequests from "./RescheduleRequests";
 import "./TeacherLessonPrepDashboard.css";
 
 // Warm, no-shame triage — surfaces who to reach out to without ever reading as failure.
@@ -124,6 +125,8 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
 
   return (
     <div className="lesson-prep-container">
+      <RescheduleRequests teacherId={teacherId} />
+
       {/* ── Studio pulse ── */}
       <section className="pulse" aria-label="Studio at a glance">
         <div className="pulse-tile t-sessions">
