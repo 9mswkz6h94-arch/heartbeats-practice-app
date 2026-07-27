@@ -306,3 +306,40 @@ What landed (see `SQL_MIGRATIONS/002_families_and_parent_signup.sql` + `src/lib/
 ⚠️ Deploy order: **run migration 002 + turn OFF "Confirm email" in Supabase auth settings
 BEFORE pushing this code** — the client now selects/filters `students.status`, which errors
 until the column exists. PIN resets need an edge function (no service key client-side) — parked.
+
+---
+
+## ADDENDUM 2026-07-27 — Phase 6 (SMS) built, BLOCKED on Twilio account
+
+Jonathan asked for real texting to parents, not just the in-app comm log (which was already
+shipped and verified working — commit `8236d8d`, tested end-to-end against the live DB). This
+is the parked "Phase 6" from the original plan, pulled forward ahead of Phase 5 email.
+
+What landed (code deployed, not yet functional — needs Twilio credentials):
+- `SQL_MIGRATIONS/008_sms_notifications.sql` — adds `parent_students.parent_phone`
+  (`notify_sms` already existed from migration 002, unused until now).
+- `src/components/NotificationSettings.js` + `.css` — parent-facing "Text me when the
+  teacher sends a flagged message" toggle + phone input, wired into `KidPracticePanel`
+  (interactive/parent mode only) above `CommLog`. Writes to the parent's own
+  `parent_students` row (`parent_update_own_links` RLS policy already covers it, verified
+  against `pg_policies`).
+- `supabase/functions/notify-parent-sms/index.ts` (deployed via
+  `npx supabase functions deploy notify-parent-sms --project-ref fcamjkfgxywsyjcdmrrd --use-api`)
+  — verifies caller is the message's teacher, looks up parents with `notify_sms=true` and a
+  phone on file, sends a **pointer-only** SMS via Twilio's REST API (never message content,
+  matching the plan's privacy rule), marks `notified_at`. Needs function secrets
+  `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` (not set yet).
+- `CommLog.js` — after a flagged send, fire-and-forgets a call to `notify-parent-sms`
+  (`.catch(() => {})` — never blocks or fails the message itself, per the reliability rule).
+
+**Deliberate deviation from the original Phase 5 spec:** that called for a Supabase Database
+Webhook triggering the function on INSERT. Built as a direct client-side `functions.invoke()`
+instead (matches the existing `reset-kid-pin` pattern already in this codebase) — simpler,
+no webhook config needed, same fire-and-forget safety guarantee.
+
+**Blocked on:** Jonathan doesn't have a Twilio account yet. Needs to sign up at
+twilio.com/try-twilio, buy a number, and either verify test recipient numbers (trial, up to 5)
+or complete toll-free verification (recommended over A2P 10DLC for a small studio — faster,
+less paperwork) before real parents can receive texts. Once he has SID/Auth Token/number:
+`npx supabase secrets set TWILIO_ACCOUNT_SID=... TWILIO_AUTH_TOKEN=... TWILIO_FROM_NUMBER=... --project-ref fcamjkfgxywsyjcdmrrd`.
+Phase 5 (email via Resend) is still unbuilt and not blocking this.

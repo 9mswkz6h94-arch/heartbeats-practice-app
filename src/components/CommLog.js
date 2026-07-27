@@ -53,20 +53,33 @@ export default function CommLog({ studentId, role, authorName }) {
     setError(null);
     try {
       const { data: userData } = await supabase.auth.getUser();
-      const { error: insertError } = await supabase.from("communication_log").insert([
-        {
-          student_id: studentId,
-          author_id: userData.user.id,
-          author_role: role,
-          author_name: authorName || null,
-          body: body.trim(),
-          notify: role === "teacher" ? notify : false,
-        },
-      ]);
+      const shouldNotify = role === "teacher" ? notify : false;
+      const { data: inserted, error: insertError } = await supabase
+        .from("communication_log")
+        .insert([
+          {
+            student_id: studentId,
+            author_id: userData.user.id,
+            author_role: role,
+            author_name: authorName || null,
+            body: body.trim(),
+            notify: shouldNotify,
+          },
+        ])
+        .select("id")
+        .single();
       if (insertError) throw insertError;
       setBody("");
       setNotify(false);
       fetchMessages();
+
+      // Fire-and-forget: texting a parent is a bonus, never allowed to block
+      // or fail the message itself (reliability rule — message already posted).
+      if (shouldNotify && inserted?.id) {
+        supabase.functions
+          .invoke("notify-parent-sms", { body: { message_id: inserted.id } })
+          .catch(() => {});
+      }
     } catch (err) {
       setError(err.message || "Could not send");
     } finally {

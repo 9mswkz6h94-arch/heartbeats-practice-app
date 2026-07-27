@@ -5,6 +5,7 @@ import { fetchStudentStats, dayStr } from "../lib/studentStats";
 import { buildGoogleCalendarUrl, dayName } from "../lib/calendarLink";
 import BadgeShowcase from "./BadgeShowcase";
 import CommLog from "./CommLog";
+import NotificationSettings from "./NotificationSettings";
 import PetWidget from "./PetWidget";
 import "./ParentDashboard.css";
 
@@ -355,6 +356,8 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
               </span>
             </div>
           ))}
+
+          {interactive && <NotificationSettings studentId={kid.id} />}
 
           {interactive && <CommLog studentId={kid.id} role="parent" />}
         </>

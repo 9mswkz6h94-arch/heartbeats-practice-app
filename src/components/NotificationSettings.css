@@ -1,0 +1,81 @@
+.notif-settings {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notif-settings-title {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.notif-settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.notif-settings-phone {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.notif-settings-phone:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.notif-settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-notif-save {
+  padding: 7px 16px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-notif-save:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.btn-notif-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.notif-settings-msg {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.notif-settings-msg.ok {
+  color: var(--primary-dark);
+}
+
+.notif-settings-msg.err {
+  color: #d63031;
+}
