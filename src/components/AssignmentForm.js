@@ -30,7 +30,8 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
       const { data, error: fetchError } = await supabase
         .from("students")
         .select("id, name, email")
-        .eq("teacher_id", teacherId);
+        .eq("teacher_id", teacherId)
+        .neq("status", "pending");
 
       if (fetchError) {
         setError("Could not load students");

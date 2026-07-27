@@ -19,7 +19,7 @@ export default function StudentManager({ teacherId }) {
     setFetching(true);
     const { data, error: fetchError } = await supabase
       .from("students")
-      .select("id, name, email, auth_user_id, created_at")
+      .select("id, name, email, auth_user_id, created_at, status, avatar, instrument, family_id")
       .eq("teacher_id", teacherId)
       .order("name");
 
@@ -29,6 +29,18 @@ export default function StudentManager({ teacherId }) {
       setStudents(data || []);
     }
     setFetching(false);
+  };
+
+  const handleApproveStudent = async (studentId) => {
+    const { error: approveError } = await supabase
+      .from("students")
+      .update({ status: "active" })
+      .eq("id", studentId);
+    if (approveError) {
+      setError(approveError.message);
+    } else {
+      fetchStudents();
+    }
   };
 
   const handleAddStudent = async (e) => {
@@ -68,8 +80,46 @@ export default function StudentManager({ teacherId }) {
     fetchStudents();
   };
 
+  const pendingStudents = students.filter((s) => s.status === "pending");
+  const activeStudents = students.filter((s) => s.status !== "pending");
+
   return (
     <div className="student-manager-container">
+      {pendingStudents.length > 0 && (
+        <div className="student-manager-pending-section">
+          <h2>New Families Waiting for Approval ({pendingStudents.length})</h2>
+          <p className="section-info">
+            These students signed up through the family wizard. Approve them to add them to
+            your roster — remove anything that looks like junk.
+          </p>
+          <div className="student-manager-list">
+            {pendingStudents.map((student) => (
+              <div key={student.id} className="student-manager-row pending-row">
+                <div className="student-manager-info">
+                  <span className="student-manager-name">
+                    {student.avatar ? `${student.avatar} ` : ""}{student.name}
+                  </span>
+                  <span className="student-manager-email">{student.instrument || "No instrument listed"}</span>
+                </div>
+                <button
+                  className="btn-approve-student"
+                  onClick={() => handleApproveStudent(student.id)}
+                >
+                  ✓ Approve
+                </button>
+                <button
+                  className="btn-remove-student"
+                  onClick={() => handleRemoveStudent(student.id)}
+                  title="Remove student"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="student-manager-form-section">
         <h2>Add a Student</h2>
         <p className="section-info">
@@ -118,23 +168,27 @@ export default function StudentManager({ teacherId }) {
       </div>
 
       <div className="student-manager-list-section">
-        <h3>Your Students ({students.length})</h3>
+        <h3>Your Students ({activeStudents.length})</h3>
 
         {fetching && <p className="loading">Loading students...</p>}
 
-        {!fetching && students.length === 0 && (
+        {!fetching && activeStudents.length === 0 && (
           <div className="empty-state">
             <p>No students yet. Add your first one above.</p>
           </div>
         )}
 
-        {!fetching && students.length > 0 && (
+        {!fetching && activeStudents.length > 0 && (
           <div className="student-manager-list">
-            {students.map((student) => (
+            {activeStudents.map((student) => (
               <div key={student.id} className="student-manager-row">
                 <div className="student-manager-info">
-                  <span className="student-manager-name">{student.name}</span>
-                  <span className="student-manager-email">{student.email}</span>
+                  <span className="student-manager-name">
+                    {student.avatar ? `${student.avatar} ` : ""}{student.name}
+                  </span>
+                  <span className="student-manager-email">
+                    {student.family_id ? student.instrument || "Family account" : student.email}
+                  </span>
                 </div>
                 <span
                   className={`student-manager-status ${student.auth_user_id ? "linked" : "pending"}`}

@@ -103,6 +103,10 @@ main {
   background: #0d47a1;
 }
 
+.btn-parent {
+  background: var(--teal, #1DD1A1);
+}
+
 .btn-back {
   background: var(--text-muted);
   color: #fff;

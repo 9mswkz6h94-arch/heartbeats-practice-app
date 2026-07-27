@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "./lib/supabaseClient";
 import TeacherLogin from "./components/TeacherLogin";
 import StudentLogin from "./components/StudentLogin";
+import KidLogin from "./components/KidLogin";
+import ParentLogin from "./components/ParentLogin";
+import FamilySignup from "./components/FamilySignup";
+import ParentDashboard from "./components/ParentDashboard";
 import TeacherDashboard from "./components/TeacherDashboard";
 import StudentDashboard from "./components/StudentDashboard";
 import "./App.css";
@@ -28,6 +32,11 @@ function App() {
   const [studentId, setStudentId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
+  // The family wizard manages its own signed-in flow; suppress the global
+  // auth listener's routing until the wizard finishes.
+  const [inFamilySignup, setInFamilySignup] = useState(false);
+  const inFamilySignupRef = React.useRef(false);
+  inFamilySignupRef.current = inFamilySignup;
 
   useEffect(() => {
     let isMounted = true;
@@ -62,6 +71,7 @@ function App() {
       if (!isMounted) return;
 
       if (event === "SIGNED_IN" && session) {
+        if (inFamilySignupRef.current) return; // wizard routes itself when done
         await resolveSession(session, isMounted);
       } else if (event === "SIGNED_OUT") {
         setUserType(null);
@@ -101,7 +111,8 @@ function App() {
     setUserEmail(session.user.email);
 
     if (resolvedType === "student") {
-      // Match student record by email (teacher creates these manually)
+      // Match student record by email (kid accounts use synthetic emails,
+      // legacy students use their real one — both live in students.email)
       const { data: studentData } = await supabase
         .from("students")
         .select("id")
@@ -130,6 +141,9 @@ function App() {
         );
         setScreen("selection");
       }
+    } else if (resolvedType === "parent") {
+      setAuthError(null);
+      setScreen("parent-dashboard");
     } else {
       setScreen("teacher-dashboard");
     }
@@ -161,6 +175,34 @@ function App() {
     setScreen("selection");
   };
 
+  // Wizard finished: route the (already signed-in) parent to their dashboard.
+  const handleFamilySignupDone = async () => {
+    setInFamilySignup(false);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      await resolveSession(session, true);
+    } else {
+      setScreen("selection");
+    }
+  };
+
+  const screenHeader = (
+    <header className="App-header">
+      <h1>Heart Beats Practice App</h1>
+      <button
+        onClick={() => {
+          setInFamilySignup(false);
+          setScreen("selection");
+        }}
+        className="btn-back-header"
+      >
+        Back
+      </button>
+    </header>
+  );
+
   return (
     <div className="App">
       {screen === "selection" && (
@@ -172,19 +214,25 @@ function App() {
           <main>
             <div className="auth-selection">
               <h2>Welcome!</h2>
-              <p>Are you a teacher or student?</p>
+              <p>Who's here today?</p>
               {authError && <div className="auth-banner-error">{authError}</div>}
+              <button
+                onClick={() => { setAuthError(null); setScreen("kid-login"); }}
+                className="btn btn-student"
+              >
+                🎸 Student
+              </button>
+              <button
+                onClick={() => { setAuthError(null); setScreen("parent-login"); }}
+                className="btn btn-parent"
+              >
+                👨‍👩‍👧 Parent
+              </button>
               <button
                 onClick={() => { setAuthError(null); setScreen("teacher-login"); }}
                 className="btn btn-teacher"
               >
-                Teacher
-              </button>
-              <button
-                onClick={() => { setAuthError(null); setScreen("student-login"); }}
-                className="btn btn-student"
-              >
-                Student
+                🎹 Teacher
               </button>
             </div>
           </main>
@@ -193,36 +241,56 @@ function App() {
 
       {screen === "teacher-login" && (
         <>
-          <header className="App-header">
-            <h1>Heart Beats Practice App</h1>
-            <button
-              onClick={() => setScreen("selection")}
-              className="btn-back-header"
-            >
-              Back
-            </button>
-          </header>
-
+          {screenHeader}
           <main>
             <TeacherLogin onLoginSuccess={handleTeacherLogin} />
           </main>
         </>
       )}
 
+      {screen === "kid-login" && (
+        <>
+          {screenHeader}
+          <main>
+            <KidLogin onUseEmailInstead={() => setScreen("student-login")} />
+          </main>
+        </>
+      )}
+
       {screen === "student-login" && (
         <>
-          <header className="App-header">
-            <h1>Heart Beats Practice App</h1>
-            <button
-              onClick={() => setScreen("selection")}
-              className="btn-back-header"
-            >
-              Back
-            </button>
-          </header>
-
+          {screenHeader}
           <main>
             <StudentLogin />
+          </main>
+        </>
+      )}
+
+      {screen === "parent-login" && (
+        <>
+          {screenHeader}
+          <main>
+            <ParentLogin
+              onStartSignup={() => {
+                setInFamilySignup(true);
+                setScreen("family-signup");
+              }}
+            />
+          </main>
+        </>
+      )}
+
+      {screen === "family-signup" && (
+        <>
+          {screenHeader}
+          <main>
+            <FamilySignup
+              onDone={handleFamilySignupDone}
+              onBackToLogin={() => {
+                setInFamilySignup(false);
+                setScreen("parent-login");
+              }}
+            />
           </main>
         </>
       )}
@@ -233,6 +301,10 @@ function App() {
 
       {screen === "student-dashboard" && (
         <StudentDashboard studentId={studentId} onLogout={handleLogout} />
+      )}
+
+      {screen === "parent-dashboard" && (
+        <ParentDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} />
       )}
     </div>
   );

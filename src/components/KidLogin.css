@@ -1,0 +1,122 @@
+.kid-login {
+  max-width: 400px;
+  text-align: center;
+}
+
+.kid-login h2 {
+  text-align: center;
+}
+
+.kid-login-sub {
+  margin: -16px 0 24px;
+  font-size: 15px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.family-code-input {
+  text-align: center;
+  font-size: 22px !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.kid-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.kid-picker-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  font-family: inherit;
+}
+
+.kid-picker-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.kid-picker-avatar {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.kid-picker-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.pin-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pin-dot.filled {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.pin-key {
+  padding: 16px 0;
+  font-size: 22px;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.1s ease, border-color 0.1s ease, transform 0.1s ease;
+  touch-action: manipulation;
+}
+
+.pin-key:active:not(:disabled) {
+  background: var(--primary-light, #ede9fb);
+  border-color: var(--primary);
+  transform: scale(0.96);
+}
+
+.pin-key:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pin-key-util {
+  font-size: 18px;
+  color: var(--text-muted);
+}

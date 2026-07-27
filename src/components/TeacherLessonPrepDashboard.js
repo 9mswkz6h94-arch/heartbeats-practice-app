@@ -66,8 +66,9 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
     try {
       const { data: studentsData, error: studError } = await supabase
         .from("students")
-        .select("id, name, email, created_at")
+        .select("id, name, email, created_at, status")
         .eq("teacher_id", teacherId)
+        .neq("status", "pending")
         .order("name");
 
       if (studError) throw studError;
