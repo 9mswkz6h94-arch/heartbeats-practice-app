@@ -39,6 +39,7 @@ const EMPTY_STATS = {
   completions: 0,
   thisWeek: 0,
   lastWeek: 0,
+  sightReadingSessions: 0,
   songsMemorized: 0,
   streak: 0,
   everPracticed: false,
@@ -69,6 +70,11 @@ export async function fetchStudentStats(studentId) {
       .eq("student_id", studentId)
       .order("created_at", { ascending: false });
 
+    const { data: sightreadingSessions } = await supabase
+      .from("sightreading_attempts")
+      .select("completed_at")
+      .eq("student_id", studentId);
+
     const completionList = completions || [];
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
@@ -84,6 +90,10 @@ export async function fetchStudentStats(studentId) {
     }).length;
 
     const daySet = new Set(completionList.map((c) => c.completed_at.split("T")[0]));
+    // Sight-reading sessions count toward "days practiced" / streak just like
+    // any other completion, even though they live in their own table (see
+    // SQL_MIGRATIONS/009_sightreading_attempts.sql for why).
+    (sightreadingSessions || []).forEach((s) => daySet.add(s.completed_at.split("T")[0]));
     const everPracticed = daySet.size > 0;
     const streak = computeStreak(daySet);
 
@@ -97,6 +107,7 @@ export async function fetchStudentStats(studentId) {
       completions: completionList.length,
       thisWeek,
       lastWeek,
+      sightReadingSessions: (sightreadingSessions || []).length,
       songsMemorized: repertoire?.length || 0,
       streak,
       everPracticed,

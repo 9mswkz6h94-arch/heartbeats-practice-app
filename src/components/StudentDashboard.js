@@ -2,6 +2,7 @@ import React from "react";
 import { supabase } from "../lib/supabaseClient";
 import StudentPracticeCards from "./StudentPracticeCards";
 import StudentRepertoire from "./StudentRepertoire";
+import SightReading from "./SightReading";
 import PetWidget from "./PetWidget";
 import "./Dashboard.css";
 import "./StudentDashboard.css";
@@ -24,6 +25,7 @@ export default function StudentDashboard({ studentId, onLogout }) {
       <main className="student-dashboard-content">
         <PetWidget studentId={studentId} />
         <StudentPracticeCards studentId={studentId} />
+        <SightReading studentId={studentId} />
         <StudentRepertoire studentId={studentId} />
       </main>
     </div>

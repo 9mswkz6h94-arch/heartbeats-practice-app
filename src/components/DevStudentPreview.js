@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import StudentPracticeCards from "./StudentPracticeCards";
 import StudentRepertoire from "./StudentRepertoire";
+import SightReading from "./SightReading";
 import "./DevStudentPreview.css";
 
 export default function DevStudentPreview({ teacherId }) {
@@ -70,6 +71,7 @@ export default function DevStudentPreview({ teacherId }) {
           </div>
           <div className="dev-preview-content" key={selectedStudent.id}>
             <StudentPracticeCards studentId={selectedStudent.id} readOnly />
+            <SightReading studentId={selectedStudent.id} readOnly />
             <StudentRepertoire studentId={selectedStudent.id} />
           </div>
         </div>
