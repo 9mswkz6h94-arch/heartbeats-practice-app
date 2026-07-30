@@ -4,6 +4,7 @@ import StudentPracticeCards from "./StudentPracticeCards";
 import StudentRepertoire from "./StudentRepertoire";
 import SightReading from "./SightReading";
 import PetWidget from "./PetWidget";
+import PetCollection from "./PetCollection";
 import "./DevStudentPreview.css";
 
 export default function DevStudentPreview({ teacherId }) {
@@ -72,6 +73,7 @@ export default function DevStudentPreview({ teacherId }) {
           </div>
           <div className="dev-preview-content" key={selectedStudent.id}>
             <PetWidget studentId={selectedStudent.id} />
+            <PetCollection studentId={selectedStudent.id} readOnly />
             <StudentPracticeCards studentId={selectedStudent.id} readOnly />
             <SightReading studentId={selectedStudent.id} readOnly />
             <StudentRepertoire studentId={selectedStudent.id} />
