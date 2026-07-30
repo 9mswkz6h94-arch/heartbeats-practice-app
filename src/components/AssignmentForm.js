@@ -75,9 +75,6 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
       if (!title || !selectedStudent) {
         throw new Error("Please fill in title and select a student");
       }
-      if (practiceSteps.length === 0) {
-        throw new Error("Please add at least one practice step");
-      }
       if (practiceSteps.some((s) => !s.title.trim())) {
         throw new Error("All practice steps must have a title");
       }
@@ -116,13 +113,29 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
 
       const assignmentId = assignmentData[0].id;
 
-      const stepsToInsert = practiceSteps.map((step, index) => ({
-        assignment_id: assignmentId,
-        step_number: index + 1,
-        title: step.title,
-        description: step.description,
-        sequence_order: index + 1,
-      }));
+      // The student-facing practice cards are built entirely off
+      // practice_steps — an assignment with none would be invisible to the
+      // student, with no way to mark it done. When the teacher skips
+      // breaking it down, fall back to a single step from the assignment's
+      // own title so it still shows up as one completable card.
+      const stepsToInsert =
+        practiceSteps.length > 0
+          ? practiceSteps.map((step, index) => ({
+              assignment_id: assignmentId,
+              step_number: index + 1,
+              title: step.title,
+              description: step.description,
+              sequence_order: index + 1,
+            }))
+          : [
+              {
+                assignment_id: assignmentId,
+                step_number: 1,
+                title,
+                description,
+                sequence_order: 1,
+              },
+            ];
 
       const { error: stepsError } = await supabase.from("practice_steps").insert(stepsToInsert);
       if (stepsError) throw stepsError;
@@ -301,9 +314,10 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
         </div>
 
         <div className="form-section">
-          <h3>Practice Steps</h3>
+          <h3>Practice Steps (optional)</h3>
           <p className="section-info">
-            Add the practice steps for this assignment. You'll enter them manually.
+            Break this assignment into steps if it's helpful. Leave it empty for a
+            single, simple practice card — no breakdown needed.
           </p>
 
           {practiceSteps.length > 0 && (
