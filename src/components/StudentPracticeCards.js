@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { checkAndAwardBadges } from "../lib/badgeLogic";
+import { cheerForPractice } from "./PetWidget";
 import PracticeCardDetail from "./PracticeCardDetail";
 import "./StudentPracticeCards.css";
 
@@ -170,6 +171,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       // Preview mode: reflect the action visually, write nothing
       setDailyStatus({ ...dailyStatus, [step.id]: "completed" });
       setSelectedStep(null);
+      cheerForPractice();
       return;
     }
 
@@ -206,6 +208,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       }, 1000);
 
       setSelectedStep(null);
+      cheerForPractice();
     } catch (err) {
       console.error("Error completing step:", err);
     }
