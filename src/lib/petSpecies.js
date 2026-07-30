@@ -1,8 +1,9 @@
-// Species roster for the pet collection (SQL_MIGRATIONS/013_pet_collection.sql).
-// One emoji per species — life stage is communicated through size/glow in
-// the UI rather than hunting for baby-animal emoji variants that mostly
-// don't exist in Unicode. `emoji` is the closest good match available;
-// capybara has no dedicated emoji yet, so it borrows beaver.
+// Species roster for the pet collection (SQL_MIGRATIONS/013_pet_collection.sql,
+// extended in 015_pet_species_expansion.sql). One emoji per species — life
+// stage is communicated through size/glow in the UI rather than hunting for
+// baby-animal emoji variants that mostly don't exist in Unicode. `emoji` is
+// the closest good match available; capybara and cheetah have no dedicated
+// emoji yet, so they borrow beaver and leopard respectively.
 export const SPECIES = {
   dragon: { name: "Dragon", emoji: "🐉" },
   capybara: { name: "Capybara", emoji: "🦫" },
@@ -14,6 +15,9 @@ export const SPECIES = {
   bunny: { name: "Bunny", emoji: "🐰" },
   cat: { name: "Cat", emoji: "🐱" },
   dolphin: { name: "Dolphin", emoji: "🐬" },
+  cheetah: { name: "Cheetah", emoji: "🐆" },
+  robot: { name: "Robot", emoji: "🤖" },
+  poop: { name: "Poop", emoji: "💩" },
 };
 
 export const CREATURE_STAGES = {
