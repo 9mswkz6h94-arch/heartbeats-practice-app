@@ -22,6 +22,19 @@
   will-change: transform;
 }
 
+/* Defined before pet-cheer-bounce so, per normal cascade source order, the
+   one-shot cheer animation temporarily wins over this infinite loop while
+   both classes are briefly present (see PetWidget.js's handleCheer, which
+   removes pet-cheer-bounce again after it finishes). */
+.pet-idle-bob {
+  animation: pet-idle-bob 2.6s ease-in-out infinite;
+}
+
+@keyframes pet-idle-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(-3deg); }
+}
+
 .pet-cheer-bounce {
   animation: pet-cheer-jump 0.6s ease;
 }
@@ -98,11 +111,142 @@
   color: var(--text-muted);
 }
 
-.pet-name {
+.pet-species-picker {
+  width: 100%;
+  padding: 12px;
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  margin-bottom: 4px;
+}
+
+.pet-species-prompt {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pet-species-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.pet-species-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pet-species-option:hover:not(:disabled) {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.pet-species-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pet-species-emoji {
+  font-size: 24px;
+}
+
+.pet-species-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pet-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pet-custom-name {
   font-family: 'Fraunces', Georgia, serif;
   font-weight: 700;
   font-size: 18px;
   color: var(--text);
+}
+
+.pet-name-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px;
+  opacity: 0.6;
+}
+
+.pet-name-edit-btn:hover {
+  opacity: 1;
+}
+
+.btn-name-pet {
+  background: var(--primary-light);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pet-name-form {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.pet-name-form input {
+  padding: 5px 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  width: 120px;
+  font-family: inherit;
+}
+
+.pet-name-form button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pet-name-form button[type="button"] {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.pet-name-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pet-stage-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
 }
 
 .pet-blurb {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { stageInfo, progressToNext } from "../lib/petStages";
+import { stageInfo, progressToNext, SPECIES_CHOICES } from "../lib/petStages";
 import "./PetWidget.css";
 
 const CHEER_MESSAGES = ["Yay!! 🎉", "You did it!", "Great practice!", "Woo hoo!", "Nice work!"];
@@ -19,16 +19,23 @@ export function cheerForPractice() {
 // "it's been 4 days" guilt trip. Whoever left it will find it exactly
 // as happy as they left it.
 //
-// Two purely-visual reactions layered on top of that: it wiggles along to
-// live mic volume while "Play for me!" is on (no pitch/correctness
-// judgment, just "there's sound"), and it does a little cheer whenever a
-// practice card gets completed anywhere on the dashboard.
-export default function PetWidget({ studentId, compact = false }) {
+// Reactions layered on top of that: a gentle idle bob so it never looks
+// static, wiggling along to live mic volume while "Play for me!" is on (no
+// pitch/correctness judgment, just "there's sound"), and a little cheer
+// whenever a practice card gets completed anywhere on the dashboard. Once,
+// early on, the student also names it and picks its species from the same
+// roster as the collection creatures — permanent choices, made through
+// SECURITY DEFINER functions the same way hatch/merge are.
+export default function PetWidget({ studentId, compact = false, readOnly = false }) {
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [listening, setListening] = useState(false);
   const [micStatus, setMicStatus] = useState("idle"); // idle | requesting | listening | denied | unsupported
   const [cheerMessage, setCheerMessage] = useState(null);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [choosingSpecies, setChoosingSpecies] = useState(false);
 
   const emojiRef = useRef(null);
   const audioCtxRef = useRef(null);
@@ -38,8 +45,12 @@ export default function PetWidget({ studentId, compact = false }) {
   const rafRef = useRef(null);
 
   const fetchPet = useCallback(async () => {
-    const { data } = await supabase.from("pets").select("xp, stage").eq("student_id", studentId).maybeSingle();
-    setPet(data || { xp: 0, stage: 0 });
+    const { data } = await supabase
+      .from("pets")
+      .select("xp, stage, name, species, species_chosen")
+      .eq("student_id", studentId)
+      .maybeSingle();
+    setPet(data || { xp: 0, stage: 0, name: null, species: "chicken", species_chosen: true });
     setLoading(false);
   }, [studentId]);
 
@@ -57,6 +68,7 @@ export default function PetWidget({ studentId, compact = false }) {
         // eslint-disable-next-line no-unused-expressions
         el.offsetWidth; // restart the animation if it's already mid-cheer
         el.classList.add("pet-cheer-bounce");
+        setTimeout(() => el.classList.remove("pet-cheer-bounce"), 650);
       }
       setTimeout(() => setCheerMessage(null), 2200);
     }
@@ -126,17 +138,39 @@ export default function PetWidget({ studentId, compact = false }) {
     }
   }
 
+  async function handleSaveName(e) {
+    e.preventDefault();
+    const clean = nameDraft.trim();
+    if (!clean) return;
+    setSavingName(true);
+    const { data, error } = await supabase.rpc("set_pet_name", { p_name: clean });
+    setSavingName(false);
+    if (!error) {
+      setPet((p) => ({ ...p, name: data.name }));
+      setEditingName(false);
+    }
+  }
+
+  async function handleChooseSpecies(key) {
+    setChoosingSpecies(true);
+    const { data, error } = await supabase.rpc("choose_pet_species", { p_species: key });
+    setChoosingSpecies(false);
+    if (!error) {
+      setPet((p) => ({ ...p, species: data.species, species_chosen: true }));
+    }
+  }
+
   if (loading) return null;
 
-  const info = stageInfo(pet.stage);
-  const progress = Math.round(progressToNext(pet.xp, pet.stage) * 100);
+  const info = stageInfo(pet.stage, pet.species);
+  const progress = Math.round(progressToNext(pet.xp, pet.stage, pet.species) * 100);
 
   if (compact) {
     return (
       <div className="pet-widget pet-widget-compact">
-        <span className="pet-emoji-compact">{info.emoji}</span>
+        <span className="pet-emoji-compact pet-idle-bob">{info.emoji}</span>
         <div className="pet-compact-info">
-          <span className="pet-name-compact">{info.name}</span>
+          <span className="pet-name-compact">{pet.name || info.name}</span>
           {info.xpToNext != null && (
             <div className="pet-bar-track pet-bar-track-sm">
               <div className="pet-bar-fill" style={{ width: `${progress}%` }} />
@@ -149,13 +183,86 @@ export default function PetWidget({ studentId, compact = false }) {
 
   return (
     <div className="pet-widget">
+      {!pet.species_chosen && (
+        <div className="pet-species-picker">
+          <p className="pet-species-prompt">Choose your pet! (This one's forever — pick your favorite)</p>
+          <div className="pet-species-grid">
+            {SPECIES_CHOICES.map((choice) => (
+              <button
+                key={choice.key}
+                className="pet-species-option"
+                onClick={() => handleChooseSpecies(choice.key)}
+                disabled={choosingSpecies || readOnly}
+              >
+                <span className="pet-species-emoji">{choice.previewEmoji}</span>
+                <span className="pet-species-label">{choice.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="pet-emoji-wrap">
         {cheerMessage && <div className="pet-cheer-bubble">{cheerMessage}</div>}
-        <div className="pet-emoji-big" aria-hidden="true" ref={emojiRef}>
+        <div
+          className={`pet-emoji-big${listening ? "" : " pet-idle-bob"}`}
+          aria-hidden="true"
+          ref={emojiRef}
+        >
           {info.emoji}
         </div>
       </div>
-      <div className="pet-name">{info.name}</div>
+
+      <div className="pet-name-row">
+        {pet.name && (!editingName || readOnly) && (
+          <>
+            <span className="pet-custom-name">{pet.name}</span>
+            {!readOnly && (
+              <button
+                className="pet-name-edit-btn"
+                onClick={() => {
+                  setNameDraft(pet.name);
+                  setEditingName(true);
+                }}
+                aria-label="Rename pet"
+              >
+                ✏️
+              </button>
+            )}
+          </>
+        )}
+        {!pet.name && !editingName && !readOnly && (
+          <button
+            className="btn-name-pet"
+            onClick={() => {
+              setNameDraft("");
+              setEditingName(true);
+            }}
+          >
+            Name your pet!
+          </button>
+        )}
+      </div>
+
+      {editingName && !readOnly && (
+        <form className="pet-name-form" onSubmit={handleSaveName}>
+          <input
+            value={nameDraft}
+            onChange={(e) => setNameDraft(e.target.value)}
+            maxLength={24}
+            placeholder="e.g. Spike"
+            autoFocus
+          />
+          <button type="submit" disabled={!nameDraft.trim() || savingName}>
+            {savingName ? "Saving…" : "Save"}
+          </button>
+          <button type="button" onClick={() => setEditingName(false)}>
+            Cancel
+          </button>
+        </form>
+      )}
+
+      <div className="pet-stage-label">{info.name}</div>
       <p className="pet-blurb">{info.blurb}</p>
       {info.xpToNext != null ? (
         <>

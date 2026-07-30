@@ -72,7 +72,7 @@ export default function DevStudentPreview({ teacherId }) {
             are saved
           </div>
           <div className="dev-preview-content" key={selectedStudent.id}>
-            <PetWidget studentId={selectedStudent.id} />
+            <PetWidget studentId={selectedStudent.id} readOnly />
             <PetCollection studentId={selectedStudent.id} readOnly />
             <StudentPracticeCards studentId={selectedStudent.id} readOnly />
             <SightReading studentId={selectedStudent.id} readOnly />
