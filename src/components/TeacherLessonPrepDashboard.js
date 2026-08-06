@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { fetchStudentStats } from "../lib/studentStats";
+import { resetStepsForNextLesson, isPersistentCategory } from "../lib/practiceStatus";
 import CommLog from "./CommLog";
 import RescheduleRequests from "./RescheduleRequests";
 import ParentPreviewModal from "./ParentPreviewModal";
@@ -29,6 +30,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [previewStudent, setPreviewStudent] = useState(null);
+  const [reassigning, setReassigning] = useState(null);
 
   useEffect(() => {
     fetchStudentsAndStats();
@@ -61,6 +63,24 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
       console.error("Error fetching students:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // "Reassign" = the next-lesson boundary. For Theory this is the only
+  // thing that clears a completed step (it doesn't reset on its own);
+  // for other categories it just forces an immediate reset instead of
+  // waiting for the calendar to roll over.
+  const handleReassign = async (assignment) => {
+    const stepIds = (assignment.practice_steps || []).map((s) => s.id);
+    if (!stepIds.length || !selectedStudent) return;
+    setReassigning(assignment.id);
+    try {
+      await resetStepsForNextLesson(selectedStudent.id, stepIds);
+      await fetchStudentsAndStats();
+    } catch (err) {
+      console.error("Reassign failed:", err);
+    } finally {
+      setReassigning(null);
     }
   };
 
@@ -265,7 +285,22 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
                           {new Date(assignment.created_at).toLocaleDateString()}
                         </span>
                       </div>
-                      <button className="btn-reassign">Reassign</button>
+                      <button
+                        className="btn-reassign"
+                        disabled={reassigning === assignment.id}
+                        onClick={() => handleReassign(assignment)}
+                        title={
+                          isPersistentCategory(assignment.category)
+                            ? "Theory stays checked off until you reassign it here"
+                            : "Force an immediate reset instead of waiting for tomorrow"
+                        }
+                      >
+                        {reassigning === assignment.id
+                          ? "…"
+                          : isPersistentCategory(assignment.category)
+                          ? "↺ Reset for next lesson"
+                          : "↺ Reset now"}
+                      </button>
                     </div>
                   ))}
                 </div>

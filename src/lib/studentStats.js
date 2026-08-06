@@ -63,7 +63,7 @@ export async function fetchStudentStats(studentId) {
       .from("assignments")
       .select(
         `
-        id, title, instrument_type, created_at,
+        id, title, instrument_type, category, created_at,
         practice_steps(id)
       `
       )

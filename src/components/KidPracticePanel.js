@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { randomPin } from "../lib/familyAuth";
-import { fetchStudentStats, dayStr } from "../lib/studentStats";
+import { fetchStudentStats } from "../lib/studentStats";
+import { fetchStepStatusMap } from "../lib/practiceStatus";
 import { buildGoogleCalendarUrl, dayName } from "../lib/calendarLink";
 import BadgeShowcase from "./BadgeShowcase";
 import CommLog from "./CommLog";
@@ -56,13 +57,14 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
         .eq("student_id", kid.id)
         .order("created_at", { ascending: false });
 
-      const { data: todayRows } = await supabase
-        .from("daily_practice_status")
-        .select("practice_step_id, status")
-        .eq("student_id", kid.id)
-        .eq("date", dayStr(new Date()));
-      const todayStatus = {};
-      (todayRows || []).forEach((r) => { todayStatus[r.practice_step_id] = r.status; });
+      // Theory steps carry their most-recent status forward (stay checked
+      // until the teacher resets at the next lesson); everything else only
+      // counts a row dated today. Keeps this view in sync with the kid's
+      // own practice screen — see src/lib/practiceStatus.js.
+      const flatSteps = (assignments || []).flatMap((a) =>
+        (a.practice_steps || []).map((s) => ({ id: s.id, category: a.category }))
+      );
+      const todayStatus = await fetchStepStatusMap(kid.id, flatSteps);
 
       const { data: repertoire } = await supabase
         .from("repertoire")
