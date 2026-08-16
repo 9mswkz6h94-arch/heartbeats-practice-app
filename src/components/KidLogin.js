@@ -88,8 +88,9 @@ export default function KidLogin({ onUseEmailInstead }) {
       <div className="auth-form kid-login">
         {step === "code" && (
           <>
-            <h2>🎵 Hi! Let's Practice</h2>
-            <p className="kid-login-sub">Type your family code — a grown-up has it!</p>
+            <p className="auth-context">Student quick access</p>
+            <h2>Let’s practice</h2>
+            <p className="kid-login-sub">Enter the family code your grown-up gave you.</p>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -97,7 +98,9 @@ export default function KidLogin({ onUseEmailInstead }) {
               }}
             >
               <div className="form-group">
+                <label htmlFor="family-code">Family code</label>
                 <input
+                  id="family-code"
                   className="family-code-input"
                   type="text"
                   value={code}
@@ -110,9 +113,9 @@ export default function KidLogin({ onUseEmailInstead }) {
                   disabled={busy}
                 />
               </div>
-              {error && <div className="error-message">{error}</div>}
+              {error && <div className="error-message" role="alert">{error}</div>}
               <button type="submit" className="btn-submit" disabled={busy}>
-                {busy ? "Looking..." : "Let's Go →"}
+                {busy ? "Looking for your family..." : "Continue"}
               </button>
             </form>
             <div className="toggle-auth">
@@ -128,8 +131,9 @@ export default function KidLogin({ onUseEmailInstead }) {
 
         {step === "pick" && (
           <>
-            <h2>👋 Who's Practicing?</h2>
-            <p className="kid-login-sub">Tap your name!</p>
+            <p className="auth-context">Student quick access</p>
+            <h2>Who’s practicing?</h2>
+            <p className="kid-login-sub">Choose your name.</p>
             <div className="kid-picker-grid">
               {kids.map((kid) => (
                 <button
@@ -170,16 +174,15 @@ export default function KidLogin({ onUseEmailInstead }) {
 
         {step === "pin" && selectedKid && (
           <>
-            <h2>
-              {selectedKid.avatar || "🎵"} Hi, {selectedKid.name}!
-            </h2>
-            <p className="kid-login-sub">Type your secret PIN</p>
+            <p className="auth-context">Student quick access</p>
+            <h2>Hi, {selectedKid.name}</h2>
+            <p className="kid-login-sub">Enter your four-digit PIN.</p>
             <div className="pin-dots">
               {[0, 1, 2, 3].map((i) => (
                 <span key={i} className={`pin-dot ${pin.length > i ? "filled" : ""}`} />
               ))}
             </div>
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="error-message" role="alert">{error}</div>}
             <div className="pin-pad">
               {["1", "2", "3", "4", "5", "6", "7", "8", "9", "back", "0", "who"].map((key) => {
                 if (key === "back") {
@@ -191,7 +194,7 @@ export default function KidLogin({ onUseEmailInstead }) {
                       onClick={() => setPin((p) => p.slice(0, -1))}
                       disabled={busy}
                     >
-                      ⌫
+                      Delete
                     </button>
                   );
                 }
@@ -209,7 +212,7 @@ export default function KidLogin({ onUseEmailInstead }) {
                       }}
                       disabled={busy}
                     >
-                      👋
+                      Switch
                     </button>
                   );
                 }
@@ -226,7 +229,7 @@ export default function KidLogin({ onUseEmailInstead }) {
                 );
               })}
             </div>
-            {busy && <p className="kid-login-sub" style={{ textAlign: "center" }}>Checking...</p>}
+            {busy && <p className="kid-login-status" role="status">Checking your PIN...</p>}
           </>
         )}
       </div>

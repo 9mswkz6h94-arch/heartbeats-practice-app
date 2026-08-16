@@ -190,7 +190,7 @@ function App() {
   };
 
   const screenHeader = (
-    <header className="App-header">
+    <header className="App-header has-back">
       <h1>Heart Beats Practice App</h1>
       <button
         onClick={() => {
@@ -209,32 +209,41 @@ function App() {
       {screen === "selection" && (
         <>
           <header className="App-header">
-            <h1>Heart Beats Practice App</h1>
+            <div>
+              <p className="app-kicker">Studio practice system</p>
+              <h1>Heart Beats Practice App</h1>
+            </div>
           </header>
 
           <main>
             <div className="auth-selection">
-              <h2>Welcome!</h2>
-              <p>Who's here today?</p>
-              {authError && <div className="auth-banner-error">{authError}</div>}
+              <p className="section-index">01 / Choose your space</p>
+              <h2>Welcome</h2>
+              <p className="auth-selection-intro">Who’s practicing, supporting, or teaching today?</p>
+              {authError && <div className="auth-banner-error" role="alert">{authError}</div>}
+              <div className="role-selection-list">
               <button
                 onClick={() => { setAuthError(null); setScreen("kid-login"); }}
                 className="btn btn-student"
               >
-                🎸 Student
+                <span className="role-index">01</span>
+                <span className="role-copy"><strong>Student</strong><small>Open today’s practice work</small></span>
               </button>
               <button
                 onClick={() => { setAuthError(null); setScreen("parent-login"); }}
                 className="btn btn-parent"
               >
-                👨‍👩‍👧 Parent
+                <span className="role-index">02</span>
+                <span className="role-copy"><strong>Parent</strong><small>View family practice and schedules</small></span>
               </button>
               <button
                 onClick={() => { setAuthError(null); setScreen("teacher-login"); }}
                 className="btn btn-teacher"
               >
-                🎹 Teacher
+                <span className="role-index">03</span>
+                <span className="role-copy"><strong>Teacher</strong><small>Manage students and lesson plans</small></span>
               </button>
+              </div>
             </div>
           </main>
         </>

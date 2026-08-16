@@ -36,3 +36,10 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted
 - **Decision:** Do not reuse live Supabase credentials for interactive Scaffold work. Build mock-isolated or sandbox-isolated review first.
 - **Reason:** Visual review must not risk active student records.
+
+## D-006 — Plain-language authentication controls
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Role selection uses numbered rows with descriptive text. Authentication headings and PIN utility keys do not depend on emoji for meaning.
+- **Reason:** Scaffold requires controls and navigation to remain unambiguous without brand imagery or color.

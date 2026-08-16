@@ -163,6 +163,83 @@ footer {
   color: var(--primary);
 }
 
+.App-header.has-back {
+  display: grid;
+  grid-template-columns: minmax(96px, 1fr) auto minmax(96px, 1fr);
+  justify-items: center;
+}
+.App-header.has-back h1 { grid-column: 2; }
+.App-header.has-back .btn-back-header {
+  position: static;
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  min-height: 48px;
+  border-color: var(--color-ink);
+  border-radius: 0;
+  background: var(--color-surface);
+}
+
 @media (max-width: 520px) {
   .scaffold-sandbox-offset { padding-top: 20px; }
+}
+
+/* Scaffold slice 02: entry and authentication shell. */
+.App-header {
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.App-header h1 {
+  font-size: clamp(40px, 6vw, 64px);
+  line-height: 0.9;
+  color: var(--color-text);
+}
+.app-kicker,
+.section-index {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-family: var(--font-measurement);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.auth-selection { max-width: 640px; border-color: var(--color-ink); }
+.auth-selection h2,
+.auth-form h2 { color: var(--color-text); }
+.auth-selection-intro { max-width: 42ch; }
+.role-selection-list { display: grid; gap: var(--space-3); }
+.role-selection-list .btn {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  align-items: stretch;
+  width: 100%;
+  min-height: 80px;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--color-ink);
+  border-radius: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: left;
+}
+.role-selection-list .btn:hover { background: var(--color-cut-paper); box-shadow: none; transform: none; }
+.role-index { display: grid; place-items: center; border-right: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-white); font-family: var(--font-measurement); font-size: 16px; }
+.role-copy { display: flex; flex-direction: column; justify-content: center; gap: var(--space-1); padding: var(--space-3) var(--space-4); }
+.role-copy strong { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+.role-copy small { color: var(--color-text-muted); font-size: 14px; font-weight: 400; }
+.btn-student,
+.btn-parent,
+.btn-teacher { background: var(--color-surface); }
+
+@media (max-width: 520px) {
+  .App { padding-inline: 0; }
+  .App-header { padding-inline: var(--space-4); }
+  .App-header h1 { font-size: 40px; }
+  .App-header.has-back { grid-template-columns: 1fr; justify-items: start; gap: var(--space-4); }
+  .App-header.has-back h1,
+  .App-header.has-back .btn-back-header { grid-column: 1; }
+  .App-header.has-back .btn-back-header { grid-row: 1; }
+  .App-header.has-back h1 { grid-row: 2; }
+  .auth-selection { padding: var(--space-5) var(--space-4); border-inline: 0; }
 }

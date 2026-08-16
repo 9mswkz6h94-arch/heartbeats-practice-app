@@ -65,7 +65,8 @@ export default function TeacherLogin({ onLoginSuccess }) {
   return (
     <div className="auth-form-container">
       <div className="auth-form">
-        <h2>Teacher {isSignUp ? "Sign Up" : "Login"}</h2>
+        <p className="auth-context">Teacher access</p>
+        <h2>{isSignUp ? "Create teacher account" : "Teacher sign in"}</h2>
 
         <form onSubmit={handleAuth}>
           <div className="form-group">
@@ -94,14 +95,21 @@ export default function TeacherLogin({ onLoginSuccess }) {
             />
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div
+              className={error.startsWith("Sign up successful") ? "success-message" : "error-message"}
+              role={error.startsWith("Sign up successful") ? "status" : "alert"}
+            >
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={loading}
             className="btn-submit"
           >
-            {loading ? "Loading..." : isSignUp ? "Create Account" : "Sign In"}
+            {loading ? "Working..." : isSignUp ? "Create account" : "Sign in"}
           </button>
         </form>
 

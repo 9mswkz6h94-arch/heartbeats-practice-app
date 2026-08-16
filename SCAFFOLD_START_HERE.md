@@ -34,6 +34,9 @@ Foundation slice started on 2026-08-16:
 - Added reduced-motion handling, visible focus, and a 48px control baseline.
 - Removed the Google Fonts network dependency.
 - Added a persistent local Sandbox/data-mode banner.
+- Migrated entry selection and core authentication screens to Scaffold.
+- Replaced emoji-only authentication actions with plain-language labels.
+- Verified the entry screen at all four reference widths and core auth at 390px.
 
 This is not a completed conversion. Component styles still contain hard-coded brand colors, radii, shadows, emoji controls, and one-off type rules.
 
@@ -48,7 +51,7 @@ This is not a completed conversion. Component styles still contain hard-coded br
 ## Planned slices
 
 1. Global foundation and sandbox boundary.
-2. Entry selection and authentication forms.
+2. Entry selection and authentication forms. **Implemented; review still needs zoom, long content, and full keyboard traversal.**
 3. Shared dashboards, navigation, buttons, forms, loading, empty, and error states.
 4. Teacher HUD and lesson-prep surfaces.
 5. Student practice cards, detail, sight reading, badges, and pets.

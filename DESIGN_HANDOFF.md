@@ -22,6 +22,12 @@
 - Global focus-visible and reduced-motion baselines.
 - Persistent Sandbox/data-mode banner.
 - Google Fonts removed from `public/index.html`.
+- Entry role selection rebuilt with numbered structural rows and plain-language descriptions.
+- Teacher, student, kid, and parent authentication surfaces migrated to Scaffold.
+- Family code now has a visible/programmatic label.
+- PIN utility actions now use `Delete` and `Switch` labels rather than emoji-only controls.
+- Success and error messages now expose distinct status/alert semantics.
+- Back navigation header now stacks without overlap at the 390px reference width.
 
 ## Known incomplete areas
 
@@ -39,6 +45,10 @@
 | 2026-08-16 | Foundation | Source audit | Complete |
 | 2026-08-16 | Foundation | Production branch untouched | Confirmed before worktree creation |
 | 2026-08-16 | Foundation | Production build with placeholder sandbox credentials | Pass; existing ESLint and bundle-size warnings remain |
+| 2026-08-16 | Entry/auth | Production build with placeholder sandbox credentials | Pass; only recorded pre-existing warnings |
+| 2026-08-16 | Entry | 390, 768, 1024, and 1440px width checks | Pass; no horizontal scrolling; role targets 83px high |
+| 2026-08-16 | Auth | 390px student/teacher/parent checks | Pass; visible labels; controls 48–52px high; no horizontal scrolling |
+| 2026-08-16 | Auth header | 390px visual inspection | Pass after replacing absolute Back-button layout |
 
 ## Deferred maintenance findings
 
@@ -50,4 +60,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Verify the foundation build, then migrate entry selection and authentication as the first complete user-visible Scaffold slice.
+Complete keyboard traversal, 200% zoom, long-content, and remaining viewport review for authentication, then migrate shared dashboard navigation and feedback states.

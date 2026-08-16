@@ -27,7 +27,8 @@ export default function ParentLogin({ onStartSignup }) {
   return (
     <div className="auth-form-container">
       <div className="auth-form">
-        <h2>👨‍👩‍👧 Parent Sign In</h2>
+        <p className="auth-context">Family access</p>
+        <h2>Parent sign in</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="parent-login-email">Email</label>
@@ -53,7 +54,7 @@ export default function ParentLogin({ onStartSignup }) {
               disabled={loading}
             />
           </div>
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="error-message" role="alert">{error}</div>}
           <button type="submit" className="btn-submit" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </button>

@@ -55,7 +55,8 @@ export default function StudentLogin() {
   return (
     <div className="auth-form-container">
       <div className="auth-form">
-        <h2>🎓 {isSignUp ? "Create Student Account" : "Student Sign In"}</h2>
+        <p className="auth-context">Student email access</p>
+        <h2>{isSignUp ? "Create student account" : "Student sign in"}</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -85,11 +86,11 @@ export default function StudentLogin() {
             />
           </div>
 
-          {error && <div className="error-message">{error}</div>}
-          {info && <div className="success-message">{info}</div>}
+          {error && <div className="error-message" role="alert">{error}</div>}
+          {info && <div className="success-message" role="status">{info}</div>}
 
           <button type="submit" disabled={loading} className="btn-submit">
-            {loading ? "Loading..." : isSignUp ? "Create Account" : "Sign In"}
+            {loading ? "Working..." : isSignUp ? "Create account" : "Sign in"}
           </button>
         </form>
 
