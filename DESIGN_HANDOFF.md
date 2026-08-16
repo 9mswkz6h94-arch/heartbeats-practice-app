@@ -47,6 +47,11 @@
 - Badges now expose their descriptions visibly instead of relying on hover titles.
 - Pet growth, naming, listening, eggs, hatching, merging, and collection states use Scaffold structure with plain-language controls.
 - Creature and badge artwork remains as motivational content; operational controls no longer depend on emoji.
+- Parent family code, child switcher, weekly stats, assignments, repertoire, lesson calendar, PIN reset, reschedule request, text notifications, and private chat migrated to Scaffold.
+- Parent and child-detail fetch failures now include named error states and `Try again` recovery.
+- Scheduling fields have explicit programmatic labels; child switching exposes its selected state.
+- Family onboarding controls have explicit labels, 48px+ targets, and an isolated `?review=parent-signup` fixture.
+- Parent chat retains its existing teacher/parent-only data path; no Supabase queries or RLS behavior changed.
 
 ## Known incomplete areas
 
@@ -54,7 +59,7 @@
 - Emoji used in controls and navigation require a plain-language/semantic review.
 - Category colors embedded in JavaScript need structural cues before neutralization.
 - The teacher HUD has fixed-window assumptions needing responsive review.
-- Parent features and their deeper states remain unmigrated.
+- Remaining work is the cross-app keyboard, 200% zoom, assistive-technology, and state-completeness review plus any legacy teacher/admin surfaces not covered by the current fixtures.
 - Full keyboard, 200% zoom, and assistive-technology review remains incomplete.
 
 ## Verification log
@@ -77,6 +82,9 @@
 | 2026-08-16 | Practice detail | 390px interactive fixture | Pass; no horizontal overflow; Close 48px and actions 52px high |
 | 2026-08-16 | Sight reading | Production build and 390px interactive fixture | Pass; staff scrolls internally; no page overflow; controls 48–52px |
 | 2026-08-16 | Badges and pets | 390/1440px mock-isolated fixtures | Pass; no horizontal overflow; operational controls at least 48px |
+| 2026-08-16 | Parent family dashboard | Production build and 390/1440px long-content fixture | Pass; no horizontal overflow or clipped names/messages; controls at least 48px |
+| 2026-08-16 | Parent scheduling/chat | 390px interactive fixture | Pass; reschedule fields/actions, notifications, and message composer remain contained and labeled |
+| 2026-08-16 | Family onboarding | 390px `?review=parent-signup` fixture | Pass; no horizontal overflow; inputs and controls 52–55px high |
 
 ## Deferred maintenance findings
 
@@ -88,4 +96,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Migrate the parent dashboard, family onboarding, messaging, and scheduling while preserving existing authorization and data behavior.
+Run the cross-app keyboard, 200% zoom, long-content, reduced-motion, and assistive-technology review; then audit any remaining legacy teacher/admin surfaces.

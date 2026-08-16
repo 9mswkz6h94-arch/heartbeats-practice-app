@@ -70,14 +70,14 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
     <div className="parent-dashboard">
       <header className="parent-dashboard-header">
         <div><p className="dashboard-context">Parent workspace</p><h1>Your family</h1></div>
-        <button className="btn-logout" onClick={async () => { await supabase.auth.signOut(); onLogout(); }}>
-          Log Out
+        <button type="button" className="btn-logout" onClick={async () => { await supabase.auth.signOut(); onLogout(); }}>
+          Log out
         </button>
       </header>
 
       <main className="parent-dashboard-main">
-        {loading && <p className="parent-loading" role="status">Loading your family...</p>}
-        {error && <div className="error-message" role="alert">{error}</div>}
+        {loading && <p className="parent-loading" role="status">Loading your family…</p>}
+        {error && <div className="parent-load-error" role="alert"><h2>Your family could not load</h2><p>{error}</p><button type="button" onClick={fetchFamily}>Try again</button></div>}
 
         {!loading && !error && kids.length === 0 && (
           <div className="parent-empty" role="status">
@@ -108,6 +108,7 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
                     key={kid.id}
                     type="button"
                     className={`kid-tab ${kid.id === selectedKidId ? "active" : ""}`}
+                    aria-pressed={kid.id === selectedKidId}
                     onClick={() => setSelectedKidId(kid.id)}
                   >
                     <span className="kid-tab-avatar">{kid.avatar || "🎵"}</span>

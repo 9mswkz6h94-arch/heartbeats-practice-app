@@ -16,8 +16,9 @@ Static inspection is not a pass. Record concrete evidence for every pass.
 | Practice detail | Pass | — | — | — | In progress | — | Pass | Pass | Interactive fixture at 390px; no overflow; Close 48px and actions 52px; labeled dialog |
 | Sight reading | Pass | — | — | Pass | In progress | — | Pass | Pass | 390px interactive fixture: notation scrolls locally; page has no overflow; controls ≥48px; desktop containment checked |
 | Pets and badges | Pass | — | — | Pass | In progress | — | Pass | Pass | 390/1440px mock fixtures: no overflow; controls ≥48px; badge descriptions visible |
-| Parent dashboard | Pass | — | — | Pass | In progress | — | In progress | Pass | Mock-isolated shell and empty state checked at 390/1440px |
-| Messaging/scheduling | — | — | — | — | — | — | — | — | Not started |
+| Parent dashboard | Pass | — | — | Pass | In progress | — | Pass | Pass | Linked-family long-content fixture at 390/1440px; no overflow/clipping; controls ≥48px |
+| Family onboarding | Pass | — | — | — | In progress | — | Pass | Pass | `?review=parent-signup` at 390px; inputs and controls 52–55px; no page overflow |
+| Messaging/scheduling | Pass | — | — | Pass | In progress | — | Pass | Pass | Parent fixture at 390/1440px; labeled reschedule fields, private chat, notification settings; no overflow |
 
 ## Global contract checks
 

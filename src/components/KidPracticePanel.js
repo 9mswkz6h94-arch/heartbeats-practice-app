@@ -11,18 +11,10 @@ import PetWidget from "./PetWidget";
 import "./ParentDashboard.css";
 
 const RESCHED_STATUS_LABEL = {
-  pending: "⏳ Waiting for teacher",
-  approved: "✅ Confirmed",
-  declined: "❌ Declined",
+  pending: "Waiting for teacher",
+  approved: "Confirmed",
+  declined: "Declined",
   cancelled: "Cancelled",
-};
-
-const CATEGORY_COLORS = {
-  Warmup: "var(--red, #FF6B6B)",
-  Technique: "var(--yellow, #FECA57)",
-  Theory: "var(--teal, #1DD1A1)",
-  Pieces: "var(--blue, #54A0FF)",
-  Performance: "var(--purple, #A29BFE)",
 };
 
 // The kid-level practice view: stats, lesson + calendar link, reschedule
@@ -36,6 +28,7 @@ const CATEGORY_COLORS = {
 export default function KidPracticePanel({ kid, mode = "parent" }) {
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(true);
+  const [detailError, setDetailError] = useState(null);
   const [resetting, setResetting] = useState(false);
   const [resetPin, setResetPin] = useState("");
   const [resetBusy, setResetBusy] = useState(false);
@@ -48,6 +41,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
   const fetchDetail = useCallback(async () => {
     if (!kid) return;
     setDetailLoading(true);
+    setDetailError(null);
     try {
       const stats = await fetchStudentStats(kid.id);
 
@@ -94,6 +88,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
       });
     } catch (err) {
       console.error("Kid detail fetch failed:", err);
+      setDetailError(err.message || "Could not load practice information");
     } finally {
       setDetailLoading(false);
     }
@@ -182,13 +177,13 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
           <span className="parent-kid-instrument">{kid.instrument || "—"}</span>
         </div>
         <span className={`parent-kid-status ${kid.status === "active" ? "active" : "pending"}`}>
-          {kid.status === "active" ? "✓ Approved" : "Waiting for teacher approval"}
+          {kid.status === "active" ? "Approved" : "Waiting for teacher approval"}
         </span>
       </div>
 
       {interactive && kid.family_id && !resetting && (
         <button type="button" className="btn-reset-pin" onClick={startPinReset}>
-          🔑 Reset PIN
+          Reset PIN
         </button>
       )}
       {interactive && resetting && (
@@ -213,9 +208,10 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
           </div>
         </div>
       )}
-      {interactive && resetMsg && <p className={`pin-reset-msg ${resetMsg.ok ? "ok" : "err"}`}>{resetMsg.text}</p>}
+      {interactive && resetMsg && <p role={resetMsg.ok ? "status" : "alert"} className={`pin-reset-msg ${resetMsg.ok ? "ok" : "err"}`}>{resetMsg.text}</p>}
 
-      {detailLoading && !detail && <p className="parent-loading">Loading practice info...</p>}
+      {detailLoading && !detail && <p className="parent-loading" role="status">Loading practice information…</p>}
+      {detailError && !detail && <div className="parent-load-error" role="alert"><h3>Practice information could not load</h3><p>{detailError}</p><button type="button" onClick={fetchDetail}>Try again</button></div>}
 
       {detail && (
         <>
@@ -224,7 +220,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
           {detail.lesson && (
             <div className="lesson-info-row">
               <span>
-                📅 Lessons every <strong>{dayName(detail.lesson.day_of_week)}</strong> at{" "}
+                Lessons every <strong>{dayName(detail.lesson.day_of_week)}</strong> at{" "}
                 <strong>{detail.lesson.start_time.slice(0, 5)}</strong>
                 {detail.lesson.location ? ` — ${detail.lesson.location}` : ""}
               </span>
@@ -240,11 +236,11 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                📆 Add to Google Calendar
+                Add to Google Calendar
               </a>
               {interactive && !reschedOpen && (
                 <button type="button" className="btn-request-reschedule" onClick={openReschedule}>
-                  🔁 Request a different time
+                  Request a different time
                 </button>
               )}
             </div>
@@ -252,22 +248,25 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
 
           {interactive && reschedOpen && (
             <div className="reschedule-editor">
-              <label>New date</label>
+              <label htmlFor={`reschedule-date-${kid.id}`}>New date</label>
               <input
+                id={`reschedule-date-${kid.id}`}
                 type="date"
                 value={reschedDraft.proposed_date}
                 onChange={(e) => setReschedDraft({ ...reschedDraft, proposed_date: e.target.value })}
                 disabled={reschedBusy}
               />
-              <label>New time</label>
+              <label htmlFor={`reschedule-time-${kid.id}`}>New time</label>
               <input
+                id={`reschedule-time-${kid.id}`}
                 type="time"
                 value={reschedDraft.proposed_time}
                 onChange={(e) => setReschedDraft({ ...reschedDraft, proposed_time: e.target.value })}
                 disabled={reschedBusy}
               />
-              <label>Reason (optional)</label>
+              <label htmlFor={`reschedule-reason-${kid.id}`}>Reason (optional)</label>
               <input
+                id={`reschedule-reason-${kid.id}`}
                 type="text"
                 placeholder="e.g., dentist appointment"
                 value={reschedDraft.reason}
@@ -284,7 +283,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
               </div>
             </div>
           )}
-          {interactive && reschedMsg && <p className={`pin-reset-msg ${reschedMsg.ok ? "ok" : "err"}`}>{reschedMsg.text}</p>}
+          {interactive && reschedMsg && <p role={reschedMsg.ok ? "status" : "alert"} className={`pin-reset-msg ${reschedMsg.ok ? "ok" : "err"}`}>{reschedMsg.text}</p>}
           {detail.reschedules?.filter((r) => r.status === "pending").map((r) => (
             <div key={r.id} className="reschedule-pending-row">
               <span>
@@ -306,7 +305,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
               <span className="week-stat-label">sessions this week</span>
             </div>
             <div className="week-stat">
-              <span className="week-stat-value">{detail.stats.streak > 0 ? `🔥 ${detail.stats.streak}` : "—"}</span>
+              <span className="week-stat-value">{detail.stats.streak > 0 ? detail.stats.streak : "—"}</span>
               <span className="week-stat-label">day streak</span>
             </div>
             <div className="week-stat">
@@ -324,7 +323,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
               <div className="parent-assignment-head">
                 <span className="parent-assignment-title">{a.title}</span>
                 {a.category && (
-                  <span className="parent-category-chip" style={{ background: CATEGORY_COLORS[a.category] || "var(--border)" }}>
+                  <span className="parent-category-chip">
                     {a.category}
                   </span>
                 )}
@@ -334,8 +333,8 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
                 .sort((x, y) => (x.sequence_order ?? 0) - (y.sequence_order ?? 0))
                 .map((step) => (
                   <div key={step.id} className="parent-step">
-                    <span className="parent-step-mark">
-                      {detail.todayStatus[step.id] === "completed" ? "✅" : "⬜"}
+                    <span className="parent-step-mark" aria-label={detail.todayStatus[step.id] === "completed" ? "Completed" : "Not completed"}>
+                      {detail.todayStatus[step.id] === "completed" ? "Done" : "Open"}
                     </span>
                     <span className="parent-step-title">{step.title}</span>
                   </div>
@@ -348,11 +347,11 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
 
           <h3 className="kid-section-title">Songs Memorized</h3>
           {detail.repertoire.length === 0 && (
-            <p className="parent-muted">The repertoire list grows as songs get memorized. 🎵</p>
+            <p className="parent-muted">The repertoire list grows as songs get memorized.</p>
           )}
           {detail.repertoire.map((r) => (
             <div key={r.id} className="parent-repertoire-row">
-              <span>🎵 {r.assignments?.title || "Song"}</span>
+              <span>{r.assignments?.title || "Song"}</span>
               <span className="parent-repertoire-date">
                 {r.memorized_at ? new Date(r.memorized_at).toLocaleDateString() : ""}
               </span>

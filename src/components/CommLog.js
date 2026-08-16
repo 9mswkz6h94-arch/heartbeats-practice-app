@@ -89,9 +89,9 @@ export default function CommLog({ studentId, role, authorName }) {
 
   return (
     <div className="comm-log">
-      <h3 className="comm-log-title">💬 {role === "teacher" ? "Parent chat" : "Chat with your teacher"}</h3>
+      <h3 className="comm-log-title">{role === "teacher" ? "Parent chat" : "Chat with your teacher"}</h3>
       <div className="comm-log-list" ref={listRef}>
-        {loading && <p className="comm-log-empty">Loading messages...</p>}
+        {loading && <p className="comm-log-empty" role="status">Loading messages…</p>}
         {!loading && messages.length === 0 && (
           <p className="comm-log-empty">
             No messages yet — {role === "teacher" ? "post a note for this student's parents." : "your teacher's notes will show up here."}
@@ -108,7 +108,7 @@ export default function CommLog({ studentId, role, authorName }) {
                 {new Date(m.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
               </span>
               {m.notify && (
-                <span className="comm-msg-notify">{m.notified_at ? "📣 notified" : "📣 pending"}</span>
+                <span className="comm-msg-notify">{m.notified_at ? "Notification sent" : "Notification pending"}</span>
               )}
             </div>
             <div className="comm-msg-body">{m.body}</div>
@@ -117,6 +117,7 @@ export default function CommLog({ studentId, role, authorName }) {
       </div>
       <form className="comm-log-compose" onSubmit={send}>
         <textarea
+          aria-label="Message to teacher"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder="Write a message..."
@@ -127,14 +128,14 @@ export default function CommLog({ studentId, role, authorName }) {
           {role === "teacher" && (
             <label className="comm-notify-toggle">
               <input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} disabled={sending} />
-              📣 Notify parent
+              Notify parent by text
             </label>
           )}
           <button type="submit" className="btn-comm-send" disabled={sending || !body.trim()}>
             {sending ? "Sending..." : "Send"}
           </button>
         </div>
-        {error && <p className="comm-log-error">{error}</p>}
+        {error && <p className="comm-log-error" role="alert">{error}</p>}
       </form>
     </div>
   );

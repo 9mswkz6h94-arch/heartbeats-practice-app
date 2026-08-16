@@ -92,3 +92,17 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted
 - **Decision:** Generated staff and tab notation may scroll horizontally inside the sight-reading panel, but must never cause page-level horizontal scrolling.
 - **Reason:** Legible musical spacing is more useful than compressing notes, while the surrounding student interface must remain stable on phones.
+
+## D-014 — Parent communication remains private and structurally distinct
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Preserve the existing teacher–parent communication data path and student exclusion. Message ownership uses alignment plus structural borders and author text, not color alone.
+- **Reason:** The Scaffold migration must improve legibility without widening access to adult communication.
+
+## D-015 — Scheduling is a request, not a silent calendar mutation
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Keep rescheduling as an explicit parent request with a visible pending state, cancellation action, and teacher confirmation. The calendar link remains a separate action.
+- **Reason:** This preserves teacher coordination and prevents a visual redesign from implying that a proposed time is already approved.

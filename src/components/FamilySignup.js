@@ -182,7 +182,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
       <div className="auth-form family-signup">
         {step === 1 && (
           <>
-            <h2>👨‍👩‍👧 Create Your Family Account</h2>
+            <h2>Create your family account</h2>
             <p className="wizard-sub">Step 1 of 2 — your parent account. You'll add your kids next.</p>
             <form onSubmit={handleParentSubmit}>
               <div className="form-group">
@@ -222,16 +222,16 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                   disabled={busy}
                 />
               </div>
-              {error && <div className="error-message">{error}</div>}
+              {error && <div className="error-message" role="alert">{error}</div>}
               <button type="submit" className="btn-submit" disabled={busy}>
-                {busy ? "Creating..." : "Next: Add Your Kids →"}
+                {busy ? "Creating…" : "Next: add your kids"}
               </button>
             </form>
             <div className="toggle-auth">
               <p>
                 Already have a family account?
                 <button type="button" className="toggle-btn" onClick={onBackToLogin}>
-                  Sign In
+                  Sign in
                 </button>
               </p>
             </div>
@@ -240,7 +240,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
 
         {step === 2 && (
           <>
-            <h2>🎵 Add Your Kids</h2>
+            <h2>Add your kids</h2>
             <p className="wizard-sub">
               Step 2 of 2 — each kid gets an avatar and a 4-digit PIN they'll use to log in. No email needed for them.
             </p>
@@ -257,9 +257,9 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                         className="btn-remove-kid"
                         onClick={() => setKids((prev) => prev.filter((k) => k.localId !== kid.localId))}
                         disabled={busy}
-                        title="Remove"
+                        aria-label={`Remove kid ${idx + 1}`}
                       >
-                        ✕
+                        Remove
                       </button>
                     )}
                   </div>
@@ -267,6 +267,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                   <div className="form-group">
                     <label>Name</label>
                     <input
+                      aria-label={`Kid ${idx + 1} name`}
                       type="text"
                       value={kid.name}
                       onChange={(e) => updateKid(kid.localId, { name: e.target.value })}
@@ -279,6 +280,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                     <div className="form-group">
                       <label>Instrument</label>
                       <select
+                        aria-label={`Kid ${idx + 1} instrument`}
                         value={kid.instrument}
                         onChange={(e) => updateKid(kid.localId, { instrument: e.target.value })}
                         disabled={busy || kid.state === "created"}
@@ -291,6 +293,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                     <div className="form-group">
                       <label>Their PIN (4 digits)</label>
                       <input
+                        aria-label={`Kid ${idx + 1} PIN`}
                         type="text"
                         inputMode="numeric"
                         pattern="\d{4}"
@@ -310,6 +313,8 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                           key={a}
                           type="button"
                           className={`avatar-option ${kid.avatar === a ? "selected" : ""}`}
+                          aria-label={`Use ${a} as kid ${idx + 1} avatar`}
+                          aria-pressed={kid.avatar === a}
                           onClick={() => updateKid(kid.localId, { avatar: a })}
                           disabled={busy || kid.state === "created"}
                         >
@@ -319,7 +324,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                     </div>
                   </div>
 
-                  {kid.errorMsg && <div className="error-message">{kid.errorMsg}</div>}
+                  {kid.errorMsg && <div className="error-message" role="alert">{kid.errorMsg}</div>}
                 </div>
               ))}
 
@@ -332,9 +337,9 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                 + Add another kid
               </button>
 
-              {error && <div className="error-message">{error}</div>}
+              {error && <div className="error-message" role="alert">{error}</div>}
               <button type="submit" className="btn-submit" disabled={busy}>
-                {busy ? "Setting up your family..." : "Finish Setup 🎉"}
+                {busy ? "Setting up your family…" : "Finish setup"}
               </button>
             </form>
           </>
@@ -342,7 +347,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
 
         {step === 3 && (
           <>
-            <h2>🎉 You're All Set!</h2>
+            <h2>Your family is ready</h2>
             <div className="family-code-card">
               <p className="family-code-label">Your family code</p>
               <p className="family-code-value">{family?.code}</p>
@@ -359,13 +364,13 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
               ))}
             </div>
             <button type="button" className="btn-copy-codes" onClick={copySummary}>
-              📋 Copy code + PINs
+              Copy code and PINs
             </button>
             <p className="wizard-sub" style={{ textAlign: "center" }}>
               Your teacher will see your kids and approve them — assignments show up after that.
             </p>
             <button type="button" className="btn-submit" onClick={onDone}>
-              Go to My Family Dashboard →
+              Go to my family dashboard
             </button>
           </>
         )}

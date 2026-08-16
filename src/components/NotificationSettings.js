@@ -57,9 +57,10 @@ export default function NotificationSettings({ studentId }) {
 
   return (
     <form className="notif-settings" onSubmit={save}>
-      <h4 className="notif-settings-title">🔔 Notifications</h4>
+      <h4 className="notif-settings-title">Text notifications</h4>
       <label className="notif-settings-toggle">
         <input
+          aria-label="Parent phone number"
           type="checkbox"
           checked={notifySms}
           onChange={(e) => setNotifySms(e.target.checked)}
@@ -82,7 +83,7 @@ export default function NotificationSettings({ studentId }) {
           {saving ? "Saving..." : "Save"}
         </button>
         {message && (
-          <span className={`notif-settings-msg ${message.ok ? "ok" : "err"}`}>{message.text}</span>
+          <span role={message.ok ? "status" : "alert"} className={`notif-settings-msg ${message.ok ? "ok" : "err"}`}>{message.text}</span>
         )}
       </div>
     </form>
