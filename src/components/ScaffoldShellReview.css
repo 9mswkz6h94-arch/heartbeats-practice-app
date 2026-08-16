@@ -1,0 +1,4 @@
+.review-state { width: 100%; padding: var(--space-5); border: 1px solid var(--color-border); border-left: 8px solid var(--color-ink); background: var(--color-surface); }
+.review-state h2 { margin: 0 0 var(--space-3); font-size: 25px; }
+.review-state p { margin: 0; color: var(--color-text-muted); }
+.review-state-loading { border-left-style: double; }

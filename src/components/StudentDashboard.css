@@ -1,6 +1,6 @@
 .student-dashboard-content {
   flex: 1;
-  padding: 40px 20px;
+  padding: var(--space-6) var(--space-5);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -17,6 +17,6 @@
 
 @media (max-width: 768px) {
   .student-dashboard-content {
-    padding: 16px 12px;
+    padding: var(--space-4) var(--space-3);
   }
 }

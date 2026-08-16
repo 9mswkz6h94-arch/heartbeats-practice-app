@@ -1,18 +1,21 @@
 .parent-dashboard {
-  max-width: 720px;
+  max-width: 880px;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--space-5);
 }
 
 .parent-dashboard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  min-height: 88px;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--color-ink);
 }
 
 .parent-dashboard-header h1 {
-  font-size: 26px;
+  font-size: 32px;
   margin: 0;
   color: var(--text);
 }
@@ -35,26 +38,27 @@
 }
 
 .parent-loading {
-  color: var(--text-muted);
-  text-align: center;
-  padding: 40px 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-left: 8px solid var(--color-ink);
+  color: var(--color-text-muted);
 }
 
 .parent-empty {
-  text-align: center;
-  padding: 40px 20px;
+  padding: var(--space-6) var(--space-5);
   border: 2px dashed var(--border);
-  border-radius: var(--radius);
   color: var(--text-muted);
 }
+
+.parent-empty h2 { margin-bottom: var(--space-3); color: var(--color-text); font-size: 25px; }
 
 .parent-family-code {
   display: flex;
   align-items: center;
   gap: 20px;
-  border: 2px solid var(--primary);
-  border-radius: var(--radius);
-  background: var(--primary-light, #ede9fb);
+  border: 2px solid var(--color-ink);
+  border-radius: 0;
+  background: var(--color-cut-paper);
   padding: 18px 22px;
   margin-bottom: 24px;
   flex-wrap: wrap;
@@ -71,10 +75,10 @@
 
 .parent-code-value {
   margin: 0;
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: var(--font-measurement);
   font-size: 26px;
   font-weight: 700;
-  color: var(--primary-dark);
+  color: var(--color-text);
   white-space: nowrap;
 }
 
@@ -153,6 +157,8 @@
 }
 
 @media (max-width: 480px) {
+  .parent-dashboard { padding: var(--space-4); }
+  .parent-dashboard-header { align-items: flex-start; }
   .parent-family-code {
     flex-direction: column;
     align-items: flex-start;

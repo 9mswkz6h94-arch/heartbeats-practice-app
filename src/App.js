@@ -9,6 +9,7 @@ import ParentDashboard from "./components/ParentDashboard";
 import TeacherDashboard from "./components/TeacherDashboard";
 import StudentDashboard from "./components/StudentDashboard";
 import ScaffoldSandboxBanner from "./components/ScaffoldSandboxBanner";
+import ScaffoldShellReview from "./components/ScaffoldShellReview";
 import "./App.css";
 
 // Read SSO tokens from URL hash (passed by rainbowheart.studio)
@@ -26,6 +27,9 @@ async function applySSOTokenFromURL() {
 }
 
 function App() {
+  const reviewScreen = process.env.REACT_APP_REVIEW_DATA_MODE === "mock-isolated"
+    ? new URLSearchParams(window.location.search).get("review")
+    : null;
   const [screen, setScreen] = useState("selection");
   const [userType, setUserType] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -148,6 +152,10 @@ function App() {
     } else {
       setScreen("teacher-dashboard");
     }
+  }
+
+  if (["teacher", "student", "parent"].includes(reviewScreen)) {
+    return <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset"><ScaffoldShellReview screen={reviewScreen} /></div></>;
   }
 
   if (loading) {

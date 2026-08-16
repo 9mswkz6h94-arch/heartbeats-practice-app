@@ -43,3 +43,17 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted
 - **Decision:** Role selection uses numbered rows with descriptive text. Authentication headings and PIN utility keys do not depend on emoji for meaning.
 - **Reason:** Scaffold requires controls and navigation to remain unambiguous without brand imagery or color.
+
+## D-007 — Static shell review harness
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Dashboard shells may be rendered with static fixtures only when `REACT_APP_REVIEW_DATA_MODE=mock-isolated` and a supported `?review=` value is present.
+- **Reason:** Responsive visual review must not require live credentials or risk student records.
+
+## D-008 — Labeled navigation at every width
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Teacher navigation changes layout across breakpoints but never hides its text labels.
+- **Reason:** An emoji-only rail contradicts Scaffold’s plain-language and accessible-navigation requirements.

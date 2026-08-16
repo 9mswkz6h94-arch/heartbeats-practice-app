@@ -10,13 +10,13 @@ Static inspection is not a pass. Record concrete evidence for every pass.
 | Teacher login | Pass | — | — | — | In progress | — | — | Pass | 390px source/browser check; labeled fields and 48–52px controls |
 | Student/kid login | Pass | — | — | — | In progress | — | — | Pass | 390px visual/browser check; family code labeled; no overlap or horizontal overflow |
 | Parent login/signup | Pass | — | — | — | In progress | — | — | Pass | Parent login checked at 390px; family signup remains for its later slice |
-| Teacher HUD/nav | — | — | — | — | — | — | — | — | Not started |
+| Teacher HUD/nav | Pass | Pass | Pass | Pass | In progress | — | In progress | Pass | Mock-isolated shell: no overflow; all labels retained; controls 48–52px |
 | Lesson prep | — | — | — | — | — | — | — | — | Not started |
 | Student practice list | — | — | — | — | — | — | — | — | Not started |
 | Practice detail | — | — | — | — | — | — | — | — | Not started |
 | Sight reading | — | — | — | — | — | — | — | — | Not started |
 | Pets and badges | — | — | — | — | — | — | — | — | Not started |
-| Parent dashboard | — | — | — | — | — | — | — | — | Not started |
+| Parent dashboard | Pass | — | — | Pass | In progress | — | In progress | Pass | Mock-isolated shell and empty state checked at 390/1440px |
 | Messaging/scheduling | — | — | — | — | — | — | — | — | Not started |
 
 ## Global contract checks

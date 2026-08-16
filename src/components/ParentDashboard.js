@@ -69,18 +69,19 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
   return (
     <div className="parent-dashboard">
       <header className="parent-dashboard-header">
-        <h1>👨‍👩‍👧 Your Family</h1>
+        <div><p className="dashboard-context">Parent workspace</p><h1>Your family</h1></div>
         <button className="btn-logout" onClick={async () => { await supabase.auth.signOut(); onLogout(); }}>
           Log Out
         </button>
       </header>
 
       <main className="parent-dashboard-main">
-        {loading && <p className="parent-loading">Loading your family...</p>}
-        {error && <div className="error-message">{error}</div>}
+        {loading && <p className="parent-loading" role="status">Loading your family...</p>}
+        {error && <div className="error-message" role="alert">{error}</div>}
 
         {!loading && !error && kids.length === 0 && (
-          <div className="parent-empty">
+          <div className="parent-empty" role="status">
+            <h2>No students linked yet</h2>
             <p>No kids are linked to this account yet.</p>
             <p>If you just signed up, try reloading — otherwise ask your teacher to link you.</p>
           </div>

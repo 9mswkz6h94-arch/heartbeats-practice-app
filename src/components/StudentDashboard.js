@@ -17,9 +17,9 @@ export default function StudentDashboard({ studentId, onLogout }) {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>Student Dashboard</h1>
+        <div><p className="dashboard-context">Student workspace</p><h1>Today’s practice</h1></div>
         <button onClick={handleLogout} className="btn-logout">
-          Logout
+          Log out
         </button>
       </header>
 

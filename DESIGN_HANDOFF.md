@@ -28,6 +28,11 @@
 - PIN utility actions now use `Delete` and `Switch` labels rather than emoji-only controls.
 - Success and error messages now expose distinct status/alert semantics.
 - Back navigation header now stacks without overlap at the 390px reference width.
+- Teacher navigation now uses numbered, fully labeled controls at every viewport; the emoji-only collapsed rail was removed.
+- Teacher navigation becomes a three-column tablet grid and a one-column phone stack.
+- Student and parent dashboard headers now share the same workspace/title/logout grammar.
+- Parent loading, error, and empty states now carry explicit status semantics and recovery copy.
+- Added a `mock-isolated` shell review harness (`?review=teacher|student|parent`) that never reads or writes Supabase data.
 
 ## Known incomplete areas
 
@@ -49,6 +54,9 @@
 | 2026-08-16 | Entry | 390, 768, 1024, and 1440px width checks | Pass; no horizontal scrolling; role targets 83px high |
 | 2026-08-16 | Auth | 390px student/teacher/parent checks | Pass; visible labels; controls 48–52px high; no horizontal scrolling |
 | 2026-08-16 | Auth header | 390px visual inspection | Pass after replacing absolute Back-button layout |
+| 2026-08-16 | Shared shells | Production build in mock-isolated mode | Pass; only recorded pre-existing warnings |
+| 2026-08-16 | Teacher shell | 390/768/1024/1440px mock-isolated browser checks | Pass; no horizontal overflow; labeled nav controls 48–52px |
+| 2026-08-16 | Student/parent shells | 390/1440px mock-isolated browser checks | Pass; no horizontal overflow; logout controls 48px |
 
 ## Deferred maintenance findings
 
@@ -60,4 +68,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Complete keyboard traversal, 200% zoom, long-content, and remaining viewport review for authentication, then migrate shared dashboard navigation and feedback states.
+Migrate the teacher lesson-prep content surfaces and verify long names, empty/error states, and tablet behavior inside the new shell.
