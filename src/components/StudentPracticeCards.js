@@ -195,7 +195,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
   if (loading) {
     return (
       <div className="practice-container">
-        <p className="loading">Loading practice cards...</p>
+        <div className="practice-state" role="status"><h2>Loading today’s practice</h2><p>Gathering your practice cards…</p></div>
       </div>
     );
   }
@@ -203,7 +203,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
   if (error) {
     return (
       <div className="practice-container">
-        <p className="error">Error loading practice cards: {error}</p>
+        <div className="practice-state practice-state-error" role="alert"><h2>Practice cards could not load</h2><p>{error}</p><button type="button" onClick={fetchAssignmentsAndStatus}>Try again</button></div>
       </div>
     );
   }
@@ -230,7 +230,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
   if (allSteps.length === 0) {
     return (
       <div className="practice-container">
-        <div className="empty-state">
+        <div className="empty-state" role="status">
           <h2>No practice cards yet</h2>
           <p>Your teacher will assign practice goals for you here!</p>
         </div>
@@ -243,8 +243,8 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       <div className="practice-header">
         <div className="header-top">
           <div className="streak-badge">
-            <span className="flame">🔥</span>
-            <span className="streak-count">{streak} day streak</span>
+            <span className="streak-label">Current streak</span>
+            <span className="streak-count">{streak} days</span>
           </div>
 
           <div className="counter">
@@ -255,8 +255,8 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       </div>
 
       {remainingCount === 0 && totalCount > 0 && (
-        <div className="celebration-message">
-          🎉 You've completed all today's practice! Great work! 🎉
+        <div className="celebration-message" role="status">
+          <strong>Today’s practice is complete.</strong> Great work!
         </div>
       )}
 
@@ -268,23 +268,22 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
           if (!isVisible) return null;
 
           return (
-            <div
+            <button
+              type="button"
               key={step.id}
               className="practice-card-tile"
               onClick={() => setSelectedStep(step)}
             >
-              <div className="tile-header">
-                <h3>{step.assignment_title}</h3>
+              <span className="tile-header">
+                <span className="tile-assignment-title">{step.assignment_title}</span>
                 <span className="instrument-tag">{step.instrument_type}</span>
-              </div>
-              <div className="tile-body">
-                <p className="step-title">{step.title}</p>
-                <p className="step-number">Step {step.step_number}</p>
-              </div>
-              <div className="tile-action">
-                <span className="tap-hint">Tap to practice →</span>
-              </div>
-            </div>
+              </span>
+              <span className="tile-body">
+                <span className="step-title">{step.title}</span>
+                <span className="step-number">Step {step.step_number}</span>
+              </span>
+              <span className="tile-action"><span className="tap-hint">Open practice card</span></span>
+            </button>
           );
         })}
       </div>

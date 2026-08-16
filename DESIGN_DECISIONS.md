@@ -64,3 +64,17 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted
 - **Decision:** Keep the no-shame labels `Needs a nudge`, `On a roll`, `Practiced today`, and `Steady`; pair each with a text label and structural leading edge rather than emoji or color alone.
 - **Reason:** The language is a product behavior worth preserving, while Scaffold requires state to remain legible without decoration.
+
+## D-010 — Student progress without pressure
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Preserve streaks, clear remaining counts, the completion celebration, and `Skip for today`. Scaffold neutralizes their surfaces but does not remove or shame the underlying choices.
+- **Reason:** These mechanics support orientation and motivation for students; they are product behavior rather than Rainbow Heart identity decoration.
+
+## D-011 — Practice cards are native controls
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Render each pending practice card as a semantic button and the expanded card as a labeled dialog with plain-language actions.
+- **Reason:** Keyboard and assistive-technology operation should be inherent, while the familiar card-to-detail workflow remains unchanged.

@@ -12,8 +12,8 @@ Static inspection is not a pass. Record concrete evidence for every pass.
 | Parent login/signup | Pass | — | — | — | In progress | — | — | Pass | Parent login checked at 390px; family signup remains for its later slice |
 | Teacher HUD/nav | Pass | Pass | Pass | Pass | In progress | — | In progress | Pass | Mock-isolated shell: no overflow; all labels retained; controls 48–52px |
 | Lesson prep | Pass | Pass | Pass | Pass | In progress | — | Pass | Pass | Long-name/assignment mock fixture: no overflow or clipping; controls ≥48px |
-| Student practice list | — | — | — | — | — | — | — | — | Not started |
-| Practice detail | — | — | — | — | — | — | — | — | Not started |
+| Student practice list | Pass | — | — | Pass | In progress | — | Pass | Pass | Mock-isolated long-content fixture at 390/1440px; no horizontal overflow; native card buttons ≥48px |
+| Practice detail | Pass | — | — | — | In progress | — | Pass | Pass | Interactive fixture at 390px; no overflow; Close 48px and actions 52px; labeled dialog |
 | Sight reading | — | — | — | — | — | — | — | — | Not started |
 | Pets and badges | — | — | — | — | — | — | — | — | Not started |
 | Parent dashboard | Pass | — | — | Pass | In progress | — | In progress | Pass | Mock-isolated shell and empty state checked at 390/1440px |

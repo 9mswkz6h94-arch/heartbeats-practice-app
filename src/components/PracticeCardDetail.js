@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./PracticeCardDetail.css";
 
 export default function PracticeCardDetail({
@@ -20,18 +20,18 @@ export default function PracticeCardDetail({
 
   return (
     <div className="detail-modal-overlay" onClick={onClose}>
-      <div className="detail-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>
-          ✕
+      <div className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="practice-detail-title" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="modal-close" onClick={onClose}>
+          Close
         </button>
 
         {readOnly && (
-          <div className="preview-banner">🔍 Preview mode — nothing here is saved</div>
+          <div className="preview-banner" role="status">Preview mode — nothing here is saved</div>
         )}
 
         <div className="detail-header">
           <div className="detail-assignment">
-            <h2>{assignment.title}</h2>
+            <h2 id="practice-detail-title">{assignment.title}</h2>
             <span className="detail-instrument">{assignment.instrument_type}</span>
           </div>
           <div className="detail-step-number">Step {step.step_number}</div>
@@ -48,7 +48,7 @@ export default function PracticeCardDetail({
           return (
             <div className="detail-attachment">
               <div className="detail-attachment-label">
-                {isPdf ? "📄 Assignment Sheet (PDF)" : "🖼 Assignment Sheet"}
+                {isPdf ? "Assignment sheet (PDF)" : "Assignment sheet"}
               </div>
               {isPdf ? (
                 <a
@@ -57,7 +57,6 @@ export default function PracticeCardDetail({
                   rel="noopener noreferrer"
                   className="detail-attachment-pdf"
                 >
-                  <span className="detail-attachment-pdf-icon">📄</span>
                   Open PDF assignment sheet
                 </a>
               ) : (
@@ -87,11 +86,11 @@ export default function PracticeCardDetail({
         )}
 
         <div className="detail-actions">
-          <button className="btn-complete" onClick={handleComplete}>
-            ✓ I Practiced This
+          <button type="button" className="btn-complete" onClick={handleComplete} disabled={showCelebration}>
+            {showCelebration ? "Practice recorded" : "I practiced this"}
           </button>
-          <button className="btn-skip" onClick={onSkip}>
-            ⏭ Skip Today
+          <button type="button" className="btn-skip" onClick={onSkip} disabled={showCelebration}>
+            Skip for today
           </button>
         </div>
       </div>

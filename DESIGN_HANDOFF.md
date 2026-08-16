@@ -38,6 +38,10 @@
 - Operational emoji were removed from pulse metrics, preview/reset controls, streak counts, and reach-out headings.
 - Teacher loading/error/empty states now name the activity and provide recovery; error includes `Try again`.
 - Long-name and long-assignment fixtures were added to the mock teacher view.
+- Student daily progress, practice-card list, loading, empty, error/retry, and completion states migrated to Scaffold.
+- Practice cards are now semantic buttons with visible focus support and long-content wrapping.
+- Practice detail is a responsive dialog with plain-language Close, complete, and skip controls.
+- The student review fixture uses realistic long assignment copy and opens an interactive detail sheet without Supabase.
 
 ## Known incomplete areas
 
@@ -45,8 +49,8 @@
 - Emoji used in controls and navigation require a plain-language/semantic review.
 - Category colors embedded in JavaScript need structural cues before neutralization.
 - The teacher HUD has fixed-window assumptions needing responsive review.
-- Mock-isolated data fixtures do not exist yet.
-- No visual or assistive-technology review evidence exists yet.
+- Sight reading, badges, pets, parent features, and their deeper states remain unmigrated.
+- Full keyboard, 200% zoom, and assistive-technology review remains incomplete.
 
 ## Verification log
 
@@ -63,6 +67,9 @@
 | 2026-08-16 | Teacher shell | 390/768/1024/1440px mock-isolated browser checks | Pass; no horizontal overflow; labeled nav controls 48–52px |
 | 2026-08-16 | Student/parent shells | 390/1440px mock-isolated browser checks | Pass; no horizontal overflow; logout controls 48px |
 | 2026-08-16 | Lesson prep | 390/768/1024/1440px long-content fixture | Pass; no horizontal overflow or clipped headings/titles; controls at least 48px |
+| 2026-08-16 | Student practice | Production build in mock-isolated mode | Pass; only recorded pre-existing warnings remain |
+| 2026-08-16 | Student practice list | 390/1440px long-content fixture | Pass; no horizontal overflow; card and logout controls at least 48px |
+| 2026-08-16 | Practice detail | 390px interactive fixture | Pass; no horizontal overflow; Close 48px and actions 52px high |
 
 ## Deferred maintenance findings
 
@@ -74,4 +81,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Migrate student practice cards, practice detail, sight reading, badges, and pets while preserving motivation mechanics.
+Migrate student sight reading, badges, and pets while preserving motivation mechanics.
