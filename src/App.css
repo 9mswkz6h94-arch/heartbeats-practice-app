@@ -9,6 +9,13 @@
   padding: 20px;
 }
 
+.scaffold-sandbox-offset { padding-top: calc(20px + var(--sandbox-banner-height)); }
+.scaffold-sandbox-offset > .hud,
+.scaffold-sandbox-offset > .dashboard {
+  min-height: calc(100vh - var(--sandbox-banner-height));
+  height: calc(100vh - var(--sandbox-banner-height));
+}
+
 .App-header {
   margin-bottom: 40px;
   position: relative;
@@ -70,7 +77,7 @@ main {
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 16px 0;
   text-align: left;
 }
@@ -154,4 +161,8 @@ footer {
 .btn-back-header:hover {
   border-color: var(--primary);
   color: var(--primary);
+}
+
+@media (max-width: 520px) {
+  .scaffold-sandbox-offset { padding-top: 20px; }
 }

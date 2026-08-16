@@ -8,6 +8,7 @@ import FamilySignup from "./components/FamilySignup";
 import ParentDashboard from "./components/ParentDashboard";
 import TeacherDashboard from "./components/TeacherDashboard";
 import StudentDashboard from "./components/StudentDashboard";
+import ScaffoldSandboxBanner from "./components/ScaffoldSandboxBanner";
 import "./App.css";
 
 // Read SSO tokens from URL hash (passed by rainbowheart.studio)
@@ -151,12 +152,12 @@ function App() {
 
   if (loading) {
     return (
-      <div className="App">
-        <div className="loading">
+      <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset">
+        <div className="loading" role="status">
           <h1>Heart Beats Practice App</h1>
-          <p>Loading...</p>
+          <p>Loading your practice space...</p>
         </div>
-      </div>
+      </div></>
     );
   }
 
@@ -204,7 +205,7 @@ function App() {
   );
 
   return (
-    <div className="App">
+    <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset">
       {screen === "selection" && (
         <>
           <header className="App-header">
@@ -306,7 +307,7 @@ function App() {
       {screen === "parent-dashboard" && (
         <ParentDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} />
       )}
-    </div>
+    </div></>
   );
 }
 

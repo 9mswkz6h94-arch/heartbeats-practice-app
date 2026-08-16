@@ -1,0 +1,24 @@
+.scaffold-sandbox-banner {
+  position: fixed;
+  z-index: 10000;
+  inset: 0 0 auto;
+  min-height: var(--sandbox-banner-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 2px solid var(--color-ink);
+  background: var(--color-cut-paper);
+  color: var(--color-ink);
+  font-family: var(--font-measurement);
+  font-size: 12px;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 520px) {
+  .scaffold-sandbox-banner { position: static; }
+}
