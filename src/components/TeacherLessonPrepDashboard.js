@@ -85,13 +85,13 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
   };
 
   if (loading) {
-    return <div className="lesson-prep-container"><p>Loading your studio…</p></div>;
+    return <div className="lesson-prep-container"><div className="prep-state" role="status"><h2>Loading studio activity</h2><p>Gathering student practice summaries…</p></div></div>;
   }
 
   if (error) {
     return (
       <div className="lesson-prep-container">
-        <p className="error">Error: {error}</p>
+        <div className="prep-state prep-state-error" role="alert"><h2>Studio activity could not load</h2><p>{error}</p><button type="button" onClick={fetchStudentsAndStats}>Try again</button></div>
       </div>
     );
   }
@@ -99,7 +99,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
   if (students.length === 0) {
     return (
       <div className="lesson-prep-container">
-        <div className="empty-state">
+        <div className="empty-state" role="status">
           <h2>No students yet</h2>
           <p>Add students to your studio to see their practice at a glance here.</p>
         </div>
@@ -153,7 +153,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
       <section className="pulse" aria-label="Studio at a glance">
         <div className="pulse-tile t-sessions">
           <div className="pulse-top">
-            <span className="pulse-icon" aria-hidden="true">🎵</span>
+            <span className="pulse-index" aria-hidden="true">01</span>
             {renderSessionDelta()}
           </div>
           <span className="pulse-num">{weekSessions}</span>
@@ -161,7 +161,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
         </div>
         <div className={`pulse-tile t-nudge ${needAttention > 0 ? "warm" : ""}`}>
           <div className="pulse-top">
-            <span className="pulse-icon" aria-hidden="true">👋</span>
+            <span className="pulse-index" aria-hidden="true">02</span>
           </div>
           <span className="pulse-num">{needAttention}</span>
           <span className="pulse-lab">
@@ -170,14 +170,14 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
         </div>
         <div className="pulse-tile t-roll">
           <div className="pulse-top">
-            <span className="pulse-icon" aria-hidden="true">🔥</span>
+            <span className="pulse-index" aria-hidden="true">03</span>
           </div>
           <span className="pulse-num">{onStreak}</span>
           <span className="pulse-lab">on a roll</span>
         </div>
         <div className="pulse-tile t-students">
           <div className="pulse-top">
-            <span className="pulse-icon" aria-hidden="true">👥</span>
+            <span className="pulse-index" aria-hidden="true">04</span>
             {newThisMonth > 0 && (
               <span className="pulse-delta up">↑ {newThisMonth} this month</span>
             )}
@@ -192,20 +192,21 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
           <h3 className="list-title">Studio · today</h3>
           <div className="student-cards">
             {enriched.map(({ student, stats, triage }) => (
-              <div
+              <button
+                type="button"
                 key={student.id}
                 className={`triage-card status-${triage.key} ${
                   selectedStudent?.id === student.id ? "selected" : ""
                 }`}
                 onClick={() => setSelectedStudent(student)}
               >
-                <div className="triage-top">
-                  <h4>{student.name}</h4>
+                <span className="triage-top">
+                  <span className="triage-name">{student.name}</span>
                   <span className={`triage-pill ${triage.key}`}>{triage.label}</span>
-                </div>
-                <div className="triage-meta">
+                </span>
+                <span className="triage-meta">
                   <span className="tm">
-                    <span className="tm-num">🔥 {stats.streak || 0}</span>
+                    <span className="tm-num">{stats.streak || 0}</span>
                     <span className="tm-lab">day streak</span>
                   </span>
                   <span className="tm">
@@ -216,8 +217,8 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
                     <span className="tm-num">{stats.songsMemorized || 0}</span>
                     <span className="tm-lab">songs</span>
                   </span>
-                </div>
-              </div>
+                </span>
+              </button>
             ))}
           </div>
         </div>
@@ -227,38 +228,38 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
             <div className="detail-head">
               <h3>{selectedStudent.name}</h3>
               <button className="btn-preview-parent" onClick={() => setPreviewStudent(selectedStudent)}>
-                👀 Preview as Parent
+                Preview parent view
               </button>
               <button
                 className="detail-close"
                 onClick={() => setSelectedStudent(null)}
                 aria-label="Close student detail"
               >
-                ✕
+                Close
               </button>
             </div>
 
             <div className="detail-stats">
               <div className="detail-stat">
-                <label>Sessions This Week</label>
+                <span className="detail-stat-label">Sessions this week</span>
                 <div className="detail-value">
                   {studentStats[selectedStudent.id]?.thisWeek || 0}
                 </div>
               </div>
               <div className="detail-stat">
-                <label>Current Streak</label>
+                <span className="detail-stat-label">Current streak</span>
                 <div className="detail-value">
-                  🔥 {studentStats[selectedStudent.id]?.streak || 0} days
+                  {studentStats[selectedStudent.id]?.streak || 0} days
                 </div>
               </div>
               <div className="detail-stat">
-                <label>Songs Memorized</label>
+                <span className="detail-stat-label">Songs memorized</span>
                 <div className="detail-value">
                   {studentStats[selectedStudent.id]?.songsMemorized || 0}
                 </div>
               </div>
               <div className="detail-stat">
-                <label>Total Completions</label>
+                <span className="detail-stat-label">Total completions</span>
                 <div className="detail-value">
                   {studentStats[selectedStudent.id]?.completions || 0}
                 </div>
@@ -298,8 +299,8 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
                         {reassigning === assignment.id
                           ? "…"
                           : isPersistentCategory(assignment.category)
-                          ? "↺ Reset for next lesson"
-                          : "↺ Reset now"}
+                          ? "Reset for next lesson"
+                          : "Reset now"}
                       </button>
                     </div>
                   ))}
@@ -313,7 +314,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
           </div>
         ) : attentionList.length > 0 ? (
           <div className="attention-panel">
-            <h4>👋 Reach out today</h4>
+            <h4>Reach out today</h4>
             <div className="attention-list">
               {attentionList.map(({ student, stats }) => (
                 <button
@@ -329,8 +330,8 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
           </div>
         ) : (
           <div className="detail-placeholder">
-            <span className="dp-emoji" aria-hidden="true">🎉</span>
-            <p>Everyone's practiced recently. Select a student to see their details.</p>
+            <h4>Everyone is active</h4>
+            <p>Everyone has practiced recently. Select a student to see their details.</p>
           </div>
         )}
       </div>

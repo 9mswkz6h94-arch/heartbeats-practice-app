@@ -57,3 +57,10 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted
 - **Decision:** Teacher navigation changes layout across breakpoints but never hides its text labels.
 - **Reason:** An emoji-only rail contradicts Scaffold’s plain-language and accessible-navigation requirements.
+
+## D-009 — Triage remains warm but structurally explicit
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Keep the no-shame labels `Needs a nudge`, `On a roll`, `Practiced today`, and `Steady`; pair each with a text label and structural leading edge rather than emoji or color alone.
+- **Reason:** The language is a product behavior worth preserving, while Scaffold requires state to remain legible without decoration.

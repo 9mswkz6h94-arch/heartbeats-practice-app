@@ -39,6 +39,7 @@ Foundation slice started on 2026-08-16:
 - Verified the entry screen at all four reference widths and core auth at 390px.
 - Migrated teacher, student, and parent dashboard shells to Scaffold.
 - Added mock-isolated shell URLs: `?review=teacher`, `?review=student`, and `?review=parent`.
+- Migrated teacher lesson-prep content and added realistic long-content fixtures to `?review=teacher`.
 
 This is not a completed conversion. Component styles still contain hard-coded brand colors, radii, shadows, emoji controls, and one-off type rules.
 
@@ -55,7 +56,7 @@ This is not a completed conversion. Component styles still contain hard-coded br
 1. Global foundation and sandbox boundary.
 2. Entry selection and authentication forms. **Implemented; review still needs zoom, long content, and full keyboard traversal.**
 3. Shared dashboard shells, navigation, logout controls, and initial loading/empty/error states. **Implemented; deeper content states remain in later slices.**
-4. Teacher HUD and lesson-prep surfaces.
+4. Teacher HUD and lesson-prep surfaces. **Implemented; full keyboard and zoom review remains.**
 5. Student practice cards, detail, sight reading, badges, and pets.
 6. Parent dashboard, family onboarding, messaging, and scheduling.
 7. Four-viewport, keyboard, zoom, long-content, and reduced-motion review.

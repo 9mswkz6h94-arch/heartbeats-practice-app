@@ -33,6 +33,11 @@
 - Student and parent dashboard headers now share the same workspace/title/logout grammar.
 - Parent loading, error, and empty states now carry explicit status semantics and recovery copy.
 - Added a `mock-isolated` shell review harness (`?review=teacher|student|parent`) that never reads or writes Supabase data.
+- Teacher lesson-prep pulse, triage cards, selected-student detail, assignments, and reach-out panel migrated to Scaffold.
+- Student triage cards are now keyboard-operable buttons instead of clickable `div` elements.
+- Operational emoji were removed from pulse metrics, preview/reset controls, streak counts, and reach-out headings.
+- Teacher loading/error/empty states now name the activity and provide recovery; error includes `Try again`.
+- Long-name and long-assignment fixtures were added to the mock teacher view.
 
 ## Known incomplete areas
 
@@ -57,6 +62,7 @@
 | 2026-08-16 | Shared shells | Production build in mock-isolated mode | Pass; only recorded pre-existing warnings |
 | 2026-08-16 | Teacher shell | 390/768/1024/1440px mock-isolated browser checks | Pass; no horizontal overflow; labeled nav controls 48–52px |
 | 2026-08-16 | Student/parent shells | 390/1440px mock-isolated browser checks | Pass; no horizontal overflow; logout controls 48px |
+| 2026-08-16 | Lesson prep | 390/768/1024/1440px long-content fixture | Pass; no horizontal overflow or clipped headings/titles; controls at least 48px |
 
 ## Deferred maintenance findings
 
@@ -68,4 +74,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Migrate the teacher lesson-prep content surfaces and verify long names, empty/error states, and tablet behavior inside the new shell.
+Migrate student practice cards, practice detail, sight reading, badges, and pets while preserving motivation mechanics.
