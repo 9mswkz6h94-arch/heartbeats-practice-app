@@ -154,7 +154,7 @@ function App() {
     }
   }
 
-  if (["teacher", "student", "parent", "parent-signup"].includes(reviewScreen)) {
+  if (["teacher", "teacher-admin", "student", "parent", "parent-signup"].includes(reviewScreen)) {
     return <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset"><ScaffoldShellReview screen={reviewScreen} /></div></>;
   }
 

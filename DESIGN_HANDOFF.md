@@ -52,6 +52,10 @@
 - Scheduling fields have explicit programmatic labels; child switching exposes its selected state.
 - Family onboarding controls have explicit labels, 48px+ targets, and an isolated `?review=parent-signup` fixture.
 - Parent chat retains its existing teacher/parent-only data path; no Supabase queries or RLS behavior changed.
+- Remaining active teacher/admin surfaces—recent assignments, repertoire, reschedule decisions, student management, assignment editing, and parent preview—now use Scaffold tokens and plain-language controls.
+- Added `?review=teacher-admin` with long assignment and reschedule content.
+- All five review targets pass a 640px viewport check as the layout equivalent of 200% zoom on a 1280px display.
+- The unused standalone `PracticeCard.js`/`.css` pair remains untouched and is not imported by the active student workflow.
 
 ## Known incomplete areas
 
@@ -59,7 +63,7 @@
 - Emoji used in controls and navigation require a plain-language/semantic review.
 - Category colors embedded in JavaScript need structural cues before neutralization.
 - The teacher HUD has fixed-window assumptions needing responsive review.
-- Remaining work is the cross-app keyboard, 200% zoom, assistive-technology, and state-completeness review plus any legacy teacher/admin surfaces not covered by the current fixtures.
+- Remaining work is a manual Tab-order/focus-clipping pass, assistive-technology review, and final state-completeness sign-off.
 - Full keyboard, 200% zoom, and assistive-technology review remains incomplete.
 
 ## Verification log
@@ -85,6 +89,9 @@
 | 2026-08-16 | Parent family dashboard | Production build and 390/1440px long-content fixture | Pass; no horizontal overflow or clipped names/messages; controls at least 48px |
 | 2026-08-16 | Parent scheduling/chat | 390px interactive fixture | Pass; reschedule fields/actions, notifications, and message composer remain contained and labeled |
 | 2026-08-16 | Family onboarding | 390px `?review=parent-signup` fixture | Pass; no horizontal overflow; inputs and controls 52–55px high |
+| 2026-08-16 | Cross-app zoom equivalent | 640px review of teacher/student/parent/onboarding | Pass; no horizontal overflow or clipped tested headings/controls |
+| 2026-08-16 | Teacher admin | 390/640/1440px `?review=teacher-admin` fixture | Pass; no overflow/clipping; controls 48–52px |
+| 2026-08-16 | Keyboard names/focus source | Semantic-name audit plus global `:focus-visible` rule | Partial; no unnamed fixture controls found; real Tab traversal remains manual |
 
 ## Deferred maintenance findings
 
@@ -96,4 +103,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Run the cross-app keyboard, 200% zoom, long-content, reduced-motion, and assistive-technology review; then audit any remaining legacy teacher/admin surfaces.
+Run the manual Tab-order/focus-clipping and assistive-technology review, then prepare the Scaffold acceptance checklist for Jonathan.

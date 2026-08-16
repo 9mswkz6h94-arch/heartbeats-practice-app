@@ -61,7 +61,7 @@ export default function TeacherDashboard({ userId, userEmail, onLogout }) {
           <div className="hud-user" title={userEmail}>
             <span className="hud-user-email">{userEmail}</span>
           </div>
-          <button onClick={handleLogout} className="hud-logout">
+          <button type="button" onClick={handleLogout} className="hud-logout">
             Log out
           </button>
         </div>

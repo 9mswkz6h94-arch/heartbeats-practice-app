@@ -42,17 +42,6 @@ export default function StudentRepertoire({ studentId }) {
     }
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
-      warmup: "#ff6b6b",
-      technique: "#ffd93d",
-      theory: "#6bcf7f",
-      pieces: "#4a90e2",
-      performance: "#b85cff",
-    };
-    return colors[category] || "#667eea";
-  };
-
   const getCategoryLabel = (category) => {
     const labels = {
       warmup: "Warmup",
@@ -75,7 +64,7 @@ export default function StudentRepertoire({ studentId }) {
   if (loading) {
     return (
       <div className="repertoire-container">
-        <p>Loading repertoire...</p>
+        <p role="status">Loading repertoire…</p>
       </div>
     );
   }
@@ -83,7 +72,7 @@ export default function StudentRepertoire({ studentId }) {
   if (error) {
     return (
       <div className="repertoire-container">
-        <p className="error">Error loading repertoire: {error}</p>
+        <p className="error" role="alert">Repertoire could not load: {error}</p>
       </div>
     );
   }
@@ -93,7 +82,7 @@ export default function StudentRepertoire({ studentId }) {
       <div className="repertoire-container">
         <div className="empty-repertoire">
           <p>No memorized songs yet.</p>
-          <p className="subtitle">Keep practicing to build your repertoire! 🎵</p>
+          <p className="subtitle">Keep practicing to build your repertoire.</p>
         </div>
       </div>
     );
@@ -101,16 +90,13 @@ export default function StudentRepertoire({ studentId }) {
 
   return (
     <div className="repertoire-container">
-      <h3>★ Your Memorized Repertoire</h3>
+      <h3>Your memorized repertoire</h3>
       <div className="repertoire-grid">
         {memorizedSongs.map((song) => (
           <div key={song.id} className="repertoire-card">
             <div className="song-header">
               <h4>{song.title}</h4>
-              <span
-                className="repertoire-category-badge"
-                style={{ backgroundColor: getCategoryColor(song.category) }}
-              >
+              <span className="repertoire-category-badge">
                 {getCategoryLabel(song.category)}
               </span>
             </div>

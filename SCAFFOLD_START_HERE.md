@@ -45,6 +45,9 @@ Foundation slice started on 2026-08-16:
 - Migrated sight reading, badges, the practice pet, and pet collection to Scaffold while preserving microphone fallback, skipping, growth, hatching, merging, and celebrations.
 - Migrated the parent family dashboard, child detail, PIN reset, lesson/calendar information, rescheduling, notifications, private chat, and family onboarding surfaces.
 - Added mock-isolated parent URLs: `?review=parent` for a linked family and `?review=parent-signup` for onboarding.
+- Migrated remaining active teacher/admin presentation for assignments, repertoire, reschedule approval, student management, and parent preview.
+- Added `?review=teacher-admin` for long-content/responsive review of requests and assignment operations.
+- Completed automated 200%-equivalent layout checks across teacher, teacher-admin, student, parent, and onboarding fixtures.
 
 This is not a completed conversion. Component styles still contain hard-coded brand colors, radii, shadows, emoji controls, and one-off type rules.
 
@@ -64,7 +67,7 @@ This is not a completed conversion. Component styles still contain hard-coded br
 4. Teacher HUD and lesson-prep surfaces. **Implemented; full keyboard and zoom review remains.**
 5. Student practice cards, detail, sight reading, badges, and pets. **Implemented; full keyboard, zoom, and assistive-technology review remains.**
 6. Parent dashboard, family onboarding, messaging, and scheduling. **Implemented; full keyboard, zoom, and assistive-technology review remains.**
-7. Four-viewport, keyboard, zoom, long-content, and reduced-motion review.
+7. Four-viewport, keyboard, zoom, long-content, and reduced-motion review. **Viewport, zoom-equivalent, long-content, and reduced-motion source checks pass; manual Tab order and assistive-technology review remain.**
 
 ## Approval definition
 

@@ -306,7 +306,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
                   onClick={handleRemoveFile}
                   disabled={loading}
                 >
-                  ✕
+                  Remove file
                 </button>
               </div>
             )}
@@ -349,7 +349,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
                     className="btn-remove-step"
                     disabled={loading}
                   >
-                    ✕
+                    Remove step
                   </button>
                 </div>
               ))}

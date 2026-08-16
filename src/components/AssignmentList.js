@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { assignmentCategories, getCategoryColor } from "../lib/practiceTemplates";
+import { assignmentCategories } from "../lib/practiceTemplates";
 import "./AssignmentList.css";
 
 export default function AssignmentList({ teacherId, refresh }) {
@@ -160,7 +160,7 @@ export default function AssignmentList({ teacherId, refresh }) {
   if (loading) {
     return (
       <div className="assignment-list">
-        <p>Loading assignments...</p>
+        <p role="status">Loading assignments…</p>
       </div>
     );
   }
@@ -168,7 +168,7 @@ export default function AssignmentList({ teacherId, refresh }) {
   if (error) {
     return (
       <div className="assignment-list">
-        <p className="error">Error loading assignments: {error}</p>
+        <p className="error" role="alert">Assignments could not load: {error}</p>
       </div>
     );
   }
@@ -183,19 +183,14 @@ export default function AssignmentList({ teacherId, refresh }) {
 
   return (
     <div className="assignment-list">
-      <h3>Recent Assignments</h3>
+      <h3>Recent assignments</h3>
       <div className="assignments-grid">
         {assignments.map((assignment) => (
           <div key={assignment.id} className="assignment-card">
             <div className="card-header">
               <div className="card-title-section">
                 <h4>{assignment.title}</h4>
-                <span
-                  className="category-badge"
-                  style={{
-                    backgroundColor: getCategoryColor(assignment.category),
-                  }}
-                >
+                <span className="category-badge">
                   {getCategoryLabel(assignment.category)}
                 </span>
               </div>
@@ -227,21 +222,23 @@ export default function AssignmentList({ teacherId, refresh }) {
 
             <div className="card-actions">
               <button
+                type="button"
                 className={`btn-action btn-memorize ${
                   assignment.memorized ? "memorized" : ""
                 }`}
                 onClick={() => handleMarkMemoized(assignment)}
                 title={assignment.memorized ? "Remove from repertoire" : "Mark as memorized"}
               >
-                {assignment.memorized ? "★ Memorized" : "☆ Memorize"}
+                {assignment.memorized ? "Memorized" : "Mark memorized"}
               </button>
-              <button className="btn-action btn-edit">✎ Edit</button>
+              <button type="button" className="btn-action btn-edit">Edit</button>
               <button
+                type="button"
                 className="btn-action btn-duplicate"
                 onClick={() => handleDuplicate(assignment)}
                 disabled={duplicating === assignment.id}
               >
-                {duplicating === assignment.id ? "..." : "⚡ Duplicate"}
+                {duplicating === assignment.id ? "Duplicating…" : "Duplicate"}
               </button>
             </div>
           </div>

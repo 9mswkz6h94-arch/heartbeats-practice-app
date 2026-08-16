@@ -185,7 +185,7 @@ export default function StudentManager({ teacherId }) {
                   onClick={() => handleRemoveStudent(student.id)}
                   title="Remove student"
                 >
-                  ✕
+                  Remove
                 </button>
               </div>
             ))}
@@ -271,15 +271,15 @@ export default function StudentManager({ teacherId }) {
                 {editingLessonFor !== student.id && (
                   <button className="btn-edit-lesson" onClick={() => startEditLesson(student.id)}>
                     {lessons[student.id]
-                      ? `📅 ${DAY_OPTIONS[lessons[student.id].day_of_week].name.slice(0, 3)} ${lessons[student.id].start_time.slice(0, 5)}`
-                      : "📅 Set lesson time"}
+                      ? `${DAY_OPTIONS[lessons[student.id].day_of_week].name.slice(0, 3)} ${lessons[student.id].start_time.slice(0, 5)}`
+                      : "Set lesson time"}
                   </button>
                 )}
                 {editingSightReadingFor !== student.id && (
                   <button className="btn-edit-lesson" onClick={() => startEditSightReading(student)}>
                     {student.sightreading_enabled === false
-                      ? "🎼 Sight Reading: Off"
-                      : `🎼 ${(student.sightreading_level || "beginner") === "beginner" ? "Beginner" : "Intermediate"}`}
+                      ? "Sight reading: off"
+                      : `Sight reading: ${(student.sightreading_level || "beginner") === "beginner" ? "beginner" : "intermediate"}`}
                   </button>
                 )}
                 <button
@@ -287,7 +287,7 @@ export default function StudentManager({ teacherId }) {
                   onClick={() => handleRemoveStudent(student.id)}
                   title="Remove student"
                 >
-                  ✕
+                  Remove
                 </button>
                 {editingSightReadingFor === student.id && (
                   <div className="lesson-editor">

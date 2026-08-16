@@ -20,7 +20,7 @@
 .btn-complete,
 .btn-skip { min-height: 52px; padding: var(--space-3) var(--space-4); border-radius: 0; font-weight: 600; cursor: pointer; }
 .btn-complete { border: 2px solid var(--color-complete); background: var(--color-complete); color: var(--color-white); }
-.btn-complete:hover:not(:disabled) { background: #0f4b2c; }
+.btn-complete:hover:not(:disabled) { background: var(--color-complete); }
 .btn-skip { border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); }
 .btn-skip:hover:not(:disabled) { border-color: var(--color-ink); }
 .btn-complete:disabled,

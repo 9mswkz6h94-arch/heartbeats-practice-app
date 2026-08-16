@@ -4,7 +4,7 @@ import "./CommLog.css";
 
 // Teacher↔parent message thread per student. Students never see this —
 // enforced by RLS (no student policies on communication_log at all).
-// role: "teacher" | "parent". Teacher gets a per-message "📣 Notify parent"
+// role: "teacher" | "parent". Teacher gets a per-message "Notify parent"
 // checkbox (delivery is a later phase; the flag persists now).
 export default function CommLog({ studentId, role, authorName }) {
   const [messages, setMessages] = useState([]);

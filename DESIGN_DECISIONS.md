@@ -106,3 +106,17 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted
 - **Decision:** Keep rescheduling as an explicit parent request with a visible pending state, cancellation action, and teacher confirmation. The calendar link remains a separate action.
 - **Reason:** This preserves teacher coordination and prevents a visual redesign from implying that a proposed time is already approved.
+
+## D-016 — Unused legacy practice card stays isolated
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Do not migrate or delete `PracticeCard.js` and `PracticeCard.css` during Scaffold. The active workflow uses `StudentPracticeCards` and `PracticeCardDetail`; no source imports the standalone component.
+- **Reason:** Removing dead code is maintenance, not design migration, and reviving it would add an unreviewed path.
+
+## D-017 — Zoom evidence uses the reflow-equivalent viewport
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Record the 640px viewport as automated layout evidence equivalent to 200% zoom on a 1280px viewport, and keep true browser-zoom/manual assistive review separately identified.
+- **Reason:** The local browser controller exposes viewport sizing but not browser zoom or reduced-motion emulation; evidence must state that limitation precisely.

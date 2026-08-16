@@ -39,7 +39,7 @@ export default function RescheduleRequests({ teacherId }) {
 
   return (
     <section className="resched-panel">
-      <h3 className="resched-panel-title">🔁 Reschedule Requests ({requests.length})</h3>
+      <h3 className="resched-panel-title">Reschedule requests ({requests.length})</h3>
       <div className="resched-list">
         {requests.map((r) => (
           <div key={r.id} className="resched-row">
@@ -53,17 +53,18 @@ export default function RescheduleRequests({ teacherId }) {
             <input
               type="text"
               className="resched-note-input"
+              aria-label={`Optional note for ${r.students?.name || "student"}`}
               placeholder="Optional note back to parent"
               value={noteDraft[r.id] || ""}
               onChange={(e) => setNoteDraft({ ...noteDraft, [r.id]: e.target.value })}
               disabled={busyId === r.id}
             />
             <div className="resched-actions">
-              <button className="btn-resched-approve" disabled={busyId === r.id} onClick={() => resolve(r.id, "approved")}>
-                ✅ Approve
+              <button type="button" className="btn-resched-approve" disabled={busyId === r.id} onClick={() => resolve(r.id, "approved")}>
+                Approve
               </button>
-              <button className="btn-resched-decline" disabled={busyId === r.id} onClick={() => resolve(r.id, "declined")}>
-                ❌ Decline
+              <button type="button" className="btn-resched-decline" disabled={busyId === r.id} onClick={() => resolve(r.id, "declined")}>
+                Decline
               </button>
             </div>
           </div>
