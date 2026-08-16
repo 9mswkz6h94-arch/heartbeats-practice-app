@@ -1,310 +1,46 @@
-.pet-widget {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 20px 16px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-subtle);
-  text-align: center;
-}
-
-.pet-emoji-wrap {
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-.pet-emoji-big {
-  font-size: 56px;
-  line-height: 1;
-  will-change: transform;
-}
-
-/* Defined before pet-cheer-bounce so, per normal cascade source order, the
-   one-shot cheer animation temporarily wins over this infinite loop while
-   both classes are briefly present (see PetWidget.js's handleCheer, which
-   removes pet-cheer-bounce again after it finishes). */
-.pet-idle-bob {
-  animation: pet-idle-bob 2.6s ease-in-out infinite;
-}
-
-@keyframes pet-idle-bob {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-4px) rotate(-3deg); }
-}
-
-.pet-cheer-bounce {
-  animation: pet-cheer-jump 0.6s ease;
-}
-
-@keyframes pet-cheer-jump {
-  0% { transform: translateY(0) scale(1); }
-  30% { transform: translateY(-14px) scale(1.15); }
-  55% { transform: translateY(0) scale(1); }
-  75% { transform: translateY(-6px) scale(1.08); }
-  100% { transform: translateY(0) scale(1); }
-}
-
-.pet-cheer-bubble {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--primary);
-  color: white;
-  font-weight: 700;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-  animation: pet-bubble-pop 2.2s ease forwards;
-}
-
-@keyframes pet-bubble-pop {
-  0% { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.8); }
-  15% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(0.95); }
-}
-
-.pet-listen-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.btn-pet-listen {
-  background: var(--bg-subtle);
-  border: 2px solid var(--border);
-  color: var(--text);
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.btn-pet-listen:hover:not(:disabled) {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.btn-pet-listen.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
-}
-
-.btn-pet-listen:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.pet-mic-note {
-  margin: 0;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.pet-species-picker {
-  width: 100%;
-  padding: 12px;
-  border: 2px dashed var(--primary);
-  border-radius: var(--radius-sm);
-  background: var(--primary-light);
-  margin-bottom: 4px;
-}
-
-.pet-species-prompt {
-  margin: 0 0 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.pet-species-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 8px;
-}
-
-.pet-species-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.pet-species-option:hover:not(:disabled) {
-  border-color: var(--primary);
-  transform: translateY(-2px);
-}
-
-.pet-species-option:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.pet-species-emoji {
-  font-size: 24px;
-}
-
-.pet-species-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.pet-name-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.pet-custom-name {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--text);
-}
-
-.pet-name-edit-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 13px;
-  padding: 2px;
-  opacity: 0.6;
-}
-
-.pet-name-edit-btn:hover {
-  opacity: 1;
-}
-
-.btn-name-pet {
-  background: var(--primary-light);
-  border: 2px solid var(--primary);
-  color: var(--primary);
-  padding: 5px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.pet-name-form {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.pet-name-form input {
-  padding: 5px 10px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  width: 120px;
-  font-family: inherit;
-}
-
-.pet-name-form button {
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 5px 10px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.pet-name-form button[type="button"] {
-  background: var(--bg-subtle);
-  color: var(--text-muted);
-}
-
-.pet-name-form button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.pet-stage-label {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-}
-
-.pet-blurb {
-  margin: 0 0 6px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.pet-bar-track {
-  width: 100%;
-  max-width: 220px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--border);
-  overflow: hidden;
-}
-
-.pet-bar-track-sm {
-  height: 6px;
-  max-width: 90px;
-}
-
-.pet-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--teal, #1DD1A1), var(--primary));
-  border-radius: 999px;
-  transition: width 0.4s ease;
-}
-
-.pet-xp-label {
-  margin: 4px 0 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.pet-widget-compact {
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  text-align: left;
-}
-
-.pet-emoji-compact {
-  font-size: 30px;
-  line-height: 1;
-}
-
-.pet-compact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.pet-name-compact {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--text);
-}
+.pet-widget { width: 100%; min-width: 0; padding: var(--space-5); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); border: 1px solid var(--color-border); border-top: 4px solid var(--color-ink); background: var(--color-surface-raised); text-align: center; }
+.pet-emoji-wrap { position: relative; display: flex; justify-content: center; margin-block: var(--space-2); }
+.pet-emoji-big { font-size: 56px; line-height: 1; will-change: transform; }
+.pet-idle-bob { animation: pet-idle-bob 2.6s ease-in-out infinite; }
+@keyframes pet-idle-bob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(-3deg); } }
+.pet-cheer-bounce { animation: pet-cheer-jump .6s ease; }
+@keyframes pet-cheer-jump { 0%,100% { transform: translateY(0) scale(1); } 35% { transform: translateY(-14px) scale(1.12); } }
+.pet-cheer-bubble { position: absolute; top: -34px; left: 50%; transform: translateX(-50%); padding: var(--space-1) var(--space-2); border: 1px solid var(--color-ink); background: var(--color-ink); color: var(--color-white); font-size: 12px; font-weight: 600; white-space: nowrap; animation: pet-bubble-pop 2.2s ease forwards; }
+@keyframes pet-bubble-pop { 0% { opacity: 0; } 15%,80% { opacity: 1; } 100% { opacity: 0; } }
+.pet-listen-row { margin-top: var(--space-2); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+.btn-pet-listen,
+.btn-name-pet { min-height: 48px; padding: var(--space-2) var(--space-4); border: 1px solid var(--color-border); border-radius: 0; background: var(--color-surface); color: var(--color-text); font-weight: 600; cursor: pointer; }
+.btn-pet-listen:hover:not(:disabled),
+.btn-name-pet:hover { border-color: var(--color-ink); }
+.btn-pet-listen.active { border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-white); }
+.btn-pet-listen:disabled { opacity: .55; cursor: wait; }
+.pet-mic-note { margin: 0; color: var(--color-warning); font-size: 12px; }
+.pet-species-picker { width: 100%; margin-bottom: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); background: var(--color-paper); }
+.pet-species-prompt { margin: 0 0 var(--space-3); font-weight: 600; }
+.pet-species-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: var(--space-2); }
+.pet-species-option { min-height: 72px; padding: var(--space-2); display: flex; flex-direction: column; align-items: center; gap: var(--space-1); border: 1px solid var(--color-border); border-radius: 0; background: var(--color-surface-raised); cursor: pointer; }
+.pet-species-option:hover:not(:disabled) { border: 2px solid var(--color-ink); }
+.pet-species-option:disabled { opacity: .55; cursor: wait; }
+.pet-species-emoji { font-size: 24px; }
+.pet-species-label { color: var(--color-text); font-size: 11px; font-weight: 600; }
+.pet-name-row { display: flex; align-items: center; justify-content: center; gap: var(--space-2); flex-wrap: wrap; }
+.pet-custom-name { font-family: var(--font-display); font-size: 24px; font-weight: 600; overflow-wrap: anywhere; }
+.pet-name-edit-btn { min-height: 48px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); background: transparent; color: var(--color-focus); font-size: 12px; font-weight: 600; cursor: pointer; }
+.pet-name-form { width: min(100%, 420px); display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: var(--space-2); }
+.pet-name-form input,
+.pet-name-form button { min-height: 48px; border-radius: 0; }
+.pet-name-form input { min-width: 0; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); }
+.pet-name-form button { padding: var(--space-2) var(--space-3); border: 1px solid var(--color-ink); background: var(--color-ink); color: var(--color-white); font-weight: 600; cursor: pointer; }
+.pet-name-form button[type="button"] { border-color: var(--color-border); background: var(--color-surface); color: var(--color-text); }
+.pet-name-form button:disabled { opacity: .55; cursor: wait; }
+.pet-stage-label { color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.pet-blurb { margin: 0 0 var(--space-2); color: var(--color-text-muted); font-size: 13px; }
+.pet-bar-track { width: min(100%, 260px); height: 12px; overflow: hidden; border: 1px solid var(--color-border); background: var(--color-cut-paper); }
+.pet-bar-track-sm { width: 90px; height: 8px; }
+.pet-bar-fill { height: 100%; background: var(--color-complete); transition: width .4s ease; }
+.pet-xp-label { margin: var(--space-1) 0 0; color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 11px; }
+.pet-widget-compact { padding: var(--space-3); flex-direction: row; justify-content: flex-start; gap: var(--space-3); text-align: left; }
+.pet-emoji-compact { font-size: 30px; line-height: 1; }
+.pet-compact-info { min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.pet-name-compact { font-family: var(--font-display); font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+@media (max-width: 500px) { .pet-widget { padding: var(--space-4); } .pet-name-form { grid-template-columns: 1fr 1fr; } .pet-name-form input { grid-column: 1 / -1; } }

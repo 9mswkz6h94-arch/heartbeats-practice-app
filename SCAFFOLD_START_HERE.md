@@ -42,6 +42,7 @@ Foundation slice started on 2026-08-16:
 - Migrated teacher lesson-prep content and added realistic long-content fixtures to `?review=teacher`.
 - Migrated the student daily progress, practice-card list, detail sheet, completion, skip, loading, empty, and error states.
 - Added long-content student fixtures to `?review=student`; the fixture is interactive but never reads or writes Supabase.
+- Migrated sight reading, badges, the practice pet, and pet collection to Scaffold while preserving microphone fallback, skipping, growth, hatching, merging, and celebrations.
 
 This is not a completed conversion. Component styles still contain hard-coded brand colors, radii, shadows, emoji controls, and one-off type rules.
 
@@ -59,7 +60,7 @@ This is not a completed conversion. Component styles still contain hard-coded br
 2. Entry selection and authentication forms. **Implemented; review still needs zoom, long content, and full keyboard traversal.**
 3. Shared dashboard shells, navigation, logout controls, and initial loading/empty/error states. **Implemented; deeper content states remain in later slices.**
 4. Teacher HUD and lesson-prep surfaces. **Implemented; full keyboard and zoom review remains.**
-5. Student practice cards and detail. **Core daily workflow implemented; sight reading, badges, and pets remain.**
+5. Student practice cards, detail, sight reading, badges, and pets. **Implemented; full keyboard, zoom, and assistive-technology review remains.**
 6. Parent dashboard, family onboarding, messaging, and scheduling.
 7. Four-viewport, keyboard, zoom, long-content, and reduced-motion review.
 

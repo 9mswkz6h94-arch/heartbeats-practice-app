@@ -190,6 +190,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
             {SPECIES_CHOICES.map((choice) => (
               <button
                 key={choice.key}
+                type="button"
                 className="pet-species-option"
                 onClick={() => handleChooseSpecies(choice.key)}
                 disabled={choosingSpecies || readOnly}
@@ -219,6 +220,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
             <span className="pet-custom-name">{pet.name}</span>
             {!readOnly && (
               <button
+                type="button"
                 className="pet-name-edit-btn"
                 onClick={() => {
                   setNameDraft(pet.name);
@@ -226,13 +228,14 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
                 }}
                 aria-label="Rename pet"
               >
-                ✏️
+                Rename
               </button>
             )}
           </>
         )}
         {!pet.name && !editingName && !readOnly && (
           <button
+            type="button"
             className="btn-name-pet"
             onClick={() => {
               setNameDraft("");
@@ -266,23 +269,23 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
       <p className="pet-blurb">{info.blurb}</p>
       {info.xpToNext != null ? (
         <>
-          <div className="pet-bar-track">
+          <div className="pet-bar-track" role="progressbar" aria-label="Pet growth progress" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">
             <div className="pet-bar-fill" style={{ width: `${progress}%` }} />
           </div>
           <p className="pet-xp-label">{pet.xp} / {info.xpToNext} XP to next stage</p>
         </>
       ) : (
-        <p className="pet-xp-label">🌟 {pet.xp} total practice XP</p>
+        <p className="pet-xp-label">{pet.xp} total practice XP</p>
       )}
 
       <div className="pet-listen-row">
         {!listening ? (
-          <button className="btn-pet-listen" onClick={startListening} disabled={micStatus === "requesting"}>
-            {micStatus === "requesting" ? "Listening…" : "🎤 Play for me!"}
+          <button type="button" className="btn-pet-listen" onClick={startListening} disabled={micStatus === "requesting"}>
+            {micStatus === "requesting" ? "Requesting microphone…" : "Play for my pet"}
           </button>
         ) : (
-          <button className="btn-pet-listen active" onClick={stopListening}>
-            ⏹ Stop
+          <button type="button" className="btn-pet-listen active" onClick={stopListening}>
+            Stop listening
           </button>
         )}
         {micStatus === "denied" && <p className="pet-mic-note">Couldn't access the microphone.</p>}

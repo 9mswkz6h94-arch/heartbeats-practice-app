@@ -18,7 +18,7 @@ export default function BadgeShowcase({ studentId }) {
   };
 
   if (loading) {
-    return <div className="badge-showcase"><p>Loading badges...</p></div>;
+    return <div className="badge-showcase" role="status"><p>Loading badges…</p></div>;
   }
 
   if (badges.length === 0) {
@@ -33,12 +33,13 @@ export default function BadgeShowcase({ studentId }) {
 
   return (
     <div className="badge-showcase">
-      <h3>Badges Earned</h3>
+      <h3>Badges earned</h3>
       <div className="badges-grid">
         {badges.map((badge) => (
-          <div key={badge.id} className="badge-item" title={badge.description}>
+          <div key={badge.id} className="badge-item">
             <div className="badge-icon">{badge.icon}</div>
             <div className="badge-name">{badge.name}</div>
+            <div className="badge-description">{badge.description}</div>
             <div className="badge-date">
               {new Date(badge.earned_at).toLocaleDateString()}
             </div>

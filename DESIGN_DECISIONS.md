@@ -78,3 +78,17 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted
 - **Decision:** Render each pending practice card as a semantic button and the expanded card as a labeled dialog with plain-language actions.
 - **Reason:** Keyboard and assistive-technology operation should be inherent, while the familiar card-to-detail workflow remains unchanged.
+
+## D-012 — Playful content survives the neutral foundation
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Creature and badge illustrations remain visible as motivational content. Operational meaning and controls use text, structure, and semantic state rather than emoji alone.
+- **Reason:** Scaffold is a structural foundation for a later skin, not a removal of product features the students already value.
+
+## D-013 — Wide notation scrolls locally
+
+- **Date:** 2026-08-16
+- **Status:** accepted
+- **Decision:** Generated staff and tab notation may scroll horizontally inside the sight-reading panel, but must never cause page-level horizontal scrolling.
+- **Reason:** Legible musical spacing is more useful than compressing notes, while the surrounding student interface must remain stable on phones.

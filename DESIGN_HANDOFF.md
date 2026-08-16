@@ -42,6 +42,11 @@
 - Practice cards are now semantic buttons with visible focus support and long-content wrapping.
 - Practice detail is a responsive dialog with plain-language Close, complete, and skip controls.
 - The student review fixture uses realistic long assignment copy and opens an interactive detail sheet without Supabase.
+- Sight reading uses Scaffold controls and neutral notation colors while retaining microphone, tap, skip, staff/tab, level, and rotation flows.
+- Wide musical notation is contained in its own horizontal scroller and cannot expand the student dashboard.
+- Badges now expose their descriptions visibly instead of relying on hover titles.
+- Pet growth, naming, listening, eggs, hatching, merging, and collection states use Scaffold structure with plain-language controls.
+- Creature and badge artwork remains as motivational content; operational controls no longer depend on emoji.
 
 ## Known incomplete areas
 
@@ -49,7 +54,7 @@
 - Emoji used in controls and navigation require a plain-language/semantic review.
 - Category colors embedded in JavaScript need structural cues before neutralization.
 - The teacher HUD has fixed-window assumptions needing responsive review.
-- Sight reading, badges, pets, parent features, and their deeper states remain unmigrated.
+- Parent features and their deeper states remain unmigrated.
 - Full keyboard, 200% zoom, and assistive-technology review remains incomplete.
 
 ## Verification log
@@ -70,6 +75,8 @@
 | 2026-08-16 | Student practice | Production build in mock-isolated mode | Pass; only recorded pre-existing warnings remain |
 | 2026-08-16 | Student practice list | 390/1440px long-content fixture | Pass; no horizontal overflow; card and logout controls at least 48px |
 | 2026-08-16 | Practice detail | 390px interactive fixture | Pass; no horizontal overflow; Close 48px and actions 52px high |
+| 2026-08-16 | Sight reading | Production build and 390px interactive fixture | Pass; staff scrolls internally; no page overflow; controls 48–52px |
+| 2026-08-16 | Badges and pets | 390/1440px mock-isolated fixtures | Pass; no horizontal overflow; operational controls at least 48px |
 
 ## Deferred maintenance findings
 
@@ -81,4 +88,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Migrate student sight reading, badges, and pets while preserving motivation mechanics.
+Migrate the parent dashboard, family onboarding, messaging, and scheduling while preserving existing authorization and data behavior.

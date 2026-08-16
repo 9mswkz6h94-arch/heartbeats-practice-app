@@ -14,8 +14,8 @@ Static inspection is not a pass. Record concrete evidence for every pass.
 | Lesson prep | Pass | Pass | Pass | Pass | In progress | — | Pass | Pass | Long-name/assignment mock fixture: no overflow or clipping; controls ≥48px |
 | Student practice list | Pass | — | — | Pass | In progress | — | Pass | Pass | Mock-isolated long-content fixture at 390/1440px; no horizontal overflow; native card buttons ≥48px |
 | Practice detail | Pass | — | — | — | In progress | — | Pass | Pass | Interactive fixture at 390px; no overflow; Close 48px and actions 52px; labeled dialog |
-| Sight reading | — | — | — | — | — | — | — | — | Not started |
-| Pets and badges | — | — | — | — | — | — | — | — | Not started |
+| Sight reading | Pass | — | — | Pass | In progress | — | Pass | Pass | 390px interactive fixture: notation scrolls locally; page has no overflow; controls ≥48px; desktop containment checked |
+| Pets and badges | Pass | — | — | Pass | In progress | — | Pass | Pass | 390/1440px mock fixtures: no overflow; controls ≥48px; badge descriptions visible |
 | Parent dashboard | Pass | — | — | Pass | In progress | — | In progress | Pass | Mock-isolated shell and empty state checked at 390/1440px |
 | Messaging/scheduling | — | — | — | — | — | — | — | — | Not started |
 

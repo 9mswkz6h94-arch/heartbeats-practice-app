@@ -80,12 +80,12 @@ export default function PetCollection({ studentId, readOnly = false }) {
 
   return (
     <div className="pet-collection">
-      <h3 className="pet-collection-title">🥚 Pet Collection</h3>
+      <h3 className="pet-collection-title">Pet collection</h3>
 
-      {error && <p className="pet-collection-error">{error}</p>}
+      {error && <p className="pet-collection-error" role="alert">{error}</p>}
 
       {revealInfo && (
-        <div className="pet-hatch-reveal">
+        <div className="pet-hatch-reveal" role="status">
           <span className="pet-hatch-reveal-emoji">{revealInfo.emoji}</span>
           You hatched a {revealInfo.name}!
         </div>
@@ -94,11 +94,12 @@ export default function PetCollection({ studentId, readOnly = false }) {
       {eggs.length > 0 && (
         <div className="pet-collection-eggs">
           <span className="pet-egg-count">
-            🥚 {eggs.length} unhatched egg{eggs.length > 1 ? "s" : ""}
+            {eggs.length} unhatched egg{eggs.length > 1 ? "s" : ""}
           </span>
           {!readOnly && (
             <button
               className="btn-hatch"
+              type="button"
               onClick={handleHatch}
               disabled={busyKey === eggs[0]?.id}
             >
@@ -130,10 +131,11 @@ export default function PetCollection({ studentId, readOnly = false }) {
                 {!readOnly && canMerge && (
                   <button
                     className="btn-merge"
+                    type="button"
                     onClick={() => handleMerge(group)}
                     disabled={busyKey === key}
                   >
-                    {busyKey === key ? "Merging…" : "✨ Merge"}
+                    {busyKey === key ? "Merging…" : "Merge pair"}
                   </button>
                 )}
               </div>

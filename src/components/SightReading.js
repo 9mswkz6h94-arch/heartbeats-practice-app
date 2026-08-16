@@ -11,11 +11,11 @@ import {
 import "./SightReading.css";
 
 const NOTE_LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
-const PITCH_COLOR = "#6C5CE7"; // var(--primary) — VexFlow sets SVG fill
+const PITCH_COLOR = "#175CD3"; // var(--color-focus) — VexFlow sets SVG fill
 // attributes directly, which don't resolve CSS custom properties, so these
 // are the token's literal values (kept in sync with src/index.css by hand).
-const CORRECT_COLOR = "#1DD1A1"; // var(--teal)
-const DEFAULT_COLOR = "#2D3436"; // var(--text)
+const CORRECT_COLOR = "#17603A"; // var(--color-complete)
+const DEFAULT_COLOR = "#0A0A0A"; // var(--color-ink)
 
 function flattenExercise(exercise) {
   const flat = [];
@@ -378,16 +378,17 @@ export default function SightReading({ studentId, readOnly = false }) {
   if (!enabled) return null;
 
   if (!instrument || !exercise) {
-    return <div className="sightreading-loading">Loading sight reading…</div>;
+    return <div className="sightreading-loading" role="status"><h3>Loading sight reading</h3><p>Preparing an exercise for your instrument…</p></div>;
   }
 
   if (!started) {
     return (
       <div className="sightreading-container sightreading-start-screen">
-        <h3>🎼 Sight Reading</h3>
+        <p className="sightreading-kicker">Optional practice</p>
+        <h3>Sight reading</h3>
         <p>Read music on the staff — by ear or by tapping the note name.</p>
-        <button className="btn-primary" onClick={() => setStarted(true)}>
-          ▶ Start Sight Reading
+        <button type="button" className="btn-primary" onClick={() => setStarted(true)}>
+          Start sight reading
         </button>
       </div>
     );
@@ -397,9 +398,9 @@ export default function SightReading({ studentId, readOnly = false }) {
     return (
       <div className="sightreading-container">
         <div className="sightreading-orientation-prompt">
-          <div className="rotate-icon">📱</div>
+          <div className="rotate-icon" aria-hidden="true">↻</div>
           <p>Turn your phone sideways for Sight Reading</p>
-          <button className="btn-link" onClick={() => setForceContinue(true)}>
+          <button type="button" className="btn-link" onClick={() => setForceContinue(true)}>
             Continue anyway
           </button>
         </div>
@@ -412,16 +413,20 @@ export default function SightReading({ studentId, readOnly = false }) {
   return (
     <div className={`sightreading-container ${flash ? `flash-${flash}` : ""}`}>
       <div className="sightreading-header">
-        <h3>🎼 Sight Reading</h3>
+        <h3>Sight reading</h3>
         <div className="sightreading-level-toggle">
           <button
+            type="button"
             className={level === "beginner" ? "active" : ""}
+            aria-pressed={level === "beginner"}
             onClick={() => setLevel("beginner")}
           >
             Beginner
           </button>
           <button
+            type="button"
             className={level === "intermediate" ? "active" : ""}
+            aria-pressed={level === "intermediate"}
             onClick={() => setLevel("intermediate")}
           >
             Intermediate
@@ -445,10 +450,10 @@ export default function SightReading({ studentId, readOnly = false }) {
 
         {instrumentSupportsTab(instrument) && (
           <div className="sightreading-level-toggle">
-            <button className={notation === "staff" ? "active" : ""} onClick={() => setNotation("staff")}>
+            <button type="button" className={notation === "staff" ? "active" : ""} aria-pressed={notation === "staff"} onClick={() => setNotation("staff")}>
               Standard
             </button>
-            <button className={notation === "tab" ? "active" : ""} onClick={() => setNotation("tab")}>
+            <button type="button" className={notation === "tab" ? "active" : ""} aria-pressed={notation === "tab"} onClick={() => setNotation("tab")}>
               Tab
             </button>
           </div>
@@ -462,21 +467,21 @@ export default function SightReading({ studentId, readOnly = false }) {
       <div ref={staffRef} className="sightreading-staff" />
 
       {sessionDone ? (
-        <div className="sightreading-done">
-          <p>🎉 {correctSoFar} / {flat.length} notes correct!</p>
-          <button className="btn-primary" onClick={newExercise}>
-            New Exercise
+        <div className="sightreading-done" role="status">
+          <p><strong>Exercise complete.</strong> {correctSoFar} of {flat.length} notes correct.</p>
+          <button type="button" className="btn-primary" onClick={newExercise}>
+            New exercise
           </button>
         </div>
       ) : (
         <div className="sightreading-controls">
           {!inputMode && (
             <div className="sightreading-mode-picker">
-              <button className="btn-primary" onClick={startMic}>
-                🎤 Play it (use microphone)
+              <button type="button" className="btn-primary" onClick={startMic}>
+                Play it — use microphone
               </button>
-              <button className="btn-secondary" onClick={() => setInputMode("manual")}>
-                👆 Tap the note name
+              <button type="button" className="btn-secondary" onClick={() => setInputMode("manual")}>
+                Tap the note name
               </button>
             </div>
           )}
@@ -484,9 +489,10 @@ export default function SightReading({ studentId, readOnly = false }) {
           {inputMode === "mic" && (
             <div className="sightreading-mic-status">
               {micStatus === "requesting" && <p>Requesting microphone access…</p>}
-              {micStatus === "listening" && <p>🎤 Listening — play the highlighted note</p>}
+              {micStatus === "listening" && <p>Listening — play the highlighted note</p>}
               <button
                 className="btn-link"
+                type="button"
                 onClick={() => {
                   stopMic();
                   setInputMode("manual");
@@ -505,7 +511,7 @@ export default function SightReading({ studentId, readOnly = false }) {
                 </p>
               )}
               {NOTE_LETTERS.map((letter) => (
-                <button key={letter} className="note-letter-btn" onClick={() => tapLetter(letter)}>
+                <button type="button" key={letter} className="note-letter-btn" onClick={() => tapLetter(letter)}>
                   {letter}
                 </button>
               ))}
@@ -513,8 +519,8 @@ export default function SightReading({ studentId, readOnly = false }) {
           )}
 
           {inputMode && current && !current.isRest && (
-            <button className="btn-link sightreading-skip" onClick={skipNote}>
-              Skip this note →
+            <button type="button" className="btn-link sightreading-skip" onClick={skipNote}>
+              Skip this note
             </button>
           )}
         </div>
