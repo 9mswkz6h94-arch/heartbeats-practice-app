@@ -7,6 +7,7 @@ import {
   cleanupOldDailyRows,
   setStepStatus,
 } from "../lib/practiceStatus";
+import { isAssignmentActive } from "../lib/assignmentLifecycle";
 import { cheerForPractice } from "./PetWidget";
 import PracticeCardDetail from "./PracticeCardDetail";
 import "./StudentPracticeCards.css";
@@ -19,11 +20,50 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
   const [streak, setStreak] = useState(0);
   const [selectedStep, setSelectedStep] = useState(null);
   const [refresh, setRefresh] = useState(0);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     fetchAssignmentsAndStatus();
     fetchStreak();
   }, [studentId, refresh]);
+
+  useEffect(() => {
+    let midnightTimer;
+
+    const refreshVisiblePractice = () => {
+      if (document.visibilityState === "visible") {
+        setSelectedStep(null);
+        setRefresh((current) => current + 1);
+      }
+    };
+
+    const scheduleMidnightRefresh = () => {
+      const now = new Date();
+      const nextMidnight = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0,
+        0,
+        1
+      );
+      midnightTimer = window.setTimeout(() => {
+        setSelectedStep(null);
+        setRefresh((current) => current + 1);
+        scheduleMidnightRefresh();
+      }, nextMidnight.getTime() - now.getTime());
+    };
+
+    window.addEventListener("focus", refreshVisiblePractice);
+    document.addEventListener("visibilitychange", refreshVisiblePractice);
+    scheduleMidnightRefresh();
+
+    return () => {
+      window.clearTimeout(midnightTimer);
+      window.removeEventListener("focus", refreshVisiblePractice);
+      document.removeEventListener("visibilitychange", refreshVisiblePractice);
+    };
+  }, [studentId]);
 
   const getTodayDate = () => {
     return new Date().toISOString().split("T")[0];
@@ -43,6 +83,9 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
           title,
           instrument_type,
           category,
+          deadline,
+          memorized,
+          archived_at,
           attachment_url,
           student_id,
           practice_steps(
@@ -59,11 +102,18 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
 
       if (assignError) throw assignError;
 
-      setAssignments(assignments || []);
+      // Due dates are inclusive: the card remains available on its due date
+      // and falls off the following day. No-date assignments stay active
+      // until the teacher resolves them from lesson prep.
+      const activeAssignments = (assignments || []).filter((assignment) =>
+        isAssignmentActive(assignment)
+      );
+
+      setAssignments(activeAssignments);
 
       const allSteps = [];
       const assignmentMap = {};
-      assignments?.forEach((assignment) => {
+      activeAssignments.forEach((assignment) => {
         assignmentMap[assignment.id] = assignment;
         assignment.practice_steps?.forEach((step) => {
           allSteps.push({
@@ -127,6 +177,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
   };
 
   const handleStepComplete = async (step) => {
+    setActionError(null);
     if (readOnly) {
       // Preview mode: reflect the action visually, write nothing
       setDailyStatus({ ...dailyStatus, [step.id]: "completed" });
@@ -139,7 +190,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       const today = getTodayDate();
 
       // Insert completion record (accumulates across all days, never resets)
-      await supabase.from("completions").insert([
+      const { error: completionError } = await supabase.from("completions").insert([
         {
           student_id: studentId,
           practice_step_id: step.id,
@@ -147,6 +198,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
           completed_at: today,
         },
       ]);
+      if (completionError) throw completionError;
 
       // Mark today's status completed (for Theory, this is also the row
       // that will keep showing as done on future days until reset).
@@ -167,10 +219,16 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       cheerForPractice();
     } catch (err) {
       console.error("Error completing step:", err);
+      setActionError(
+        "That assignment may have just changed. I refreshed your practice cards—please try again."
+      );
+      setSelectedStep(null);
+      setRefresh((current) => current + 1);
     }
   };
 
   const handleStepSkip = async (step) => {
+    setActionError(null);
     if (readOnly) {
       setDailyStatus({ ...dailyStatus, [step.id]: "skipped" });
       setSelectedStep(null);
@@ -189,6 +247,11 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       setSelectedStep(null);
     } catch (err) {
       console.error("Error skipping step:", err);
+      setActionError(
+        "That assignment may have just changed. I refreshed your practice cards—please try again."
+      );
+      setSelectedStep(null);
+      setRefresh((current) => current + 1);
     }
   };
 
@@ -254,6 +317,12 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
         </div>
       </div>
 
+      {actionError && (
+        <p className="error" role="alert">
+          {actionError}
+        </p>
+      )}
+
       {remainingCount === 0 && totalCount > 0 && (
         <div className="celebration-message">
           🎉 You've completed all today's practice! Great work! 🎉
@@ -271,7 +340,10 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
             <div
               key={step.id}
               className="practice-card-tile"
-              onClick={() => setSelectedStep(step)}
+              onClick={() => {
+                setActionError(null);
+                setSelectedStep(step);
+              }}
             >
               <div className="tile-header">
                 <h3>{step.assignment_title}</h3>

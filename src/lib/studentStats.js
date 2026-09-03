@@ -35,45 +35,38 @@ export function computeStreak(daySet) {
   return streak;
 }
 
-const EMPTY_STATS = {
-  completions: 0,
-  thisWeek: 0,
-  lastWeek: 0,
-  sightReadingSessions: 0,
-  songsMemorized: 0,
-  streak: 0,
-  everPracticed: false,
-  lastDaysAgo: Infinity,
-  assignments: [],
-};
-
 export async function fetchStudentStats(studentId) {
   try {
-    const { data: completions } = await supabase
+    const { data: completions, error: completionsError } = await supabase
       .from("completions")
       .select("completed_at")
       .eq("student_id", studentId);
+    if (completionsError) throw completionsError;
 
-    const { data: repertoire } = await supabase
+    const { data: repertoire, error: repertoireError } = await supabase
       .from("repertoire")
       .select("id")
       .eq("student_id", studentId);
+    if (repertoireError) throw repertoireError;
 
-    const { data: assignments } = await supabase
+    const { data: assignments, error: assignmentsError } = await supabase
       .from("assignments")
       .select(
         `
-        id, title, instrument_type, category, created_at,
+        id, title, instrument_type, category, created_at, deadline, memorized, archived_at,
         practice_steps(id)
       `
       )
       .eq("student_id", studentId)
+      .is("archived_at", null)
       .order("created_at", { ascending: false });
+    if (assignmentsError) throw assignmentsError;
 
-    const { data: sightreadingSessions } = await supabase
+    const { data: sightreadingSessions, error: sightreadingError } = await supabase
       .from("sightreading_attempts")
       .select("completed_at")
       .eq("student_id", studentId);
+    if (sightreadingError) throw sightreadingError;
 
     const completionList = completions || [];
     const weekAgo = new Date();
@@ -112,10 +105,12 @@ export async function fetchStudentStats(studentId) {
       streak,
       everPracticed,
       lastDaysAgo,
-      assignments: assignments || [],
+      assignments: (assignments || []).filter(
+        (assignment) => assignment.memorized !== true
+      ),
     };
   } catch (err) {
     console.error("Error fetching student stats:", err);
-    return { ...EMPTY_STATS };
+    throw err;
   }
 }

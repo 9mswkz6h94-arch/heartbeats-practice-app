@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { fetchStudentStats } from "../lib/studentStats";
-import { resetStepsForNextLesson, isPersistentCategory } from "../lib/practiceStatus";
+import { isPersistentCategory } from "../lib/practiceStatus";
+import {
+  addLocalDays,
+  getAssignmentDueState,
+  localDateString,
+} from "../lib/assignmentLifecycle";
 import CommLog from "./CommLog";
 import RescheduleRequests from "./RescheduleRequests";
 import ParentPreviewModal from "./ParentPreviewModal";
@@ -30,7 +35,9 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [previewStudent, setPreviewStudent] = useState(null);
-  const [reassigning, setReassigning] = useState(null);
+  const [assignmentAction, setAssignmentAction] = useState(null);
+  const [assignmentNotice, setAssignmentNotice] = useState(null);
+  const [reassignDraft, setReassignDraft] = useState(null);
 
   useEffect(() => {
     fetchStudentsAndStats();
@@ -66,22 +73,162 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
     }
   };
 
-  // "Reassign" = the next-lesson boundary. For Theory this is the only
-  // thing that clears a completed step (it doesn't reset on its own);
-  // for other categories it just forces an immediate reset instead of
-  // waiting for the calendar to roll over.
-  const handleReassign = async (assignment) => {
-    const stepIds = (assignment.practice_steps || []).map((s) => s.id);
-    if (!stepIds.length || !selectedStudent) return;
-    setReassigning(assignment.id);
+  const refreshStudent = async (studentId) => {
+    const stats = await fetchStudentStats(studentId);
+    setStudentStats((current) => ({
+      ...current,
+      [studentId]: stats,
+    }));
+  };
+
+  const showSavedResult = async (studentId, successText) => {
     try {
-      await resetStepsForNextLesson(selectedStudent.id, stepIds);
-      await fetchStudentsAndStats();
+      await refreshStudent(studentId);
+      setAssignmentNotice({ type: "success", text: successText });
+    } catch (refreshError) {
+      console.error("Assignment saved but refresh failed:", refreshError);
+      setAssignmentNotice({
+        type: "error",
+        text: `${successText} The list could not refresh; reload this page to see the change.`,
+      });
+    }
+  };
+
+  const beginAssignmentAction = (assignment, action) => {
+    setAssignmentNotice(null);
+    setAssignmentAction({ id: assignment.id, action });
+  };
+
+  const finishAssignmentAction = () => setAssignmentAction(null);
+
+  const assignmentIsBusy = () => Boolean(assignmentAction);
+
+  const handleSelectStudent = (student) => {
+    if (assignmentIsBusy()) return;
+    setSelectedStudent(student);
+    setAssignmentNotice(null);
+    setReassignDraft(null);
+  };
+
+  const openReassign = (assignment) => {
+    setAssignmentNotice(null);
+    setReassignDraft({
+      assignmentId: assignment.id,
+      deadline: localDateString(addLocalDays(new Date(), 7)),
+    });
+  };
+
+  // Reassign starts the same song over through a new due date. Saved step
+  // state is cleared in the same database transaction as the assignment.
+  const handleReassign = async (event, assignment) => {
+    event.preventDefault();
+    if (!selectedStudent) return;
+    const deadline = reassignDraft?.deadline;
+    if (!deadline || deadline < localDateString()) {
+      setAssignmentNotice({
+        type: "error",
+        text: "Choose today or a future date before reassigning.",
+      });
+      return;
+    }
+
+    const studentId = selectedStudent.id;
+    beginAssignmentAction(assignment, "reassign");
+    try {
+      const { error: actionError } = await supabase.rpc("resolve_practice_assignment", {
+        p_assignment_id: assignment.id,
+        p_action: "reassign",
+        p_deadline: deadline,
+      });
+      if (actionError) throw actionError;
+
+      setReassignDraft(null);
+      await showSavedResult(
+        studentId,
+        `${assignment.title} reassigned through ${new Date(
+          `${deadline}T00:00:00`
+        ).toLocaleDateString(undefined, { month: "short", day: "numeric" })}.`
+      );
     } catch (err) {
       console.error("Reassign failed:", err);
+      setAssignmentNotice({
+        type: "error",
+        text: `Could not reassign ${assignment.title}: ${err.message}`,
+      });
     } finally {
-      setReassigning(null);
+      finishAssignmentAction();
     }
+  };
+
+  const handleMoveToRepertoire = async (assignment) => {
+    if (!selectedStudent) return;
+    const studentId = selectedStudent.id;
+    setReassignDraft(null);
+    beginAssignmentAction(assignment, "repertoire");
+
+    try {
+      const { error: actionError } = await supabase.rpc("resolve_practice_assignment", {
+        p_assignment_id: assignment.id,
+        p_action: "repertoire",
+        p_deadline: null,
+      });
+      if (actionError) throw actionError;
+
+      await showSavedResult(
+        studentId,
+        `${assignment.title} moved to the repertoire.`
+      );
+    } catch (err) {
+      console.error("Move to repertoire failed:", err);
+      setAssignmentNotice({
+        type: "error",
+        text: `Could not move ${assignment.title} to the repertoire: ${err.message}`,
+      });
+    } finally {
+      finishAssignmentAction();
+    }
+  };
+
+  const handleRemoveAssignment = async (assignment) => {
+    if (!selectedStudent) return;
+    const confirmed = window.confirm(
+      `Remove “${assignment.title}” from ${selectedStudent.name}'s current assignments? Past practice history will be kept.`
+    );
+    if (!confirmed) return;
+
+    const studentId = selectedStudent.id;
+    setReassignDraft(null);
+    beginAssignmentAction(assignment, "remove");
+    try {
+      const { error: actionError } = await supabase.rpc("resolve_practice_assignment", {
+        p_assignment_id: assignment.id,
+        p_action: "remove",
+        p_deadline: null,
+      });
+      if (actionError) throw actionError;
+
+      await showSavedResult(
+        studentId,
+        `${assignment.title} removed from current assignments. Practice history was kept.`
+      );
+    } catch (err) {
+      console.error("Remove assignment failed:", err);
+      setAssignmentNotice({
+        type: "error",
+        text: `Could not remove ${assignment.title}: ${err.message}`,
+      });
+    } finally {
+      finishAssignmentAction();
+    }
+  };
+
+  const assignmentTiming = (assignment) => {
+    const state = getAssignmentDueState(assignment);
+    if (state === "none") return { state, label: "No due date" };
+    const formatted = new Date(`${assignment.deadline}T00:00:00`).toLocaleDateString();
+    if (state === "past-due") return { state, label: `Past due ${formatted}` };
+    if (state === "due-today") return { state, label: "Due today" };
+    return { state, label: `Due ${formatted}` };
   };
 
   if (loading) {
@@ -197,7 +344,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
                 className={`triage-card status-${triage.key} ${
                   selectedStudent?.id === student.id ? "selected" : ""
                 }`}
-                onClick={() => setSelectedStudent(student)}
+                onClick={() => handleSelectStudent(student)}
               >
                 <div className="triage-top">
                   <h4>{student.name}</h4>
@@ -231,7 +378,8 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
               </button>
               <button
                 className="detail-close"
-                onClick={() => setSelectedStudent(null)}
+                disabled={assignmentIsBusy()}
+                onClick={() => handleSelectStudent(null)}
                 aria-label="Close student detail"
               >
                 ✕
@@ -267,42 +415,126 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
 
             <div className="assignments-section">
               <h4>Assignments</h4>
+              {assignmentNotice && (
+                <p
+                  className={`assignment-notice ${assignmentNotice.type}`}
+                  role={assignmentNotice.type === "error" ? "alert" : "status"}
+                >
+                  {assignmentNotice.text}
+                </p>
+              )}
               {studentStats[selectedStudent.id]?.assignments?.length ? (
                 <div className="assignments-list">
-                  {studentStats[selectedStudent.id].assignments.map((assignment) => (
-                    <div key={assignment.id} className="assignment-item">
-                      <div className="assignment-header">
-                        <span className="assignment-title">{assignment.title}</span>
-                        <span className="assignment-type">
-                          {assignment.instrument_type}
-                        </span>
+                  {studentStats[selectedStudent.id].assignments.map((assignment) => {
+                    const timing = assignmentTiming(assignment);
+                    const busy = assignmentIsBusy(assignment);
+                    const editingReassign =
+                      reassignDraft?.assignmentId === assignment.id;
+                    const editorId = `reassign-editor-${assignment.id}`;
+                    return (
+                      <div key={assignment.id} className="assignment-item">
+                        <div className="assignment-header">
+                          <span className="assignment-title">{assignment.title}</span>
+                          <span className="assignment-type">
+                            {assignment.instrument_type}
+                          </span>
+                        </div>
+                        <div className="assignment-meta">
+                          <span className="assignment-steps">
+                            {assignment.practice_steps?.length || 0} steps
+                          </span>
+                          <span className="assignment-date">
+                            {new Date(assignment.created_at).toLocaleDateString()}
+                          </span>
+                          <span className={`assignment-deadline ${timing.state}`}>
+                            {timing.label}
+                          </span>
+                        </div>
+                        <div className="assignment-actions">
+                          <button
+                            type="button"
+                            className="assignment-action reassign"
+                            disabled={busy}
+                            onClick={() => openReassign(assignment)}
+                            aria-expanded={editingReassign}
+                            aria-controls={editorId}
+                            title={
+                              isPersistentCategory(assignment.category)
+                                ? "Clear completed steps and assign this again"
+                                : "Reset today's steps and keep this assignment active"
+                            }
+                          >
+                            Reassign
+                          </button>
+                          <button
+                            type="button"
+                            className="assignment-action repertoire"
+                            disabled={busy}
+                            onClick={() => handleMoveToRepertoire(assignment)}
+                            title="Move this song out of practice and into the student's repertoire"
+                          >
+                            {assignmentAction?.id === assignment.id &&
+                            assignmentAction.action === "repertoire"
+                              ? "Saving…"
+                              : "To repertoire"}
+                          </button>
+                          <button
+                            type="button"
+                            className="assignment-action remove"
+                            disabled={busy}
+                            onClick={() => handleRemoveAssignment(assignment)}
+                            title="Remove from current practice while keeping past practice history"
+                          >
+                            {assignmentAction?.id === assignment.id &&
+                            assignmentAction.action === "remove"
+                              ? "Saving…"
+                              : "Remove"}
+                          </button>
+                        </div>
+                        {editingReassign && (
+                          <form
+                            id={editorId}
+                            className="reassign-editor"
+                            onSubmit={(event) => handleReassign(event, assignment)}
+                          >
+                            <label htmlFor={`reassign-due-${assignment.id}`}>
+                              New due date
+                            </label>
+                            <input
+                              id={`reassign-due-${assignment.id}`}
+                              type="date"
+                              required
+                              min={localDateString()}
+                              value={reassignDraft.deadline}
+                              disabled={busy}
+                              autoFocus
+                              onChange={(event) =>
+                                setReassignDraft((current) => ({
+                                  ...current,
+                                  deadline: event.target.value,
+                                }))
+                              }
+                            />
+                            <div className="reassign-editor-actions">
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => setReassignDraft(null)}
+                              >
+                                Cancel
+                              </button>
+                              <button type="submit" disabled={busy}>
+                                {assignmentAction?.id === assignment.id &&
+                                assignmentAction.action === "reassign"
+                                  ? "Saving…"
+                                  : "Confirm reassign"}
+                              </button>
+                            </div>
+                          </form>
+                        )}
                       </div>
-                      <div className="assignment-meta">
-                        <span className="assignment-steps">
-                          {assignment.practice_steps?.length || 0} steps
-                        </span>
-                        <span className="assignment-date">
-                          {new Date(assignment.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <button
-                        className="btn-reassign"
-                        disabled={reassigning === assignment.id}
-                        onClick={() => handleReassign(assignment)}
-                        title={
-                          isPersistentCategory(assignment.category)
-                            ? "Theory stays checked off until you reassign it here"
-                            : "Force an immediate reset instead of waiting for tomorrow"
-                        }
-                      >
-                        {reassigning === assignment.id
-                          ? "…"
-                          : isPersistentCategory(assignment.category)
-                          ? "↺ Reset for next lesson"
-                          : "↺ Reset now"}
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="no-assignments">No assignments yet</p>
@@ -319,7 +551,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
                 <button
                   key={student.id}
                   className="attention-row"
-                  onClick={() => setSelectedStudent(student)}
+                  onClick={() => handleSelectStudent(student)}
                 >
                   <span className="attention-name">{student.name}</span>
                   <span className="attention-when">{lastPracticedLabel(stats)}</span>
