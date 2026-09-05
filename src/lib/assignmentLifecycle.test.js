@@ -7,7 +7,7 @@ import {
 
 describe("assignment lifecycle", () => {
   test("formats a date using the local calendar day", () => {
-    expect(localDateString(new Date(2026, 8, 3, 23, 30))).toBe("2026-09-03");
+    expect(localDateString(new Date("2026-09-04T04:30:00.000Z"))).toBe("2026-09-03");
   });
 
   test("defaults a reassignment one local week ahead across month boundaries", () => {

@@ -6,6 +6,7 @@ import {
   ensureTodayRows,
   cleanupOldDailyRows,
   setStepStatus,
+  todayStr,
 } from "../lib/practiceStatus";
 import { isAssignmentActive } from "../lib/assignmentLifecycle";
 import { cheerForPractice } from "./PetWidget";
@@ -66,7 +67,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
   }, [studentId]);
 
   const getTodayDate = () => {
-    return new Date().toISOString().split("T")[0];
+    return todayStr();
   };
 
   const fetchAssignmentsAndStatus = async () => {
@@ -133,9 +134,23 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       const statusMap = await fetchStepStatusMap(studentId, allSteps);
 
       if (!readOnly) {
-        await ensureTodayRows(studentId, allSteps, statusMap);
+        const rejectedStepIds = await ensureTodayRows(studentId, allSteps, statusMap);
+        const validSteps = rejectedStepIds?.size
+          ? allSteps.filter((step) => !rejectedStepIds.has(step.id))
+          : allSteps;
+
+        if (rejectedStepIds?.size) {
+          setAssignments(activeAssignments
+            .map((assignment) => ({
+              ...assignment,
+              practice_steps: (assignment.practice_steps || [])
+                .filter((step) => !rejectedStepIds.has(step.id)),
+            }))
+            .filter((assignment) => assignment.practice_steps.length > 0));
+        }
+
         // Best-effort housekeeping — never blocks the practice screen.
-        cleanupOldDailyRows(studentId, allSteps).catch((err) =>
+        cleanupOldDailyRows(studentId, validSteps).catch((err) =>
           console.error("Daily status cleanup failed (non-fatal):", err)
         );
       } else {
