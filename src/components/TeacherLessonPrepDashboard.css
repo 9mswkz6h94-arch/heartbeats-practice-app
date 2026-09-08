@@ -1,17 +1,20 @@
 .lesson-prep-container { width: 100%; }
+
 .prep-state,
 .empty-state { padding: var(--space-6); border: 1px dashed var(--color-border); border-left: 8px solid var(--color-ink); background: var(--color-surface); }
 .prep-state h2,
 .empty-state h2 { margin: 0 0 var(--space-3); font-size: 25px; }
 .prep-state p,
 .empty-state p { margin: 0; color: var(--color-text-muted); }
-.prep-state-error { border-style: solid; border-color: var(--color-danger); color: var(--color-danger); }
+.prep-state-error,
+.error { border-style: solid; border-color: var(--color-danger); color: var(--color-danger); }
 .prep-state-error button { min-height: 48px; margin-top: var(--space-4); padding: var(--space-2) var(--space-4); border: 2px solid var(--color-danger); background: var(--color-surface); color: var(--color-danger); font-weight: 600; cursor: pointer; }
 
 .pulse { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6); }
 .pulse-tile { min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--color-border); border-top: 2px solid var(--color-ink); background: var(--color-surface); }
 .pulse-tile.warm { border-left: 8px solid var(--color-warning); }
 .pulse-top { min-height: 32px; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+.pulse-icon { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--color-border); }
 .pulse-index { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--color-ink); font-family: var(--font-measurement); font-size: 12px; }
 .pulse-num { color: var(--color-text); font-family: var(--font-measurement); font-size: 32px; font-weight: 600; line-height: 1; }
 .pulse-lab { color: var(--color-text-muted); font-size: 14px; }
@@ -47,11 +50,17 @@
 .detail-head h3 { flex: 1 1 160px; margin: 0; overflow-wrap: anywhere; font-size: 25px; }
 .btn-preview-parent,
 .detail-close,
-.btn-reassign { min-height: 48px; padding: var(--space-2) var(--space-3); border: 2px solid var(--color-ink); border-radius: 0; background: var(--color-surface); color: var(--color-text); font-weight: 600; cursor: pointer; }
+.btn-reassign,
+.assignment-action,
+.reassign-editor button { min-height: 48px; padding: var(--space-2) var(--space-3); border: 2px solid var(--color-ink); border-radius: 0; background: var(--color-surface); color: var(--color-text); font-weight: 600; cursor: pointer; }
 .btn-preview-parent:hover,
 .detail-close:hover,
-.btn-reassign:hover { background: var(--color-cut-paper); }
-.detail-close { border-color: var(--color-danger); color: var(--color-danger); }
+.btn-reassign:hover,
+.assignment-action:hover,
+.reassign-editor button:hover { background: var(--color-cut-paper); }
+.detail-close,
+.assignment-action.remove { border-color: var(--color-danger); color: var(--color-danger); }
+.assignment-action.repertoire { border-color: var(--color-complete); color: var(--color-complete); }
 .detail-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin-bottom: var(--space-5); padding-bottom: var(--space-5); border-bottom: 1px solid var(--color-border); }
 .detail-stat { display: flex; flex-direction: column; gap: var(--space-1); }
 .detail-stat-label { color: var(--color-text-muted); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -64,7 +73,19 @@
 .assignment-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
 .assignment-title { overflow-wrap: anywhere; font-weight: 600; }
 .assignment-type { flex-shrink: 0; padding: var(--space-1) var(--space-2); border: 1px solid var(--color-border); color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; }
-.assignment-meta { display: flex; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 11px; }
+.assignment-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-3); color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 11px; }
+.assignment-deadline.overdue { color: var(--color-danger); font-weight: 600; }
+.assignment-deadline.due-soon { color: var(--color-warning); font-weight: 600; }
+.assignment-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.assignment-action:disabled,
+.reassign-editor button:disabled { cursor: wait; opacity: 0.65; }
+.assignment-notice { margin: 0 0 var(--space-3); padding: var(--space-3); border: 2px solid var(--color-ink); background: var(--color-surface); }
+.assignment-notice.success { border-color: var(--color-complete); color: var(--color-complete); }
+.assignment-notice.error { border-color: var(--color-danger); color: var(--color-danger); }
+.reassign-editor { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3); align-items: end; margin-top: var(--space-3); padding: var(--space-3); border: 1px dashed var(--color-border); background: var(--color-surface); }
+.reassign-editor label { display: block; margin-bottom: var(--space-1); font-weight: 600; }
+.reassign-editor input { width: 100%; min-height: 48px; padding: var(--space-2); border: 1px solid var(--color-border-strong); background: var(--color-surface); color: var(--color-text); }
+.reassign-editor-actions { display: flex; gap: var(--space-2); }
 .btn-reassign { width: 100%; }
 .no-assignments { margin: 0; padding: var(--space-4); border: 1px dashed var(--color-border); color: var(--color-text-muted); }
 
@@ -86,6 +107,11 @@
 @media (max-width: 768px) {
   .pulse { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .detail-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .assignment-actions { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .reassign-editor { grid-template-columns: 1fr; }
+  .reassign-editor-actions { display: grid; grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 480px) {
   .pulse { grid-template-columns: 1fr; }

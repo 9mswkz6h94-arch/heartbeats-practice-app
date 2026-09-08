@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { randomPin } from "../lib/familyAuth";
 import { fetchStudentStats } from "../lib/studentStats";
 import { fetchStepStatusMap } from "../lib/practiceStatus";
+import { isAssignmentActive } from "../lib/assignmentLifecycle";
 import { buildGoogleCalendarUrl, dayName } from "../lib/calendarLink";
 import BadgeShowcase from "./BadgeShowcase";
 import CommLog from "./CommLog";
@@ -45,42 +46,50 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
     try {
       const stats = await fetchStudentStats(kid.id);
 
-      const { data: assignments } = await supabase
+      const { data: assignments, error: assignmentsError } = await supabase
         .from("assignments")
-        .select("id, title, category, description, created_at, practice_steps(id, title, sequence_order)")
+        .select("id, title, category, description, created_at, deadline, memorized, archived_at, practice_steps(id, title, sequence_order)")
         .eq("student_id", kid.id)
         .order("created_at", { ascending: false });
+      if (assignmentsError) throw assignmentsError;
+
+      const activeAssignments = (assignments || []).filter((assignment) =>
+        isAssignmentActive(assignment)
+      );
 
       // Theory steps carry their most-recent status forward (stay checked
       // until the teacher resets at the next lesson); everything else only
       // counts a row dated today. Keeps this view in sync with the kid's
       // own practice screen — see src/lib/practiceStatus.js.
-      const flatSteps = (assignments || []).flatMap((a) =>
+      const flatSteps = activeAssignments.flatMap((a) =>
         (a.practice_steps || []).map((s) => ({ id: s.id, category: a.category }))
       );
       const todayStatus = await fetchStepStatusMap(kid.id, flatSteps);
 
-      const { data: repertoire } = await supabase
+      const { data: repertoire, error: repertoireError } = await supabase
         .from("repertoire")
         .select("id, memorized_at, assignments(title)")
         .eq("student_id", kid.id)
         .order("memorized_at", { ascending: false });
+      if (repertoireError) throw repertoireError;
 
-      const { data: lesson } = await supabase
+      const { data: lesson, error: lessonError } = await supabase
         .from("lessons")
         .select("day_of_week, start_time, duration_minutes, location")
         .eq("student_id", kid.id)
         .maybeSingle();
+      if (lessonError) throw lessonError;
 
-      const { data: reschedules } = await supabase
+      const { data: reschedules, error: reschedulesError } = await supabase
         .from("reschedule_requests")
         .select("id, proposed_date, proposed_time, reason, status, teacher_note, created_at")
         .eq("student_id", kid.id)
         .order("created_at", { ascending: false });
+      if (reschedulesError) throw reschedulesError;
 
       setDetail({
         stats,
-        assignments: assignments || [],
+        assignments: activeAssignments,
         todayStatus,
         repertoire: repertoire || [],
         lesson: lesson || null,

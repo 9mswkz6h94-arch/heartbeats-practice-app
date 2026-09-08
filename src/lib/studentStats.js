@@ -7,20 +7,6 @@ export { computeStreak, dayStr, daysBetween, parseDay } from "./rewardMath";
 // dashboard and the parent dashboard. Extracted from
 // TeacherLessonPrepDashboard so the two can't drift.
 
-// ── Date helpers (local-day based; timezone-aware refinement is Phase 0c backlog) ──
-const EMPTY_STATS = {
-  completions: 0,
-  thisWeek: 0,
-  lastWeek: 0,
-  songsMemorized: 0,
-  streak: 0,
-  everPracticed: false,
-  lastDaysAgo: Infinity,
-  assignments: [],
-  repertoire: [],
-  recentActivity: [0, 0, 0, 0, 0, 0, 0],
-};
-
 export function buildRecentActivity(completions = [], today = new Date()) {
   const counts = new Map();
   completions.forEach((completion) => {
@@ -37,28 +23,40 @@ export function buildRecentActivity(completions = [], today = new Date()) {
 
 export async function fetchStudentStats(studentId) {
   try {
-    const { data: completions } = await supabase
+    const { data: completions, error: completionsError } = await supabase
       .from("completions")
       .select("completed_at")
       .eq("student_id", studentId);
+    if (completionsError) throw completionsError;
 
-    const { data: repertoire } = await supabase
+    const { data: repertoire, error: repertoireError } = await supabase
       .from("repertoire")
       .select("id, memorized_at, assignments(title)")
       .eq("student_id", studentId);
+    if (repertoireError) throw repertoireError;
 
-    const { data: assignments } = await supabase
+    const { data: assignments, error: assignmentsError } = await supabase
       .from("assignments")
       .select(
         `
-        id, title, instrument_type, category, created_at,
+        id, title, instrument_type, category, created_at, deadline, memorized, archived_at,
         practice_steps(id)
       `
       )
       .eq("student_id", studentId)
+      .is("archived_at", null)
       .order("created_at", { ascending: false });
+    if (assignmentsError) throw assignmentsError;
+
+    const { data: sightreadingSessions, error: sightreadingError } = await supabase
+      .from("sightreading_attempts")
+      .select("completed_at")
+      .eq("student_id", studentId);
+    if (sightreadingError) throw sightreadingError;
 
     const completionList = completions || [];
+    const sightReadingList = sightreadingSessions || [];
+    const activityList = [...completionList, ...sightReadingList];
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     const twoWeeksAgo = new Date();
@@ -72,7 +70,7 @@ export async function fetchStudentStats(studentId) {
       return d >= twoWeeksAgo && d < weekAgo;
     }).length;
 
-    const daySet = new Set(completionList.map((c) => c.completed_at.split("T")[0]));
+    const daySet = new Set(activityList.map((activity) => activity.completed_at.split("T")[0]));
     const everPracticed = daySet.size > 0;
     const streak = computeStreak(daySet);
 
@@ -86,18 +84,21 @@ export async function fetchStudentStats(studentId) {
       completions: completionList.length,
       thisWeek,
       lastWeek,
+      sightReadingSessions: sightReadingList.length,
       songsMemorized: repertoire?.length || 0,
       streak,
       everPracticed,
       lastDaysAgo,
-      assignments: assignments || [],
+      assignments: (assignments || []).filter(
+        (assignment) => assignment.memorized !== true
+      ),
       repertoire: (repertoire || [])
         .map((entry) => entry.assignments?.title)
         .filter(Boolean),
-      recentActivity: buildRecentActivity(completionList),
+      recentActivity: buildRecentActivity(activityList),
     };
   } catch (err) {
     console.error("Error fetching student stats:", err);
-    return { ...EMPTY_STATS };
+    throw err;
   }
 }

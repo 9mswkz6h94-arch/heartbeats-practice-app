@@ -1,11 +1,17 @@
 import { supabase } from "./supabaseClient";
+import { localDateString } from "./assignmentLifecycle";
 
 // Categories that stay completed across days instead of resetting daily.
 // Currently just Theory: once done, it stays done until the teacher
 // explicitly clears it at the next lesson (see resetStepsForNextLesson).
 export const THEORY_CATEGORY = "theory";
 
-export const todayStr = () => new Date().toISOString().split("T")[0];
+export const todayStr = () => localDateString();
+
+export function isInactivePracticeWrite(error) {
+  return error?.code === "23514"
+    && error?.message?.includes("Assignment is no longer active or practice step does not match");
+}
 
 export function isPersistentCategory(category) {
   return (category || "").toLowerCase() === THEORY_CATEGORY;
@@ -73,8 +79,32 @@ export async function ensureTodayRows(studentId, steps, statusMap) {
   const { error } = await supabase
     .from("daily_practice_status")
     .upsert(missing, { onConflict: "student_id,practice_step_id,date" });
-  if (error) throw error;
-  missing.forEach((m) => { statusMap[m.practice_step_id] = "pending"; });
+  if (!error) {
+    missing.forEach((m) => { statusMap[m.practice_step_id] = "pending"; });
+    return new Set();
+  }
+
+  // An assignment can be resolved between the initial read and this write.
+  // Retry only after the database's specific stale-assignment rejection so
+  // one retired card cannot block every valid card in the same bulk request.
+  if (!isInactivePracticeWrite(error)) throw error;
+
+  const rejectedStepIds = new Set();
+  for (const row of missing) {
+    const { error: rowError } = await supabase
+      .from("daily_practice_status")
+      .upsert([row], { onConflict: "student_id,practice_step_id,date" });
+
+    if (!rowError) {
+      statusMap[row.practice_step_id] = "pending";
+    } else if (isInactivePracticeWrite(rowError)) {
+      rejectedStepIds.add(row.practice_step_id);
+    } else {
+      throw rowError;
+    }
+  }
+
+  return rejectedStepIds;
 }
 
 // Housekeeping: clear out past-dated rows for daily-category steps in one
