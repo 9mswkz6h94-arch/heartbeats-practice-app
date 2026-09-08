@@ -3,7 +3,7 @@ import path from "path";
 
 describe("family profile migration", () => {
   const sql = fs.readFileSync(
-    path.join(process.cwd(), "SQL_MIGRATIONS", "018_family_profiles.sql"),
+    path.join(process.cwd(), "SQL_MIGRATIONS", "019_family_profiles.sql"),
     "utf8"
   );
 

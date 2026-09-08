@@ -51,7 +51,7 @@ Foundation slice started on 2026-08-16:
 - Completed automated 200%-equivalent layout checks across teacher, teacher-admin, student, parent, and onboarding fixtures.
 - Replaced the production Teacher Dashboard composition with the unified Studio/Students workspace while preserving the mock-isolated teacher fixture.
 - Added a real teacher-workspace adapter for active students, recurring lesson slots, assignments, practice summaries, guardian links, and private draft counts.
-- Prepared teacher-only Lesson Memory migration `017_lesson_memory.sql` plus client data access, saving/recovery states, and student-scoped assignment handoff. The migration is not applied anywhere yet.
+- Prepared teacher-only Lesson Memory migration `018_lesson_memory.sql` plus client data access, saving/recovery states, and student-scoped assignment handoff. The migration is not applied anywhere yet.
 
 The technical Scaffold conversion and automated acceptance review are complete. Any further changes should be targeted review revisions or the separately authorized Rainbow Heart identity phase. The unused standalone `PracticeCard` path is documented legacy code, not part of the active workflow.
 
@@ -64,7 +64,7 @@ On 2026-09-05, the mock `?review=student` surface entered the Rainbow Heart iden
 3. Never infer deployment approval from permission to edit locally.
 4. Work one documented migration slice at a time.
 5. Run `npm run build` after each slice and update the handoff/review files.
-6. Treat `SQL_MIGRATIONS/017_lesson_memory.sql` as prepared but unapplied until Jonathan separately approves a named Supabase sandbox or production migration.
+6. Treat `SQL_MIGRATIONS/018_lesson_memory.sql` as prepared but unapplied until Jonathan separately approves a named Supabase sandbox or production migration.
 
 ## Planned slices
 

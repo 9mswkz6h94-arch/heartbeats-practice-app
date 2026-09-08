@@ -1,3 +1,5 @@
+import { supabase } from "./supabaseClient";
+
 export const BADGE_STUDIO_LIMITS = Object.freeze({
   title: 44,
   message: 180,
@@ -112,3 +114,40 @@ export function buildBadgeAwardPreview({ draft, students = [], physicalFormatId 
     createdAt,
   });
 }
+
+export function createTeacherBadgeAwardsApi(client = supabase) {
+  const award = async ({ teacherId, studentIds = [], draft = {}, physicalFormatId = "digital" } = {}) => {
+    if (!teacherId) throw new Error("Teacher identity is required to award a badge.");
+
+    const validation = validateBadgeAward({
+      studentIds,
+      availableStudentIds: studentIds,
+      draft,
+    });
+    if (!validation.valid) throw new Error(validation.errors[0]);
+
+    const format = BADGE_PHYSICAL_FORMATS.find((candidate) => candidate.id === physicalFormatId)
+      || BADGE_PHYSICAL_FORMATS[0];
+    const rows = validation.recipients.map((studentId) => ({
+      student_id: studentId,
+      teacher_id: teacherId,
+      template_id: validation.draft.templateId,
+      title: validation.draft.title,
+      message: validation.draft.message,
+      character_id: validation.draft.characterId,
+      physical_format_id: format.id,
+      order_status: "not-requested",
+    }));
+
+    const { data, error } = await client
+      .from("teacher_badge_awards")
+      .insert(rows)
+      .select("id, student_id, title, message, character_id, physical_format_id, order_status, earned_at");
+    if (error) throw error;
+    return data || [];
+  };
+
+  return { award };
+}
+
+export const teacherBadgeAwardsApi = createTeacherBadgeAwardsApi();

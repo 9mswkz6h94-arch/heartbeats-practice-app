@@ -65,7 +65,7 @@
 - Parent, student, and teacher dashboards now use one shared `Switch account` handler that clears the device-local Supabase session before returning to role selection.
 - The production Teacher Dashboard now uses the unified Studio/Students workspace shell instead of separate global assignment and roster tabs.
 - The live workspace adapter loads the signed-in teacher’s active students, recurring lesson slots, practice summaries, current assignments, guardian links, and private assignment-draft counts.
-- Added local migration `017_lesson_memory.sql` for teacher-only lesson sessions, categorized notes, and assignment suggestions. All three tables enable RLS, grant no anonymous access, and verify the signed-in teacher through the existing student relationship.
+- Added local migration `018_lesson_memory.sql` for teacher-only lesson sessions, categorized notes, and assignment suggestions. All three tables enable RLS, grant no anonymous access, and verify the signed-in teacher through the existing student relationship.
 - Lesson Memory stores short teacher-entered text only. Its schema contains no audio, recording, or transcript field, and students and parents receive no policies.
 - Starting a lesson, saving/removing a note, wrapping the lesson with an atomic private suggestion, and approving the suggestion now have a dedicated data-access layer with explicit loading, saving, error, and recovery states.
 - The selected student’s Assignments tab now shows real current work. New assignments remain student-scoped, and an approved Lesson Memory suggestion can prefill the existing assignment form before a deliberate publish.
@@ -98,9 +98,9 @@
 
 - The real Student dashboard now contains the Musical Zoo. Existing pet growth and collection controls moved into its Caretaker Cabin, so pet features no longer sit as unrelated blocks below the Zoo.
 - Live Zoo contents derive from the student’s existing pet, hatched creatures, and completion count. Only already-earned scenery and destinations render; fake visitors and mock practice notes remain confined to the isolated fixture.
-- The floating companion now reacts after successful completion or skip events and does not prompt the student to begin. Companion choice and habitat/scenery arrangement use a device-local fallback; migration `019_student_zoo_preferences.sql` adds optional cross-device sync without copying any streak, completion, XP, assignment, pet, or reward ledger.
-- The real family wizard now captures preferred name, birthday, derived age, optional pronouns/grade, primary guardian relationship/phone, and optional additional caregiver contacts. Migration `018_family_profiles.sql` keeps additional contacts private with RLS; age is derived and never stored separately.
-- The Teacher Workspace remains usable when migration `017_lesson_memory.sql` is absent. Assignments, schedule, progress, roster, and family messages continue to load while Lesson Memory shows a bounded unavailable state.
+- The floating companion now reacts after successful completion or skip events and does not prompt the student to begin. Companion choice and habitat/scenery arrangement use a device-local fallback; migration `020_student_zoo_preferences.sql` adds optional cross-device sync without copying any streak, completion, XP, assignment, pet, or reward ledger.
+- The real family wizard now captures preferred name, birthday, derived age, optional pronouns/grade, primary guardian relationship/phone, and optional additional caregiver contacts. Migration `019_family_profiles.sql` keeps additional contacts private with RLS; age is derived and never stored separately.
+- The Teacher Workspace remains usable when migration `018_lesson_memory.sql` is absent. Assignments, schedule, progress, roster, and family messages continue to load while Lesson Memory shows a bounded unavailable state.
 - Studio Home now has a working recurring-schedule calendar, roster search, real seven-day practice activity, real repertoire titles, and a deterministic local planning helper. The helper reads only notes already in the workspace, calls no outside AI service, and never publishes an assignment.
 - The legacy assignment-list Edit control now opens a working teacher edit form while preserving practice steps and completed work. The active parent review fixture now supports student switching, reschedule/cancel, notification preference, and local message interactions.
 - The external performance calendar remains deliberately disabled in the live workspace and labeled `Not connected` until a trusted source is selected.
@@ -203,6 +203,15 @@
 - Plush is feasible as a separate product lane. The brief compares a 200-supporter Makeship campaign, a 50-unit Budsies batch, and a later 500-unit wholesale route, and records the prototype, labeling, testing, certification, tracking, and importer responsibilities that must be resolved before selling a child-directed toy.
 - No Supabase table, auth rule, migration, live badge, child profile, guardian address, vendor account, payment, order, push, merge, or deployment changed.
 
+## Live teacher workflow completion (2026-09-07)
+
+- The real local Teacher Workspace now exposes the accepted global Badge Studio, pending family reschedule requests, read-only parent preview, and assignment reassign/repertoire/remove actions.
+- Assignment lifecycle actions call the transactional `resolve_practice_assignment` function from migration `017`; removal and reassign language explicitly preserves earlier completion history.
+- Migration `021_teacher_badge_awards.sql` adds teacher-created digital celebrations beside, rather than inside or instead of, the existing automatic `student_badges` ledger. Teacher, student, and parent reads are relationship-scoped by RLS; anonymous access is revoked.
+- A physical format is planning metadata only. The database constrains `order_status` to `not-requested`, the app never collects an address, and no vendor path exists.
+- Student and parent badge showcases can read the teacher-created celebration after migration `021`; a missing table degrades to the established automatic badge experience until the release set is approved.
+- These changes are local implementation evidence only. The migration has not been applied, no real badge has been awarded, and no push or deployment occurred.
+
 ## Known incomplete areas
 
 - Component CSS still contains legacy hard-coded colors, shadows, pills, and font declarations.
@@ -211,14 +220,15 @@
 - The teacher HUD has fixed-window assumptions needing responsive review.
 - No blocking Scaffold implementation work remains. A human visual/read-aloud spot check is recommended during Jonathan's acceptance review.
 - Full manual keyboard traversal, true 200% browser zoom, reduced-motion operating-system review, and assistive-technology review remain incomplete. Native control semantics and focus styles are present, but the browser controller did not activate controls through its synthetic keyboard command during this pass.
-- Migrations `017_lesson_memory.sql`, `018_family_profiles.sql`, and `019_student_zoo_preferences.sql` have not been applied to an isolated Supabase project or production. SQL execution and teacher/parent/student RLS checks therefore remain release gates.
+- Migrations `016_invite_only_teachers.sql` through `021_teacher_badge_awards.sql` form the ordered release set. They have not been applied to an isolated Supabase project or production; the complete set still requires SQL execution, privacy-preserving before/after fingerprints, and teacher/parent/student RLS checks before release.
 - The live Studio home now exposes the existing recurring lesson schedule locally. A trusted external performance source is still not connected.
 - Publishing an approved suggestion uses the existing assignment creation path and then marks the private draft as published. A later database transaction could make that cross-table handoff fully atomic.
 - All nine accepted Musical Zoo characters are wired into the app-local registry and mock-isolated review. Character-specific habitat walk cycles, companion reaction animation frames, optional eggs, and full voice packs remain future integration gates.
 - The eight post-starter characters remain review-only. A separate product decision is still required for their grace-first arrival, ownership, and cross-device persistence behavior; the current live adapter deliberately filters them out unless that decision is implemented.
-- Teacher-created badges are review-only. Live work still needs a custom-badge schema and RLS, award revocation/audit rules, student and guardian views, notification choices, and isolated-database tests.
+- Teacher-created badges are implemented locally with additive schema and RLS, but isolated-database tests remain incomplete. Award revocation/audit policy and notification choices remain deliberately deferred; the initial live flow is append-only.
 - Physical rewards still need a sampled vendor template, final cost/shipping review, guardian opt-in and address handoff, artwork approval, and a documented consumer-product compliance owner. No vendor has been contacted.
 - Full manual keyboard traversal, true 200% browser zoom, reduced-motion operating-system review, and assistive-technology review remain release gates for Badge Studio as well as the wider app.
+- Non-breaking dependency remediation reduced `npm audit` from 20 high findings to 14. The remaining findings are transitive dependencies of the Create React App 5 build/test toolchain; npm's proposed force fix replaces `react-scripts` with an invalid/breaking version, so a deliberate toolchain migration remains a release-hardening task.
 
 ## Verification log
 
@@ -288,6 +298,7 @@
 | 2026-09-07 | Teacher Badge Studio local prototype | Multi-recipient compose → physical-plan choice → review → confirm interaction | Pass in `mock-isolated`; Alexandria and Sam receive only a local review result, all nine character choices resolve, and the interface confirms that no physical order was placed. |
 | 2026-09-07 | Teacher Badge Studio responsive review | 390×844, 768×1024, 1024×768, and 1440×900 | Pass; no page-level horizontal overflow, broken character images, or tested visible targets below 48×48 CSS pixels. |
 | 2026-09-07 | Teacher Badge Studio automated/system gate | Full test suite, optimized build, diff check, canonical OS, and connected-app validation | Pass; 23 suites/90 tests, successful optimized build with only the existing Node `fs.F_OK` deprecation warning, no whitespace errors, and Rainbow Heart OS 0.7.0 plus connected-app metadata validation. |
+| 2026-09-07 | Local release-readiness integration | Ordered migration checks, live Teacher wiring tests, full suite, art validation, optimized build, and non-breaking dependency remediation | Pass locally; migrations `016`–`021` validate statically, 27 suites/106 tests pass, 9 habitat sprites/9 companions/27 stickers/2 boards validate, and the optimized build compiles without lint warnings. Audit improves from 20 to 14 high transitive findings; isolated database and manual accessibility gates remain open. |
 
 ## Deferred maintenance findings
 
@@ -299,4 +310,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Review Badge Studio in the mock Teacher Workspace. If its interaction and language are approved, define the teacher-created badge catalog/award schema and RLS in an isolated database before connecting any real student. In parallel, convert one character into a simplified 3-inch embroidery mark and order one sample to the studio—not to a family address—only after separate purchasing approval. The complete cast's grace-first arrival rules, character-specific animation, manual accessibility review, true 200% browser zoom, physical-product compliance, and migrations `017_lesson_memory.sql`, `018_family_profiles.sql`, and `019_student_zoo_preferences.sql` remain separate gates. Do not contact a vendor, purchase, push, migrate production, or deploy without separate approval.
+Restore a sanitized, schema-complete database into an isolated Supabase project and follow `STAGING_REHEARSAL.md`: compare protected data fingerprints, apply ordered migrations `016`–`021`, run both SQL verifiers, and exercise the teacher/parent/student role matrix. Then complete manual keyboard, true 200% zoom, reduced-motion, and assistive-technology review before considering a push or deployment. Physical sampling remains a separate purchase requiring approval; do not contact a vendor, purchase, migrate production, push, or deploy from this handoff.

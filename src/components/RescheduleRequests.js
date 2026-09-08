@@ -9,16 +9,25 @@ export default function RescheduleRequests({ teacherId }) {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
   const [noteDraft, setNoteDraft] = useState({});
+  const [error, setError] = useState(null);
 
   const fetchRequests = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("reschedule_requests")
-      .select("id, student_id, proposed_date, proposed_time, reason, status, created_at, students(name)")
-      .eq("status", "pending")
-      .order("created_at", { ascending: true });
-    setRequests(data || []);
-    setLoading(false);
+    setError(null);
+    try {
+      const { data, error: requestError } = await supabase
+        .from("reschedule_requests")
+        .select("id, student_id, proposed_date, proposed_time, reason, status, created_at, students(name)")
+        .eq("status", "pending")
+        .order("created_at", { ascending: true });
+      if (requestError) throw requestError;
+      setRequests(data || []);
+    } catch (requestError) {
+      console.error("Reschedule requests could not load:", requestError);
+      setError(requestError.message || "Reschedule requests could not load.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -27,19 +36,30 @@ export default function RescheduleRequests({ teacherId }) {
 
   const resolve = async (id, status) => {
     setBusyId(id);
-    await supabase
-      .from("reschedule_requests")
-      .update({ status, teacher_note: noteDraft[id] || null, resolved_at: new Date().toISOString() })
-      .eq("id", id);
-    setBusyId(null);
-    fetchRequests();
+    setError(null);
+    try {
+      const { error: resolveError } = await supabase
+        .from("reschedule_requests")
+        .update({ status, teacher_note: noteDraft[id] || null, resolved_at: new Date().toISOString() })
+        .eq("id", id);
+      if (resolveError) throw resolveError;
+      await fetchRequests();
+    } catch (resolveError) {
+      console.error("Reschedule request could not update:", resolveError);
+      setError(resolveError.message || "The request could not be updated.");
+    } finally {
+      setBusyId(null);
+    }
   };
 
-  if (loading || requests.length === 0) return null;
+  if (loading) return <section className="resched-panel" role="status">Checking family schedule requests…</section>;
+  if (error && requests.length === 0) return <section className="resched-panel" role="alert"><strong>Schedule requests could not load.</strong><span>{error}</span><button type="button" onClick={fetchRequests}>Try again</button></section>;
+  if (requests.length === 0) return null;
 
   return (
     <section className="resched-panel">
       <h2 className="resched-panel-title">Reschedule requests ({requests.length})</h2>
+      {error && <p role="alert">{error}</p>}
       <div className="resched-list">
         {requests.map((r) => (
           <div key={r.id} className="resched-row">

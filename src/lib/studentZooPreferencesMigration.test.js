@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const migration = fs.readFileSync(
-  path.resolve(__dirname, "../../SQL_MIGRATIONS/019_student_zoo_preferences.sql"),
+  path.resolve(__dirname, "../../SQL_MIGRATIONS/020_student_zoo_preferences.sql"),
   "utf8"
 );
 

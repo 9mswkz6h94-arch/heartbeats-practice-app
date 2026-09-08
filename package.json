@@ -20,7 +20,10 @@
     "zoo:build-correction-candidates": "node concept-art/library-expansion/three-format-v1/build-correction-candidates-v2.cjs",
     "zoo:stage-app-art": "node concept-art/library-expansion/three-format-v1/stage-app-assets.cjs",
     "zoo:validate-art": "node concept-art/library-expansion/three-format-v1/validate-three-format.cjs",
-    "zoo:new-character": "node concept-art/library-expansion/three-format-v1/scaffold-character.cjs"
+    "zoo:new-character": "node concept-art/library-expansion/three-format-v1/scaffold-character.cjs",
+    "release:check-migrations": "node scripts/check-release-migrations.cjs",
+    "release:validate": "npm run release:check-migrations && npm run zoo:validate-art && npm test -- --watchAll=false --runInBand && npm run build",
+    "staging:check-env": "node scripts/check-staging-env.cjs"
   },
   "eslintConfig": {
     "extends": [

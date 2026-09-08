@@ -70,7 +70,9 @@ function mapStudent(student, lesson, familyLink, stats, draft, guardians = []) {
     id: assignment.id,
     title: assignment.title,
     category: titleCase(assignment.category || "pieces"),
+    categoryKey: assignment.category,
     age: assignmentAge(assignment.created_at),
+    deadline: assignment.deadline,
     stage: "Active",
     progress: `${assignment.practice_steps?.length || 1} practice ${assignment.practice_steps?.length === 1 ? "step" : "steps"}`,
     instrumentType: assignment.instrument_type || student.instrument || "Music",
@@ -81,6 +83,8 @@ function mapStudent(student, lesson, familyLink, stats, draft, guardians = []) {
   return {
     id: student.id,
     name,
+    avatar: student.avatar,
+    accountStatus: student.status,
     shortName: shortName(name),
     initials: initialsFor(name),
     instrument: student.instrument || "Music",

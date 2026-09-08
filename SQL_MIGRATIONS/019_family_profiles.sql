@@ -1,8 +1,10 @@
--- 018 — Privacy-scoped family and student profile details.
+-- 019 — Privacy-scoped family and student profile details.
 --
 -- Apply only after the matching FamilySignup UI is approved. Age is derived
 -- from birthday in the app and is intentionally not stored as a second value.
 -- Additional guardians are contact records, not login accounts.
+
+BEGIN;
 
 ALTER TABLE public.students
   ADD COLUMN IF NOT EXISTS preferred_name TEXT,
@@ -92,3 +94,6 @@ COMMENT ON TABLE public.family_guardians IS
   'Private caregiver contacts. Records do not create authentication accounts.';
 COMMENT ON COLUMN public.students.birthday IS
   'Private profile detail. Age is derived at display time and is not stored.';
+
+NOTIFY pgrst, 'reload schema';
+COMMIT;

@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const migration = fs.readFileSync(
-  path.resolve(__dirname, "../../SQL_MIGRATIONS/017_lesson_memory.sql"),
+  path.resolve(__dirname, "../../SQL_MIGRATIONS/018_lesson_memory.sql"),
   "utf8"
 );
 

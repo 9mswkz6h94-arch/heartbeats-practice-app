@@ -2,6 +2,7 @@ import {
   BADGE_STUDIO_LIMITS,
   BADGE_TEMPLATES,
   buildBadgeAwardPreview,
+  createTeacherBadgeAwardsApi,
   createBadgeDraft,
   normalizeBadgeDraft,
   validateBadgeAward,
@@ -39,5 +40,34 @@ describe("Badge Studio", () => {
     expect(preview.physicalFormatName).toBe("3-inch iron-on or sew-on patch");
     expect(preview.orderPlaced).toBe(false);
     expect(preview.status).toBe("local-review-only");
+  });
+
+  test("stores teacher-created awards without touching the automatic badge ledger", async () => {
+    const select = jest.fn().mockResolvedValue({
+      data: [{ id: "award-1", student_id: "student-1", order_status: "not-requested" }],
+      error: null,
+    });
+    const insert = jest.fn(() => ({ select }));
+    const from = jest.fn(() => ({ insert }));
+    const api = createTeacherBadgeAwardsApi({ from });
+
+    const awards = await api.award({
+      teacherId: "teacher-1",
+      studentIds: ["student-1"],
+      draft: createBadgeDraft("careful-listener"),
+      physicalFormatId: "embroidered-patch-3",
+    });
+
+    expect(from).toHaveBeenCalledWith("teacher_badge_awards");
+    expect(insert).toHaveBeenCalledWith([
+      expect.objectContaining({
+        student_id: "student-1",
+        teacher_id: "teacher-1",
+        title: "Careful Listener",
+        physical_format_id: "embroidered-patch-3",
+        order_status: "not-requested",
+      }),
+    ]);
+    expect(awards).toHaveLength(1);
   });
 });

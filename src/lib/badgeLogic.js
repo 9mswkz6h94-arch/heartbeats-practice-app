@@ -1,6 +1,7 @@
 import { supabase } from "./supabaseClient";
 import { fetchStudentStats } from "./studentStats";
 import { BADGES, getBadgeProgress } from "./badgeCatalog";
+import { getCharacter } from "./characterRegistry";
 
 export { BADGES, getBadgeProgress } from "./badgeCatalog";
 
@@ -72,20 +73,59 @@ export const getStudentBadges = async (studentId) => {
     })) || [];
   } catch (err) {
     console.error("Error fetching badges:", err);
-    return [];
+    throw err;
+  }
+};
+
+function teacherBadgeTableIsUnavailable(error) {
+  const message = `${error?.message || ""} ${error?.details || ""}`.toLowerCase();
+  return ["42P01", "PGRST205"].includes(error?.code)
+    || (message.includes("teacher_badge_awards") && message.includes("does not exist"));
+}
+
+export const getTeacherBadgeAwards = async (studentId, client = supabase) => {
+  try {
+    const { data, error } = await client
+      .from("teacher_badge_awards")
+      .select("id, title, message, character_id, earned_at")
+      .eq("student_id", studentId)
+      .order("earned_at", { ascending: false });
+
+    if (error) {
+      if (teacherBadgeTableIsUnavailable(error)) return [];
+      throw error;
+    }
+
+    return (data || []).map((award) => {
+      const character = getCharacter(award.character_id);
+      return {
+        id: `teacher-${award.id}`,
+        name: award.title,
+        description: award.message,
+        icon: character?.emoji || "✨",
+        source: "teacher",
+        earned_at: award.earned_at,
+      };
+    });
+  } catch (err) {
+    console.error("Error fetching teacher-created badges:", err);
+    throw err;
   }
 };
 
 export const getBadgeShowcase = async (studentId) => {
-  const [earnedBadges, stats] = await Promise.all([
+  const [earnedBadges, teacherAwards, stats] = await Promise.all([
     getStudentBadges(studentId),
+    getTeacherBadgeAwards(studentId),
     fetchStudentStats(studentId),
   ]);
   const earnedById = new Map(earnedBadges.map((badge) => [badge.id, badge]));
 
-  return Object.values(BADGES).map((badge) => ({
+  const automaticBadges = Object.values(BADGES).map((badge) => ({
     ...badge,
     ...getBadgeProgress(stats, badge),
     earned_at: earnedById.get(badge.id)?.earned_at || null,
   }));
+
+  return [...teacherAwards, ...automaticBadges];
 };

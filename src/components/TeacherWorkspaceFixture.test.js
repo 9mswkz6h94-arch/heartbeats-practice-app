@@ -12,6 +12,7 @@ describe("teacher workspace information architecture", () => {
 
   test("Badge Studio is a global teacher destination, not a student sub-tab", () => {
     expect(TEACHER_PRIMARY_TABS.map((tab) => tab.label)).toEqual(["Studio", "Students", "Badge Studio"]);
+    expect(TEACHER_PRIMARY_TABS.find((tab) => tab.id === "badges")).not.toHaveProperty("fixtureOnly");
     expect(STUDENT_WORKSPACE_TABS.map((tab) => tab.label)).not.toContain("Badge Studio");
   });
 

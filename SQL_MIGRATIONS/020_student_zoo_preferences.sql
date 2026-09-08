@@ -1,8 +1,10 @@
--- 019 — Student-owned Musical Zoo preferences.
+-- 020 — Student-owned Musical Zoo preferences.
 --
 -- This table stores arrangement and companion choices only. Practice history,
 -- streaks, XP, pets, creatures, assignments, and unlock eligibility remain in
 -- their existing tables and are never copied or rewritten here.
+
+BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.student_zoo_preferences (
   student_id UUID PRIMARY KEY REFERENCES public.students(id) ON DELETE CASCADE,
@@ -62,3 +64,6 @@ GRANT SELECT, INSERT, UPDATE ON public.student_zoo_preferences TO authenticated;
 
 COMMENT ON TABLE public.student_zoo_preferences IS
   'Student-owned Zoo arrangement preferences only; no practice or reward ledger data.';
+
+NOTIFY pgrst, 'reload schema';
+COMMIT;

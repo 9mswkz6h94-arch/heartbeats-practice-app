@@ -1,8 +1,10 @@
--- 017 — Teacher-only lesson memory and assignment suggestions.
+-- 018 — Teacher-only lesson memory and assignment suggestions.
 --
 -- This stores short, teacher-entered notes only. It does not store audio,
 -- recordings, transcripts, or student-facing chat. Students and parents get
 -- no policies on these tables; RLS limits every row to the student's teacher.
+
+BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.lesson_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -252,3 +254,6 @@ COMMENT ON TABLE public.assignment_drafts IS
 -- WHERE schemaname = 'public'
 --   AND tablename IN ('lesson_sessions', 'lesson_notes', 'assignment_drafts')
 -- ORDER BY tablename, policyname;
+
+NOTIFY pgrst, 'reload schema';
+COMMIT;

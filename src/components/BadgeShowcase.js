@@ -6,12 +6,20 @@ export default function BadgeShowcase({ studentId }) {
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unlockedBadge, setUnlockedBadge] = useState(null);
+  const [error, setError] = useState(null);
 
   const fetchBadges = useCallback(async () => {
     setLoading(true);
-    const studentBadges = await getBadgeShowcase(studentId);
-    setBadges(studentBadges);
-    setLoading(false);
+    setError(null);
+    try {
+      const studentBadges = await getBadgeShowcase(studentId);
+      setBadges(studentBadges);
+    } catch (badgeError) {
+      console.error("Badge showcase could not load:", badgeError);
+      setError("Badges are taking a moment to load. Your awards are safe.");
+    } finally {
+      setLoading(false);
+    }
   }, [studentId]);
 
   useEffect(() => { fetchBadges(); }, [fetchBadges]);
@@ -28,6 +36,10 @@ export default function BadgeShowcase({ studentId }) {
 
   if (loading) {
     return <div className="badge-showcase" role="status"><p>Loading badges…</p></div>;
+  }
+
+  if (error) {
+    return <div className="badge-showcase" role="alert"><p>{error}</p><button type="button" onClick={fetchBadges}>Try again</button></div>;
   }
 
   return (

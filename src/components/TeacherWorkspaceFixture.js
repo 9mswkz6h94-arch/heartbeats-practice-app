@@ -140,7 +140,7 @@ export const STUDENT_WORKSPACE_TABS = [
 export const TEACHER_PRIMARY_TABS = [
   { id: "studio", label: "Studio" },
   { id: "students", label: "Students" },
-  { id: "badges", label: "Badge Studio", fixtureOnly: true },
+  { id: "badges", label: "Badge Studio" },
 ];
 
 const TODAY_SCHEDULE = [
@@ -197,7 +197,7 @@ function StudioCalendar({ students }) {
   );
 }
 
-function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS, todaySchedule = TODAY_SCHEDULE, summary }) {
+function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS, todaySchedule = TODAY_SCHEDULE, summary, renderInbox }) {
   const [planningOpen, setPlanningOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showPlanOpen, setShowPlanOpen] = useState(false);
@@ -232,6 +232,8 @@ function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS
           </article>
         ))}
       </section>
+
+      {renderInbox?.()}
 
       <div className="teacher-studio-grid">
         <section className="teacher-studio-panel teacher-studio-today">
@@ -467,6 +469,7 @@ export function TeacherWorkspaceShell({
   renderFamily,
   renderStudentManager,
   renderBadgeStudio,
+  renderStudioInbox,
 }) {
   const [primaryView, setPrimaryView] = useState("studio");
   const [selectedStudentId, setSelectedStudentId] = useState(null);
@@ -500,7 +503,7 @@ export function TeacherWorkspaceShell({
       <div className="hud-main">
         <header className="hud-topbar"><div><p className="hud-view-context">{selectedStudent ? "Student workspace" : "Teacher workspace"}</p><h1 className="hud-view-title">{title}</h1></div></header>
         <main className="hud-content">
-          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} renderLessonMemory={renderLessonMemory} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} summary={summary} />}
+          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} renderLessonMemory={renderLessonMemory} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} summary={summary} renderInbox={renderStudioInbox} />}
         </main>
       </div>
     </div>

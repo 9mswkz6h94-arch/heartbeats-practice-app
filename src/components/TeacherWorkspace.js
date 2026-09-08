@@ -1,9 +1,14 @@
 import React, { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 import useTeacherWorkspace from "../hooks/useTeacherWorkspace";
 import { lessonMemoryApi } from "../lib/lessonMemory";
+import { addLocalDays, localDateString } from "../lib/assignmentLifecycle";
 import AssignmentForm from "./AssignmentForm";
+import BadgeStudio from "./BadgeStudio";
 import CommLog from "./CommLog";
 import LessonMemory from "./LessonMemory";
+import ParentPreviewModal from "./ParentPreviewModal";
+import RescheduleRequests from "./RescheduleRequests";
 import StudentManager from "./StudentManager";
 import { TeacherWorkspaceShell } from "./TeacherWorkspaceFixture";
 
@@ -11,6 +16,57 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
   const draft = student.memory.draft?.id ? student.memory.draft : null;
   const [composerSource, setComposerSource] = useState(null);
   const [status, setStatus] = useState(null);
+  const [action, setAction] = useState(null);
+  const [reassignDraft, setReassignDraft] = useState(null);
+
+  const resolveAssignment = async (assignment, nextAction, deadline, successText) => {
+    setStatus(null);
+    setAction({ assignmentId: assignment.id, name: nextAction });
+    try {
+      const { error } = await supabase.rpc("resolve_practice_assignment", {
+        p_assignment_id: assignment.id,
+        p_action: nextAction,
+        p_deadline: deadline || null,
+      });
+      if (error) throw error;
+      setReassignDraft(null);
+      setStatus(successText);
+      await onRefresh();
+    } catch (assignmentError) {
+      console.error(`Assignment ${nextAction} failed:`, assignmentError);
+      setStatus(`Could not update ${assignment.title}: ${assignmentError.message}`);
+    } finally {
+      setAction(null);
+    }
+  };
+
+  const submitReassign = async (event, assignment) => {
+    event.preventDefault();
+    const deadline = reassignDraft?.deadline;
+    if (!deadline || deadline < localDateString()) {
+      setStatus("Choose today or a future date before reassigning.");
+      return;
+    }
+    await resolveAssignment(
+      assignment,
+      "reassign",
+      deadline,
+      `${assignment.title} was reassigned. Earlier completion history was kept.`,
+    );
+  };
+
+  const removeAssignment = async (assignment) => {
+    const confirmed = window.confirm(
+      `Remove “${assignment.title}” from ${student.name}'s current assignments? Past practice history will be kept.`,
+    );
+    if (!confirmed) return;
+    await resolveAssignment(
+      assignment,
+      "remove",
+      null,
+      `${assignment.title} was removed from current practice. Earlier completion history was kept.`,
+    );
+  };
 
   const assignmentCreated = async (assignment) => {
     if (composerSource === "draft" && draft?.id) {
@@ -59,14 +115,55 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
           <div className="teacher-student-subheading"><h3>Current work</h3><span>{student.assignments.length} active</span></div>
           <div className="teacher-current-assignments">
             {student.assignments.length === 0 && <div className="teacher-studio-empty"><strong>No active assignments</strong><span>Add one when the lesson points toward a useful next step.</span></div>}
-            {student.assignments.map((assignment) => (
-              <article key={assignment.id || assignment.title}>
-                <div><span>{assignment.category}</span><span>{assignment.stage}</span></div>
-                <h4>{assignment.title}</h4>
-                <p>{assignment.progress}</p>
-                <footer><strong>{assignment.age}</strong><span>working on this</span></footer>
-              </article>
-            ))}
+            {student.assignments.map((assignment) => {
+              const busy = action?.assignmentId === assignment.id;
+              const editingReassign = reassignDraft?.assignmentId === assignment.id;
+              return (
+                <article key={assignment.id || assignment.title}>
+                  <div><span>{assignment.category}</span><span>{assignment.stage}</span></div>
+                  <h4>{assignment.title}</h4>
+                  <p>{assignment.progress}</p>
+                  <footer><strong>{assignment.age}</strong><span>working on this</span></footer>
+                  <div className="teacher-assignment-card-actions">
+                    <button
+                      type="button"
+                      disabled={Boolean(action)}
+                      aria-expanded={editingReassign}
+                      onClick={() => setReassignDraft({
+                        assignmentId: assignment.id,
+                        deadline: localDateString(addLocalDays(new Date(), 7)),
+                      })}
+                    >Reassign</button>
+                    <button
+                      type="button"
+                      disabled={Boolean(action)}
+                      onClick={() => resolveAssignment(assignment, "repertoire", null, `${assignment.title} moved to the repertoire.`)}
+                    >{busy && action.name === "repertoire" ? "Saving…" : "To repertoire"}</button>
+                    <button type="button" disabled={Boolean(action)} onClick={() => removeAssignment(assignment)}>
+                      {busy && action.name === "remove" ? "Saving…" : "Remove"}
+                    </button>
+                  </div>
+                  {editingReassign && (
+                    <form className="teacher-assignment-reassign" onSubmit={(event) => submitReassign(event, assignment)}>
+                      <label htmlFor={`workspace-reassign-${assignment.id}`}>New due date</label>
+                      <input
+                        id={`workspace-reassign-${assignment.id}`}
+                        type="date"
+                        required
+                        min={localDateString()}
+                        value={reassignDraft.deadline}
+                        disabled={Boolean(action)}
+                        onChange={(event) => setReassignDraft((current) => ({ ...current, deadline: event.target.value }))}
+                      />
+                      <div>
+                        <button type="button" disabled={Boolean(action)} onClick={() => setReassignDraft(null)}>Cancel</button>
+                        <button type="submit" disabled={Boolean(action)}>{busy && action.name === "reassign" ? "Saving…" : "Confirm reassign"}</button>
+                      </div>
+                    </form>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </div>
 
@@ -94,9 +191,10 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
 }
 
 function LiveFamily({ student }) {
+  const [previewOpen, setPreviewOpen] = useState(false);
   return (
     <section className="teacher-student-section" aria-labelledby="student-family-title">
-      <header className="teacher-student-section-heading"><div><p>Private teacher view</p><h2 id="student-family-title">Family & schedule</h2></div></header>
+      <header className="teacher-student-section-heading"><div><p>Private teacher view</p><h2 id="student-family-title">Family & schedule</h2></div><button type="button" onClick={() => setPreviewOpen(true)}>Preview parent view</button></header>
       <div className="teacher-family-grid">
         <article><span>Regular lesson</span><h3>{student.schedule}</h3><p>{student.lesson?.location || "Rainbow Heart Studio"} · {student.lesson?.duration_minutes || 30} minutes</p></article>
         <article><span>Primary family connection</span><h3>{student.family}</h3><p>{[student.familyContact?.email, student.familyContact?.phone].filter(Boolean).join(" · ") || "Contact details not added yet"}</p></article>
@@ -110,6 +208,7 @@ function LiveFamily({ student }) {
         ))}
       </div>
       <CommLog studentId={student.id} role="teacher" authorName="Jonathan" />
+      {previewOpen && <ParentPreviewModal student={{ ...student, status: student.accountStatus || "active" }} onClose={() => setPreviewOpen(false)} />}
     </section>
   );
 }
@@ -163,12 +262,16 @@ export default function TeacherWorkspace({ teacherId, userEmail, onLogout }) {
         <LiveAssignments
           teacherId={teacherId}
           student={student}
-          onRefresh={workspace.refresh}
+          onRefresh={() => workspace.refresh({ silent: true })}
           onGoLesson={onGoLesson}
         />
       )}
       renderFamily={(student) => <LiveFamily student={student} />}
       renderStudentManager={() => <StudentManager teacherId={teacherId} onChanged={workspace.refresh} />}
+      renderStudioInbox={() => <RescheduleRequests teacherId={teacherId} />}
+      renderBadgeStudio={(students) => (
+        <BadgeStudio students={students} teacherId={teacherId} onAward={() => workspace.refresh({ silent: true })} />
+      )}
     />
   );
 }

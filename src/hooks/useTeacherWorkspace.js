@@ -6,9 +6,9 @@ export default function useTeacherWorkspace(teacherId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async ({ silent = false } = {}) => {
     if (!teacherId) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     setError(null);
     try {
       setData(await teacherWorkspaceApi.load(teacherId));
@@ -16,7 +16,7 @@ export default function useTeacherWorkspace(teacherId) {
       console.error("Teacher workspace could not load:", loadError);
       setError(loadError.message || "The teacher workspace could not load.");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [teacherId]);
 

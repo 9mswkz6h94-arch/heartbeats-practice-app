@@ -145,6 +145,18 @@
 .teacher-current-assignments article > .teacher-assignment-preview { margin-top: var(--space-3); padding: var(--space-3); display: grid; justify-content: initial; gap: 3px; border: 1px solid var(--color-border); background: var(--color-cut-paper); color: var(--color-text); font-family: var(--font-body); font-size: 11px; text-transform: none; }
 .teacher-assignment-preview span,
 .teacher-assignment-preview small { color: var(--color-text-muted); }
+.teacher-current-assignments article > .teacher-assignment-card-actions { margin-top: var(--space-3); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); color: var(--color-text); font-family: var(--font-body); font-size: 11px; text-transform: none; }
+.teacher-assignment-card-actions button,
+.teacher-assignment-reassign button { min-height: 44px; padding: var(--space-2); border: 1px solid var(--color-ink); border-radius: 0; background: var(--color-surface); color: var(--color-text); font: inherit; font-weight: 700; cursor: pointer; }
+.teacher-assignment-card-actions button:last-child { border-color: var(--color-danger); color: var(--color-danger); }
+.teacher-assignment-card-actions button:disabled,
+.teacher-assignment-reassign button:disabled { opacity: .55; cursor: wait; }
+.teacher-current-assignments article > .teacher-assignment-reassign { margin-top: var(--space-3); padding: var(--space-3); display: grid; grid-template-columns: minmax(130px, 1fr) minmax(150px, 1fr); gap: var(--space-2) var(--space-3); align-items: end; border: 1px solid var(--color-border); background: var(--color-cut-paper); color: var(--color-text); font-family: var(--font-body); font-size: 11px; text-transform: none; }
+.teacher-assignment-reassign label { grid-column: 1; font-weight: 700; }
+.teacher-assignment-reassign input { grid-column: 1; min-height: 44px; padding: var(--space-2); border: 1px solid var(--color-border); border-bottom: 2px solid var(--color-ink); border-radius: 0; background: var(--color-surface); font: inherit; }
+.teacher-assignment-reassign > div { grid-column: 2; grid-row: 1 / 3; display: flex; gap: var(--space-2); }
+.teacher-assignment-reassign > div button { flex: 1; }
+.teacher-studio-home > .resched-panel { margin: 0 0 var(--space-4); }
 .teacher-suggested-assignment { padding: var(--space-4); border: 2px solid #5a4cc8; background: #e9e8f4; }
 .teacher-suggested-assignment > p { margin: 0; color: #4d40b0; font-family: var(--font-measurement); font-size: 8px; font-weight: 700; text-transform: uppercase; }
 .teacher-suggested-assignment h3 { margin: var(--space-3) 0; font-size: 17px; line-height: 1.25; }
@@ -225,6 +237,9 @@
   .teacher-student-tabs button.active { border-bottom: 4px solid var(--color-ink); }
   .teacher-assignment-composer { grid-template-columns: 1fr; }
   .teacher-assignment-composer small { grid-column: 1; }
+  .teacher-current-assignments article > .teacher-assignment-card-actions { grid-template-columns: 1fr; }
+  .teacher-current-assignments article > .teacher-assignment-reassign { grid-template-columns: 1fr; }
+  .teacher-assignment-reassign > div { grid-column: 1; grid-row: auto; }
   .teacher-progress-stats { grid-template-columns: 1fr 1fr; }
   .teacher-progress-stats article:nth-child(2) { border-right: 0; }
   .teacher-progress-stats article:nth-child(-n+2) { border-bottom: 1px solid var(--color-border); }

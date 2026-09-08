@@ -79,8 +79,8 @@ This evidence covers D-028 and remains local-only pending Jonathan’s review.
 |---|---|---|---|---|
 | Real Student Zoo integration | Passed in source/build | Student dashboard owns the Zoo; existing PetWidget and PetCollection render only inside Caretaker Cabin; completion/skip events drive the response-only companion | Local app and optimized build | Exercise with an isolated student account after migration review |
 | Calm earned-content mapping | Passed | Unit tests verify that only already-earned scenery, habitats, and owned hatched friends render; invalid or unowned saved placements are discarded | 4 automated tests | Review reward thresholds before release |
-| Zoo preference separation | Static pass | Migration `019` stores only companion/arrangement JSON, enables RLS, revokes anon, and leaves streak/completion/XP/pet/assignment ledgers untouched; device-local fallback works when the table is absent | Migration source and tests | Apply to isolated Supabase and test student write/teacher read/parent denial |
-| Family profile privacy | Static pass | Migration `018` keeps caregiver contacts in an RLS table, revokes anon, permits owning-family management and teacher read, and stores birthday rather than duplicate age | Migration source and tests | Apply to isolated Supabase and test parent/teacher/student denial matrix |
+| Zoo preference separation | Static pass | Migration `020` stores only companion/arrangement JSON, enables RLS, revokes anon, and leaves streak/completion/XP/pet/assignment ledgers untouched; device-local fallback works when the table is absent | Migration source and tests | Apply to isolated Supabase and test student write/teacher read/parent denial |
+| Family profile privacy | Static pass | Migration `019` keeps caregiver contacts in an RLS table, revokes anon, permits owning-family management and teacher read, and stores birthday rather than duplicate age | Migration source and tests | Apply to isolated Supabase and test parent/teacher/student denial matrix |
 | Teacher fallback | Passed | Missing `assignment_drafts` and `family_guardians` are treated as optional feature absence; the rest of the Teacher Workspace remains available | Unit tests and source | Exercise against isolated pre-migration schema |
 | Planning helper boundary | Passed | Suggested questions and answers are deterministic from visible local notes; no network/AI request and no automatic assignment publication | 3 automated tests and interactive mock review | Decide later whether a separately governed AI service is desirable |
 | Teacher calendar and data | Passed | Calendar expands from real recurring lesson slots; roster search filters; progress uses seven-day completion counts and real repertoire titles | Unit tests and interactive mock review | Connect a performance source separately if approved |
@@ -119,20 +119,20 @@ This additional evidence covers only the local `?review=student` pilot. The earl
 
 ## Teacher Badge Studio local review evidence
 
-This evidence covers only the mock-isolated Teacher Workspace prototype. It does not approve a live badge schema, vendor connection, purchase, or child-directed physical product.
+This evidence began with the mock-isolated prototype and now includes local live-adapter implementation. It does not approve migration execution, a vendor connection, purchase, or child-directed physical product.
 
 | Gate | Status | Evidence | Environment | Follow-up |
 |---|---|---|---|---|
-| Information architecture | Passed | Badge Studio is a global Teacher destination and is absent from each selected student's sub-tabs; the live Teacher adapter does not render it | Local source and browser | Decide whether live launch should remain global after teacher review |
+| Information architecture | Passed locally | Badge Studio is a global Teacher destination, absent from each selected student's sub-tabs, and now supplied by the live Teacher adapter | Local source and wiring tests | Repeat with an isolated teacher account |
 | Deliberate recognition | Passed | No student is preselected; teacher chooses recipients, editable strength-based copy, a Zoo friend, and a format before a separate confirmation | In-app browser, `mock-isolated` | Test language with teachers and families |
 | Pressure-free language | Passed | Five templates avoid streak, rank, perfect, leaderboard, locked-content, and deficit language | Automated helper tests and source | Add future templates through the same language review |
-| Safe data boundary | Passed | The result is local state, clears on refresh, reports `local-review-only`, and always records `orderPlaced: false`; no Supabase or vendor path is connected | Local source, tests, and browser | Design custom catalog/award schema and RLS in isolation |
+| Safe data boundary | Static pass | Migration `021` stores append-only teacher awards beside automatic badges, relationship-scopes RLS, revokes anon, and constrains `order_status` to `not-requested`; no vendor path or address field exists | Migration/API source and tests | Apply and test with isolated teacher, student, and parent sessions |
 | Responsive matrix | Passed | 390×844, 768×1024, 1024×768, and 1440×900 have no horizontal overflow, broken character images, or tested visible controls below 48×48 CSS pixels | In-app browser, `mock-isolated` | Repeat after material layout changes |
-| Automated/system validation | Passed | 23 test suites / 90 tests, optimized build, `git diff --check`, Rainbow Heart OS 0.7.0, Brand Kit 2.0, Scaffold Kit 1.0.1, and connected-app metadata validation | Local terminals | Re-run before any approved push |
+| Automated/system validation | Passed locally | 27 test suites / 106 tests, ordered migration checks, art validation, optimized build without lint warnings, and `git diff --check` | Local terminals | Repeat against isolated database and after manual responsive/accessibility review |
 | Physical fulfillment | Research only | Printful 3-inch iron-on/sew-on patch is the recommended sample; pinbacks are adult/family display only; no vendor was contacted and no order was placed | Official vendor sources and local brief | Approve art, price, sample purchase, guardian flow, and compliance owner separately |
 | Plush feasibility | Research only | Makeship, Budsies, and wholesale routes are documented with current campaign/minimum shapes and CPSC gates | Official vendor and CPSC sources | Choose one lead character and commission only one prototype after approval |
 | Manual keyboard / true zoom | Not complete | Native controls and visible focus styling are present, but full keyboard traversal, true 200% zoom, OS reduced motion, and assistive-technology checks were not completed | Local browser/source | Complete before production approval |
-| Production boundary | Passed | No migration, live award, student-data write, guardian address, vendor action, payment, push, merge, or deployment occurred | Local governance | Separate explicit authorization required |
+| Production boundary | Passed | No migration, real award, student-data write, guardian address, vendor action, payment, push, or deployment occurred | Local governance | Separate explicit authorization required |
 
 ## Identity pilot decision
 

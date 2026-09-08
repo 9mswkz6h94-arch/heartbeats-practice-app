@@ -177,7 +177,7 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Status:** accepted for local implementation; database application remains unapproved
 - **Decision:** Connect the unified Teacher Workspace to the app’s real student, lesson, assignment, practice, guardian, and schedule records. Store Lesson Memory as short teacher-entered notes in separate teacher-only tables protected by row-level security. Do not store audio, recordings, transcripts, or student-facing chat in this feature. Wrapping a lesson may create a private assignment suggestion, but nothing reaches the student until the teacher approves it and deliberately publishes an assignment.
 - **Reason:** Jonathan approved moving the Teacher Workspace prototype toward real data while preserving the no-recording approach and avoiding automatic assignments that could misrepresent a lesson. The explicit review and publish boundary keeps the teacher in control and keeps private lesson context out of student and parent views.
-- **Boundary:** Migration `017_lesson_memory.sql` is prepared locally but has not been applied to any Supabase project. No production data, authorization, deployment, push, or merge is approved by this decision.
+- **Boundary:** Migration `018_lesson_memory.sql` is prepared locally but has not been applied to any Supabase project. No production data, authorization, deployment, push, or merge is approved by this decision.
 
 ## D-026 — Rainbow Heart 2.0 unifies the four local review workspaces
 
@@ -204,4 +204,13 @@ Append new decisions. Supersede older decisions explicitly rather than deleting 
 - **Decision:** Move the reviewed Musical Zoo and response-only companion into the real Student dashboard; move existing pet care and collection inside the Zoo; derive visible Zoo content only from already-earned records; and store new arrangement preferences separately from practice ledgers. Expand the real family wizard with private profile/caregiver details. Keep the Teacher Workspace usable without Lesson Memory, add a local recurring-calendar view, and make the planning helper deterministic and device-local rather than sending private notes to an outside AI service.
 - **Reason:** Jonathan authorized an independent completion pass before review, while explicitly requiring existing student streaks and saved data to survive. Separate additive tables, missing-feature fallbacks, and existing practice write paths minimize migration risk while allowing the reviewed interfaces to become real workflows.
 - **Evidence:** 22 suites / 77 tests and the optimized build pass. The four mock-isolated workspaces pass the 360/640/1024/1440 responsive matrix with no page overflow, duplicate IDs, broken images, unnamed buttons, or active controls below 40px. Canonical OS, Scaffold Kit, Brand Kit, and connected-app validation pass.
-- **Boundary:** Migrations `017`, `018`, and `019` are local review artifacts only. No production migration, record mutation, auth change, external AI call, push, merge, or deployment is authorized.
+- **Boundary:** Migrations `018`, `019`, and `020` are local review artifacts only. No production migration, record mutation, auth change, external AI call, push, merge, or deployment is authorized.
+
+## D-029 — Finish the live teacher workflow behind an isolated release gate
+
+- **Date:** 2026-09-07
+- **Status:** accepted for local implementation; isolated database acceptance required
+- **Decision:** Expose Badge Studio, pending reschedule requests, parent-view preview, and assignment reassign/repertoire/remove controls in the real local Teacher Workspace. Store teacher-created celebrations in additive `teacher_badge_awards` records beside the existing automatic `student_badges` ledger. Preserve all earlier badge and practice history, and constrain physical-format choices to non-ordering planning metadata.
+- **Reason:** The accepted Teacher redesign contained working review interactions, but several were absent from the live adapter. A separate additive award table and the existing transactional assignment lifecycle close that product gap without rewriting established student records.
+- **Evidence:** Static migration invariants, API tests, live-wiring tests, full unit suite, art validation, and optimized build are required locally. SQL execution, real teacher/parent/student RLS checks, keyboard/zoom review, push, migration, and deployment remain separate gates.
+- **Boundary:** No production data, vendor, guardian address, order, payment, external message, migration, push, or deployment is authorized by this decision.

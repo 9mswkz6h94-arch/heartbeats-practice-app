@@ -50,5 +50,5 @@
   "referenceViewports": ["390x844", "768x1024", "1024x768", "1440x900"],
   "deploymentApproved": false,
   "productionChangesAllowed": false,
-  "nextAction": "Review the completed local workflows, then validate migrations 017–019 with isolated teacher, parent, and student accounts plus true keyboard and 200% browser-zoom checks before any push or deployment"
+  "nextAction": "Validate ordered migrations 016–021 and the live teacher workflows with isolated teacher, parent, and student accounts, then complete true keyboard and 200% browser-zoom checks before any push or deployment"
 }
