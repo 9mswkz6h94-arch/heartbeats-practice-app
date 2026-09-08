@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Spirlo proposal: snail silhouette with a French-horn shell and bell. -->
+  <g fill="#201923">
+    <path d="M8 26h4V15h5v11h5V15h5v12h4V13h22v4h5v6h4v21h-5v6h-9v5H26v5H10v-4H4v-6H1V37h3v-7h4v-4z"/>
+    <path d="M50 22h9v-4h4v23h-4v-4h-9V22z"/>
+  </g>
+  <g fill="#80511C">
+    <path d="M31 16h20v4h5v5h3v15h-5v7h-8v5H28V29h3V16z"/>
+    <path d="M7 31h24v22h17v-3h7v3h-4v4H26v-4H8v-4H4V39h3v-8z"/>
+  </g>
+  <g fill="#D7922C">
+    <path d="M34 17h16v4h5v6h3v11h-5v7h-8v4H31V28h3V17z"/>
+    <path d="M9 29h20v5h5v14h14v-3h7v4h-5v5H27v3H10v-4H6V40h3V29z"/>
+  </g>
+  <g fill="#FFE0A1">
+    <path d="M10 19h3v10h-3V19zm12 0h3v10h-3V19z"/>
+    <path d="M9 31h17v5h4v10h-5v4H9v-3H6v-8h3v-8z"/>
+    <path d="M39 23h10v3h4v11h-4v4H37v-4h-4V28h3v-5h3z"/>
+    <path d="M53 25h7v11h-7V25z"/>
+  </g>
+  <g fill="#201923">
+    <path d="M11 20h3v3h-3v-3zm11 0h3v3h-3v-3z"/>
+    <path d="M14 34h3v3h-3v-3zm8 0h3v3h-3v-3z"/>
+    <path d="M16 40h4v2h5v-2h4v3H16v-3z"/>
+    <path d="M39 27h9v2h3v7h-3v3h-9v-3h-3v-6h3v-3zm2 4v5h5v-2h2v-3h-7z"/>
+    <path d="M58 27h3v7h-3v-7z"/>
+  </g>
+</svg>

@@ -1,0 +1,23 @@
+{
+  "proposalFormat": "musical-zoo-post-starter-v1",
+  "status": "companion-review",
+  "canonical": false,
+  "id": "ringlet",
+  "name": "Ringlet",
+  "starterRole": null,
+  "animal": "rabbit",
+  "instrument": "hand-bell-torso",
+  "musicalRole": "listening",
+  "practiceVirtue": "careful-attention",
+  "palette": { "outline": "#201923", "dark": "#4A3F7A", "primary": "#8B7FD1", "light": "#FFE9B8" },
+  "companion": {
+    "sourceSvg": "../../../../concept-art/library-expansion/characters/ringlet/ringlet-companion-64x64-v1.svg",
+    "nativePng": "../../../../concept-art/library-expansion/characters/ringlet/ringlet-companion-64x64-v1.png",
+    "previewPng": "../../../../concept-art/library-expansion/characters/ringlet/ringlet-companion-preview-8x-v1.png",
+    "width": 64,
+    "height": 64
+  },
+  "accessibility": "Ringlet, a friendly rabbit with a hand-bell body and one listening ear tipped forward.",
+  "voicePremise": "Attentive and warm; notices sounds without judging accuracy.",
+  "deferred": ["roaming32", "egg16", "motion", "stickers", "authored-voice-pack", "progression", "integration"]
+}

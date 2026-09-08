@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "libraryVersion": 2,
+  "status": "proposed-correction-package",
+  "scope": {
+    "app": "Heart Beats Practice App",
+    "projectId": "proj-004",
+    "appLocal": true,
+    "canonicalRainbowHeartIllustration": false,
+    "appIntegrationApproved": false
+  },
+  "review": {
+    "label": "Correction candidates V2",
+    "nativeTitle": "Riffin + Ringlet anatomy pass",
+    "nativeSubtitle": "Proposed native-size corrections; accepted source pins remain unchanged.",
+    "stickerTitle": "Riffin + Ringlet full-art pass",
+    "stickerSubtitle": "Cross-body tail flow for Riffin; a recessed bell clapper for Ringlet.",
+    "nativeBoard": "riffin-ringlet-correction-native-review-v2.png",
+    "stickerBoard": "riffin-ringlet-correction-sticker-review-v2.png"
+  },
+  "formats": {
+    "habitat": {
+      "sourceStem": "habitat-source",
+      "outputStem": "habitat-32-candidate-v2",
+      "previewStem": "habitat-preview-8x-candidate-v2",
+      "width": 32,
+      "height": 32,
+      "previewScale": 8,
+      "maximumOpaqueColors": 16
+    },
+    "companion": {
+      "sourceStem": "companion-master",
+      "outputStem": "companion-64-candidate-v2",
+      "previewStem": "companion-preview-8x-candidate-v2",
+      "width": 64,
+      "height": 64,
+      "previewScale": 8
+    },
+    "stickers": {
+      "sourceStem": "sticker-sheet-source",
+      "cleanStem": "sticker-sheet-clean-candidate-v2",
+      "outputSuffix": "768-candidate-v2",
+      "width": 768,
+      "height": 768,
+      "poses": ["celebrate", "encourage", "connect"]
+    }
+  },
+  "characters": [
+    {
+      "id": "riffin",
+      "name": "Riffin",
+      "animal": "fox",
+      "instrument": "acoustic-guitar belly and curved neck-tail",
+      "musicalRole": "melody",
+      "practiceVirtue": "brave-first-attempts",
+      "silhouetteAnchor": "oversized ears and one long upward-curving guitar-neck tail",
+      "anatomyInvariant": "The round cream soundboard forms the belly; exactly three horizontal strings cross the body and flow into one long tail that curves upward as the neck, ending in exactly three pegs.",
+      "avoid": "No vertical torso strings, straight separate neck, separate guitar, extra strings, extra tuning pegs, or egg.",
+      "status": "proposed-correction",
+      "sourceVersions": { "companionMaster": 2, "habitatSource": 2, "stickerSheetSource": 2 }
+    },
+    {
+      "id": "ringlet",
+      "name": "Ringlet",
+      "animal": "rabbit",
+      "instrument": "hand-bell torso",
+      "musicalRole": "listening",
+      "practiceVirtue": "careful-attention",
+      "silhouetteAnchor": "two uneven listening ears over a flared bell-shaped torso",
+      "anatomyInvariant": "The lower torso is one flared handbell; one small flat clapper is recessed high inside its dark opening and never hangs below the rim or between the feet; one ear tips forward to listen.",
+      "avoid": "No carried bell, separate handle, second clapper, spherical clapper, pendant, or dangling shape between the legs.",
+      "status": "proposed-correction",
+      "sourceVersions": { "companionMaster": 2, "habitatSource": 2, "stickerSheetSource": 2 }
+    }
+  ]
+}

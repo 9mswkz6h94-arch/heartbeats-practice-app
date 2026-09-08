@@ -1,0 +1,23 @@
+{
+  "proposalFormat": "musical-zoo-post-starter-v1",
+  "status": "companion-review",
+  "canonical": false,
+  "id": "spirlo",
+  "name": "Spirlo",
+  "starterRole": null,
+  "animal": "snail",
+  "instrument": "french-horn-shell",
+  "musicalRole": "phrasing",
+  "practiceVirtue": "patient-pacing",
+  "palette": { "outline": "#201923", "dark": "#80511C", "primary": "#D7922C", "light": "#FFE0A1" },
+  "companion": {
+    "sourceSvg": "../../../../concept-art/library-expansion/characters/spirlo/spirlo-companion-64x64-v1.svg",
+    "nativePng": "../../../../concept-art/library-expansion/characters/spirlo/spirlo-companion-64x64-v1.png",
+    "previewPng": "../../../../concept-art/library-expansion/characters/spirlo/spirlo-companion-preview-8x-v1.png",
+    "width": 64,
+    "height": 64
+  },
+  "accessibility": "Spirlo, a friendly amber snail whose spiral shell opens into a French-horn bell.",
+  "voicePremise": "Unhurried and flowing; notices arcs, breath, and space without speed jokes.",
+  "deferred": ["roaming32", "egg16", "motion", "stickers", "authored-voice-pack", "progression", "integration"]
+}

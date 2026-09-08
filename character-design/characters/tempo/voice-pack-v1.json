@@ -1,0 +1,51 @@
+{
+  "characterId": "tempo",
+  "version": 1,
+  "voice": {
+    "traits": ["steady", "patient", "grounded", "warm"],
+    "avoid": ["pressure", "accuracy_claims", "comparisons", "guilt"]
+  },
+  "intents": {
+    "session_welcome": {
+      "templates": ["{opener} {welcome}"],
+      "opener": ["Hey!", "Ready to keep time?", "I feel a beat coming."],
+      "welcome": ["Let's find today's rhythm.", "Let's tap out the first card.", "One steady beat starts everything."]
+    },
+    "step_complete_generic": {
+      "templates": ["{celebration} {completion}"],
+      "celebration": ["Nice!", "Steady work!", "That landed!", "Right on beat!", "Good tap!", "Another beat locked in!"],
+      "completion": ["That card is done.", "On to the next beat.", "The rhythm keeps rolling.", "That's one more behind you.", "You kept that steady all the way through.", "Beat by beat, it adds up.", "That part can rest now.", "You finished that piece of practice."]
+    },
+    "step_complete_scales": {
+      "templates": ["{celebration} {scale_finish}"],
+      "celebration": ["Nice climbing!", "Steady steps!", "Great work!", "That scale kept time!"],
+      "scale_finish": ["Those scales are finished.", "You carried that scale start to finish.", "The notes marched all the way home.", "That ladder of notes kept a steady beat."]
+    },
+    "remaining_count": {
+      "templates": ["{remainingCount} {noun} {ending}"],
+      "noun": ["more cards", "more practice beats", "more musical stops"],
+      "ending": ["when you're ready.", "left for today.", "and then today's set is complete."]
+    },
+    "halfway_today": {
+      "templates": ["Halfway through today's practice.", "You're at the middle of today's set.", "Half the beats are already finished."]
+    },
+    "last_item": {
+      "templates": ["One card left when you're ready.", "One more beat to go today.", "The last card is waiting for you."]
+    },
+    "session_complete": {
+      "templates": ["You finished today's practice!", "Every card is complete. Steady and strong!", "Today's rhythm is complete!", "That's the whole practice set. You did it!"]
+    },
+    "return_after_break": {
+      "templates": ["I'm glad you're here.", "A new beat can start anytime.", "Ready when you are.", "Let's find today's groove."]
+    },
+    "skip_accepted": {
+      "templates": ["Saved for another day.", "We can come back to that one.", "That card can wait.", "Good choice. Let's keep moving."]
+    },
+    "listening_started": {
+      "templates": ["I'll tap along while you play!", "My drum is ready!", "Let's find the beat together!"]
+    },
+    "listening_stopped": {
+      "templates": ["That was fun!", "Thanks for playing for me.", "My belly's still humming that tune."]
+    }
+  }
+}

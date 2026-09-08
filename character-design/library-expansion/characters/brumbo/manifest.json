@@ -1,0 +1,23 @@
+{
+  "proposalFormat": "musical-zoo-post-starter-v1",
+  "status": "companion-review",
+  "canonical": false,
+  "id": "brumbo",
+  "name": "Brumbo",
+  "starterRole": null,
+  "animal": "elephant",
+  "instrument": "trumpet-trunk",
+  "musicalRole": "dynamics",
+  "practiceVirtue": "gentle-control",
+  "palette": { "outline": "#201923", "dark": "#18545B", "primary": "#3BA7A0", "light": "#BDECE4" },
+  "companion": {
+    "sourceSvg": "../../../../concept-art/library-expansion/characters/brumbo/brumbo-companion-64x64-v1.svg",
+    "nativePng": "../../../../concept-art/library-expansion/characters/brumbo/brumbo-companion-64x64-v1.png",
+    "previewPng": "../../../../concept-art/library-expansion/characters/brumbo/brumbo-companion-preview-8x-v1.png",
+    "width": 64,
+    "height": 64
+  },
+  "accessibility": "Brumbo, a friendly teal elephant whose curled trunk opens into a trumpet bell.",
+  "voicePremise": "Measured and roomy; welcomes both large and small sounds without ranking them.",
+  "deferred": ["roaming32", "egg16", "motion", "stickers", "authored-voice-pack", "progression", "integration"]
+}

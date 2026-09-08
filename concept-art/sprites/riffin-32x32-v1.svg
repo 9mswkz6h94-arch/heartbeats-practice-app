@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <!-- Four-color production palette: #201923 #7A321C #E86F21 #FFD27A -->
+  <g fill="#201923">
+    <path d="M5 2h5v2h1v3H5V2zm13 0h5v5h-6V4h1V2z"/>
+    <path d="M3 7h22v10h-2v2H5v-2H3V7z"/>
+    <path d="M7 17h14v2h3v6h-3v5h-5v-4h-4v4H7v-5H4v-6h3v-2z"/>
+    <path d="M22 7h4v-2h2v2h2v3h-2v2h2v3h-2v2h-2v-2h-4V7z"/>
+  </g>
+  <g fill="#7A321C">
+    <path d="M6 3h3v5H6V3zm13 0h3v5h-3V3z"/>
+    <path d="M23 8h3V7h1v2h2v1h-2v3h2v1h-2v2h-1v-2h-3V8z"/>
+    <path d="M5 20h3v5H5v-5zm15 0h3v5h-3v-5z"/>
+  </g>
+  <g fill="#E86F21">
+    <path d="M5 8h18v8h-2v2H7v-2H5V8z"/>
+    <path d="M8 18h12v2h2v5h-3v4h-2v-4H11v4H8v-4H6v-5h2v-2z"/>
+    <path d="M23 8h2v6h-2V8z"/>
+  </g>
+  <g fill="#FFD27A">
+    <path d="M7 4h1v3H7V4zm13 0h1v3h-1V4z"/>
+    <path d="M7 11h4v4H7v-4zm10 0h4v4h-4v-4z"/>
+    <path d="M10 14h8v3h-8v-3z"/>
+    <path d="M11 19h6v6h-6v-6z"/>
+    <path d="M12 19h1v6h-1v-6zm2 0h1v6h-1v-6zm2 0h1v6h-1v-6z"/>
+  </g>
+  <g fill="#201923">
+    <path d="M8 12h2v2H8v-2zm10 0h2v2h-2v-2z"/>
+    <path d="M13 14h2v2h-2v-2z"/>
+    <path d="M11 20h6v4h-6v-4z"/>
+  </g>
+  <g fill="#FFD27A">
+    <path d="M12 20h1v4h-1v-4zm2 0h1v4h-1v-4zm2 0h1v4h-1v-4z"/>
+  </g>
+</svg>

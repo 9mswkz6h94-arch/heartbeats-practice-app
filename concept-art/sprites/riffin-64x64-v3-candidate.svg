@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Riffin V3 cute-proportion candidate: four colors, transparency, integer grid. -->
+  <g fill="#201923">
+    <!-- Oversized fox head, tall ears, cheek tufts, and narrow neck. -->
+    <path d="M8 3h13v3h3v8h16V6h3V3h13v19h-3v6h-4v4h-8v3H23v-3h-8v-4h-4v-6H8V3z"/>
+    <!-- Rounded guitar-body silhouette with small paws and feet. -->
+    <path d="M23 33h18v3h5v4h4v8h-4v3h3v7h-5v3H36v-5h-8v5h-8v-3h-5v-7h3v-3h-4v-8h4v-4h5v-3z"/>
+    <!-- Perky guitar-neck tail with exactly three separated tuning pegs. -->
+    <path d="M43 39h5v-5h3v-5h3v-5h4v7h-3v4h4v5h-4v4h4v5h-4v4h-8v-5h-4v-9z"/>
+  </g>
+
+  <g fill="#7A321C">
+    <!-- Inner ears. -->
+    <path d="M11 6h7v12h-7V6zm35 0h7v12h-7V6z"/>
+    <!-- Tail neck and small paws. -->
+    <path d="M46 39h4v-5h3v-5h2v7h-2v4h4v2h-4v5h4v2h-7v-4h-4v-6z"/>
+    <path d="M16 42h6v7h-6v-7zm26 0h6v7h-6v-7z"/>
+    <!-- Rounded sound hole. -->
+    <path d="M25 42h14v2h2v9h-2v2H25v-2h-2v-9h2v-2z"/>
+  </g>
+
+  <g fill="#E86F21">
+    <!-- Rounder head and soft cheek clusters. -->
+    <path d="M11 16h42v9h-3v4h-5v3h-8v2H27v-2h-8v-3h-5v-4h-3v-9z"/>
+    <path d="M9 23h5v5h3v3h-5v-2H9v-6zm41 0h5v6h-3v2h-5v-3h3v-5z"/>
+    <!-- Round guitar body with a clear waist. -->
+    <path d="M24 35h16v3h5v4h2v6h-5v3h4v6h-4v3h-7v-5h-6v5h-7v-3h-4v-6h4v-3h-5v-6h2v-4h5v-3z"/>
+    <path d="M46 39h3v-4h2v11h-5v-7z"/>
+  </g>
+
+  <g fill="#FFD27A">
+    <!-- Ear lights. -->
+    <path d="M13 7h4v10h-4V7zm34 0h4v10h-4V7z"/>
+    <!-- Large bright eyes and rounded muzzle. -->
+    <path d="M16 18h10v9H16v-9zm22 0h10v9H38v-9z"/>
+    <path d="M21 25h22v6h-3v2H24v-2h-3v-6z"/>
+    <!-- Soft cheek highlights. -->
+    <path d="M14 26h5v3h-5v-3zm31 0h5v3h-5v-3z"/>
+    <!-- Resonator face: upper bout, waist, and lower bout. -->
+    <path d="M24 38h16v2h4v7h-3v3h3v6h-4v2H24v-2h-4v-6h3v-3h-3v-7h4v-2z"/>
+    <!-- Tiny rounded feet and exactly three tuning pegs. -->
+    <path d="M21 57h8v3h-8v-3zm14 0h8v3h-8v-3z"/>
+    <path d="M54 25h4v4h-4v-4zm1 11h4v4h-4v-4zm-1 9h4v4h-4v-4z"/>
+  </g>
+
+  <g fill="#201923">
+    <!-- Bigger eager eyes with one-pixel highlights cut back below. -->
+    <path d="M18 20h6v6h-6v-6zm22 0h6v6h-6v-6z"/>
+    <!-- Nose and joyful open mouth. -->
+    <path d="M30 25h4v3h-4v-3zm-5 4h5v2h4v-2h5v3h-2v3H27v-3h-2v-3z"/>
+    <!-- Reassert the single dark sound hole. -->
+    <path d="M25 42h14v2h2v9h-2v2H25v-2h-2v-9h2v-2z"/>
+  </g>
+
+  <g fill="#FFD27A">
+    <!-- Eye sparkles. -->
+    <path d="M19 20h2v2h-2v-2zm22 0h2v2h-2v-2z"/>
+    <!-- Exactly three visible strings. -->
+    <path d="M26 40h2v16h-2V40zm5 0h2v16h-2V40zm5 0h2v16h-2V40z"/>
+  </g>
+
+  <!-- Tiny tongue uses the existing coral primary. -->
+  <path fill="#E86F21" d="M30 32h4v2h-4v-2z"/>
+</svg>

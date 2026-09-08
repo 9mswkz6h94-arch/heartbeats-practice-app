@@ -1,0 +1,15 @@
+{
+  "characterId": "lyra",
+  "displayName": "Lyra the Wise Owl",
+  "version": 1,
+  "assets": {
+    "sprite64": "characters/lyra/sprite64.jpg",
+    "sprite32": "characters/lyra/sprite32.jpg",
+    "egg": "characters/lyra/egg.jpg",
+    "stickers": [
+      "characters/lyra/sticker_happy.jpg",
+      "characters/lyra/sticker_think.jpg",
+      "characters/lyra/sticker_focus.jpg"
+    ]
+  }
+}

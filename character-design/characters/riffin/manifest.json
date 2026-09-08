@@ -1,0 +1,56 @@
+{
+  "$schema": "../../schema/character-manifest.schema.json",
+  "schemaVersion": 1,
+  "characterVersion": 4,
+  "id": "riffin",
+  "name": "Riffin",
+  "starterRole": "melody",
+  "animal": "fox",
+  "instrument": "acoustic-guitar",
+  "musicalRole": "melody",
+  "practiceVirtue": "brave-first-attempts",
+  "palette": {
+    "outline": "#201923",
+    "dark": "#7A321C",
+    "primary": "#E86F21",
+    "light": "#FFD27A"
+  },
+  "assets": {
+    "companion64": "../../../concept-art/sprites/riffin-64x64-v2.png",
+    "roaming32": "../../../concept-art/sprites/riffin-32x32-v1.png",
+    "egg16": "../../../concept-art/sprites/riffin-egg-16x16-v1.png",
+    "idleFrames": [
+      "../../../concept-art/sprites/riffin-idle-01-v2.png",
+      "../../../concept-art/sprites/riffin-idle-02-v2.png"
+    ],
+    "danceFrames": [
+      "../../../concept-art/sprites/riffin-dance-01-v2.png",
+      "../../../concept-art/sprites/riffin-dance-02-v2.png"
+    ],
+    "celebrateFrames": [
+      "../../../concept-art/sprites/riffin-celebrate-01-v2.png",
+      "../../../concept-art/sprites/riffin-celebrate-02-v2.png"
+    ],
+    "stickers": {
+      "celebrate": "../../../concept-art/stickers/riffin-sticker-celebrate-full-v1.png",
+      "encourage": "../../../concept-art/stickers/riffin-sticker-encourage-full-v1.png",
+      "connect": "../../../concept-art/sprites/riffin-sticker-connect-v2.png"
+    }
+  },
+  "accessibility": {
+    "character": "Riffin, a friendly fox and acoustic-guitar creature.",
+    "egg": "Riffin's coral starter egg with flowing string markings.",
+    "stickers": {
+      "celebrate": "Riffin celebrates your practice.",
+      "encourage": "Riffin says keep going, one try at a time.",
+      "connect": "Riffin sends a musical high-five."
+    }
+  },
+  "interactions": {
+    "voicePack": "voice-pack-v2.json",
+    "implementedIntentCount": 23,
+    "reviewedCombinationCount": 175
+  },
+  "legacy": false,
+  "status": "design-approved-assets-in-progress"
+}

@@ -1,0 +1,23 @@
+{
+  "proposalFormat": "musical-zoo-post-starter-v1",
+  "status": "companion-review",
+  "canonical": false,
+  "id": "plinka",
+  "name": "Plinka",
+  "starterRole": null,
+  "animal": "hedgehog",
+  "instrument": "kalimba-quills",
+  "musicalRole": "improvisation",
+  "practiceVirtue": "playful-curiosity",
+  "palette": { "outline": "#201923", "dark": "#7A3F69", "primary": "#D96CA0", "light": "#FFD1E3" },
+  "companion": {
+    "sourceSvg": "../../../../concept-art/library-expansion/characters/plinka/plinka-companion-64x64-v1.svg",
+    "nativePng": "../../../../concept-art/library-expansion/characters/plinka/plinka-companion-64x64-v1.png",
+    "previewPng": "../../../../concept-art/library-expansion/characters/plinka/plinka-companion-preview-8x-v1.png",
+    "width": 64,
+    "height": 64
+  },
+  "accessibility": "Plinka, a friendly pink hedgehog whose center quills form three kalimba tines.",
+  "voicePremise": "Bright and possibility-minded; celebrates exploration without grading it.",
+  "deferred": ["roaming32", "egg16", "motion", "stickers", "authored-voice-pack", "progression", "integration"]
+}

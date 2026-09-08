@@ -1,0 +1,161 @@
+{
+  "$schema": "../../../character-design/schema/character-art-library.schema.json",
+  "schemaVersion": 1,
+  "libraryVersion": 2,
+  "status": "accepted-art-package",
+  "acceptedBy": "Jonathan",
+  "acceptedOn": "2026-09-07",
+  "scope": {
+    "app": "Heart Beats Practice App",
+    "projectId": "proj-004",
+    "appLocal": true,
+    "canonicalRainbowHeartIllustration": false,
+    "appIntegrationApproved": true
+  },
+  "formats": {
+    "habitat": {
+      "sourceStem": "habitat-source",
+      "outputStem": "habitat-32-v1",
+      "previewStem": "habitat-preview-8x-v1",
+      "width": 32,
+      "height": 32,
+      "previewScale": 8,
+      "maximumOpaqueColors": 16
+    },
+    "companion": {
+      "sourceStem": "companion-master",
+      "outputStem": "companion-64-v1",
+      "previewStem": "companion-preview-8x-v1",
+      "width": 64,
+      "height": 64,
+      "previewScale": 8
+    },
+    "stickers": {
+      "sourceStem": "sticker-sheet-source",
+      "cleanStem": "sticker-sheet-clean-v1",
+      "outputSuffix": "768-v1",
+      "width": 768,
+      "height": 768,
+      "poses": ["celebrate", "encourage", "connect"]
+    }
+  },
+  "characters": [
+    {
+      "id": "riffin",
+      "name": "Riffin",
+      "animal": "fox",
+      "instrument": "acoustic-guitar body and neck-tail",
+      "musicalRole": "melody",
+      "practiceVirtue": "brave-first-attempts",
+      "silhouetteAnchor": "oversized ears and a long guitar-neck tail",
+      "anatomyInvariant": "The round cream soundboard forms the belly; exactly three horizontal strings cross the body and flow into one long tail that curves upward as the neck, ending in exactly three pegs.",
+      "avoid": "No vertical torso strings, straight separate neck, separate guitar, extra strings, extra tuning pegs, or egg.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 2, "habitatSource": 2, "stickerSheetSource": 2 }
+    },
+    {
+      "id": "boppo",
+      "name": "Boppo",
+      "animal": "frog",
+      "instrument": "hand-drum belly",
+      "musicalRole": "rhythm",
+      "practiceVirtue": "steady-persistence",
+      "silhouetteAnchor": "raised frog eyes, bent legs, and a round drum belly",
+      "anatomyInvariant": "The broad cream drum membrane is the belly and rhythm reads through the body pose.",
+      "avoid": "No separate drum, sticks, mallets, or egg.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 1, "habitatSource": 1, "stickerSheetSource": 1 }
+    },
+    {
+      "id": "chordillo",
+      "name": "Chordillo",
+      "animal": "armadillo",
+      "instrument": "segmented chord shell",
+      "musicalRole": "harmony",
+      "practiceVirtue": "building-sounds-together",
+      "silhouetteAnchor": "upright ears and a large banded armadillo shell",
+      "anatomyInvariant": "Alternating shell bands suggest neighboring chord tones while remaining armadillo armor.",
+      "avoid": "No separate keyboard, xylophone, percussion bars, or egg.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 1, "habitatSource": 1, "stickerSheetSource": 1 }
+    },
+    {
+      "id": "ringlet",
+      "name": "Ringlet",
+      "animal": "rabbit",
+      "instrument": "hand-bell torso",
+      "musicalRole": "listening",
+      "practiceVirtue": "careful-attention",
+      "silhouetteAnchor": "two uneven listening ears over a bell-shaped torso",
+      "anatomyInvariant": "The lower torso is one flared handbell; one small flat clapper is recessed high inside its dark opening and never hangs below the rim or between the feet; one ear tips forward to listen.",
+      "avoid": "No carried bell, separate handle, second clapper, spherical clapper, pendant, or dangling shape between the legs.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 2, "habitatSource": 2, "stickerSheetSource": 2 }
+    },
+    {
+      "id": "brumbo",
+      "name": "Brumbo",
+      "animal": "elephant",
+      "instrument": "trumpet-bell trunk",
+      "musicalRole": "dynamics",
+      "practiceVirtue": "gentle-control",
+      "silhouetteAnchor": "wide ears and one curled bell-ended trunk",
+      "anatomyInvariant": "The trunk itself widens into one polished trumpet bell.",
+      "avoid": "No separate trumpet, mouthpiece, tusks, or loose brass parts.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 1, "habitatSource": 1, "stickerSheetSource": 1 }
+    },
+    {
+      "id": "plinka",
+      "name": "Plinka",
+      "animal": "hedgehog",
+      "instrument": "graded kalimba tine-spines",
+      "musicalRole": "improvisation",
+      "practiceVirtue": "playful-curiosity",
+      "silhouetteAnchor": "one fan of softly rounded graded tine-spines",
+      "anatomyInvariant": "The playable graded tines are the hedgehog spines themselves and form the entire back silhouette.",
+      "avoid": "No attached kalimba rack, hardware, ordinary quill layer, sharp spikes, or separate instrument.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 2, "habitatSource": 2, "stickerSheetSource": 2 }
+    },
+    {
+      "id": "puffino",
+      "name": "Puffino",
+      "animal": "puffin",
+      "instrument": "horizontal accordion torso",
+      "musicalRole": "expression",
+      "practiceVirtue": "personal-choice",
+      "silhouetteAnchor": "upright puffin oval with a beak and horizontal bellows",
+      "anatomyInvariant": "A compact accordion spans horizontally across the visible rounded torso with symmetrical end plates.",
+      "avoid": "No detached, dangling, vertical, beard-like, or chest-obscuring accordion.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 1, "habitatSource": 1, "stickerSheetSource": 2 }
+    },
+    {
+      "id": "cymbi",
+      "name": "Cymbi",
+      "animal": "ladybug",
+      "instrument": "dorsal cymbal wing covers",
+      "musicalRole": "ensemble",
+      "practiceVirtue": "thoughtful-turn-taking",
+      "silhouetteAnchor": "round ladybug body with paired golden dorsal discs",
+      "anatomyInvariant": "Exactly two cymbal discs form the wing covers on the back above a plain front torso; six small feet remain visible.",
+      "avoid": "No front-mounted cymbals, chest discs, extra cymbals, human torso anatomy, or missing feet.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 2, "habitatSource": 2, "stickerSheetSource": 3 }
+    },
+    {
+      "id": "spirlo",
+      "name": "Spirlo",
+      "animal": "snail",
+      "instrument": "French-horn shell",
+      "musicalRole": "phrasing",
+      "practiceVirtue": "patient-pacing",
+      "silhouetteAnchor": "low snail profile with a coiled horn shell and rear bell",
+      "anatomyInvariant": "Exactly one pair of eyes sits at the tips of exactly two stalks; the shell is coiled brass tubing ending in one backward flared bell.",
+      "avoid": "No second eye pair, face eyes, separate horn, racing joke, or chord-shell bands.",
+      "status": "accepted-art-package",
+      "acceptedSources": { "companionMaster": 2, "habitatSource": 2, "stickerSheetSource": 2 }
+    }
+  ]
+}

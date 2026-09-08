@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Ringlet proposal: rabbit silhouette with one integrated hand-bell torso. -->
+  <g fill="#201923">
+    <path d="M13 3h12v5h2v14h10V8h2V3h12v20h-3v5h3v13h-4v5h-4v4h4v8h-9v4H18v-4H9v-8h4v-4H9v-5H7V28h5v-5h1V3z"/>
+    <path d="M47 39h8v3h3v9h-3v3h-9V42h1v-3z"/>
+  </g>
+  <g fill="#4A3F7A">
+    <path d="M16 6h6v18h-6V6zm24 0h7v17h-7V6z"/>
+    <path d="M12 30h40v9h-4v5H16v-5h-4v-9z"/>
+    <path d="M24 43h16v12h4v2H20v-2h4V43z"/>
+    <path d="M49 42h5v8h-5v-8z"/>
+  </g>
+  <g fill="#8B7FD1">
+    <path d="M17 8h4v16h-4V8zm24 0h5v15h-5V8z"/>
+    <path d="M13 29h38v10h-5v4H18v-4h-5V29z"/>
+    <path d="M20 40h24v4h3v7h-3v6h-7v3H27v-3h-7v-6h-3v-7h3v-4z"/>
+  </g>
+  <g fill="#FFE9B8">
+    <path d="M18 9h2v13h-2V9zm24 0h3v12h-3V9z"/>
+    <path d="M18 31h9v7h-9v-7zm19 0h9v7h-9v-7z"/>
+    <path d="M24 36h16v6H24v-6z"/>
+    <path d="M24 43h16v3h3v6h-3v3h-7v3h-2v-3h-7v-3h-3v-6h3v-3z"/>
+  </g>
+  <g fill="#201923">
+    <path d="M21 33h3v3h-3v-3zm19-1h3v3h-3v-3z"/>
+    <path d="M30 36h4v3h-4v-3zm-5 4h5v2h4v-2h5v3H25v-3z"/>
+    <path d="M30 55h4v6h-4v-6z"/>
+  </g>
+</svg>

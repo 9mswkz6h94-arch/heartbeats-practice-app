@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rainbowheart.studio/schemas/musical-zoo-character-v1.json",
+  "title": "Musical Zoo character manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "characterVersion", "id", "name", "starterRole", "animal", "instrument", "musicalRole", "practiceVirtue", "palette", "assets", "accessibility", "interactions", "legacy", "status"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schemaVersion": { "const": 1 },
+    "characterVersion": { "type": "integer", "minimum": 1 },
+    "id": { "$ref": "#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "starterRole": { "type": ["string", "null"] },
+    "animal": { "type": "string", "minLength": 1 },
+    "instrument": { "type": "string", "minLength": 1 },
+    "musicalRole": { "type": "string", "minLength": 1 },
+    "practiceVirtue": { "type": "string", "minLength": 1 },
+    "palette": {
+      "type": "object",
+      "required": ["outline", "dark", "primary", "light"],
+      "additionalProperties": false,
+      "properties": {
+        "outline": { "const": "#201923" },
+        "dark": { "$ref": "#/$defs/color" },
+        "primary": { "$ref": "#/$defs/color" },
+        "light": { "$ref": "#/$defs/color" }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["companion64", "roaming32", "egg16", "idleFrames", "danceFrames", "celebrateFrames", "stickers"],
+      "properties": {
+        "companion64": { "$ref": "#/$defs/nullablePath", "description": "Medium expressive companion sprite authored for interaction, never reused as the Zoo roaming asset." },
+        "roaming32": { "$ref": "#/$defs/nullablePath", "description": "Purpose-built small 8-bit Zoo sprite, not an automatic companion downscale." },
+        "egg16": { "$ref": "#/$defs/nullablePath" },
+        "idleFrames": { "$ref": "#/$defs/twoFramePlan" },
+        "danceFrames": { "$ref": "#/$defs/twoFramePlan" },
+        "celebrateFrames": { "$ref": "#/$defs/twoFramePlan" },
+        "stickers": {
+          "description": "Paths to full-art transparent sticker masters, each authored at 512×512 or larger. Existing 64×64 paths are migration previews only.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["celebrate", "encourage", "connect"],
+          "properties": {
+            "celebrate": { "$ref": "#/$defs/nullablePath" },
+            "encourage": { "$ref": "#/$defs/nullablePath" },
+            "connect": { "$ref": "#/$defs/nullablePath" }
+          }
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["character", "egg", "stickers"],
+      "properties": {
+        "character": { "type": "string" },
+        "egg": { "type": "string" },
+        "stickers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["celebrate", "encourage", "connect"],
+          "properties": {
+            "celebrate": { "type": "string" },
+            "encourage": { "type": "string" },
+            "connect": { "type": "string" }
+          }
+        }
+      }
+    },
+    "interactions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["voicePack", "implementedIntentCount", "reviewedCombinationCount"],
+      "properties": {
+        "voicePack": { "type": "string", "minLength": 1 },
+        "implementedIntentCount": { "type": "integer", "minimum": 0, "maximum": 23 },
+        "reviewedCombinationCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "legacy": { "type": "boolean" },
+    "status": { "enum": ["concept", "design-in-review", "design-approved-assets-in-progress", "ready-for-implementation", "legacy-grove"] }
+  },
+  "$defs": {
+    "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "nullablePath": { "type": ["string", "null"], "minLength": 1 },
+    "twoFramePlan": { "type": "array", "maxItems": 2, "items": { "type": "string", "minLength": 1 } }
+  }
+}

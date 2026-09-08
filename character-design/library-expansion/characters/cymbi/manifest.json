@@ -1,0 +1,23 @@
+{
+  "proposalFormat": "musical-zoo-post-starter-v1",
+  "status": "companion-review",
+  "canonical": false,
+  "id": "cymbi",
+  "name": "Cymbi",
+  "starterRole": null,
+  "animal": "ladybug",
+  "instrument": "cymbal-wings",
+  "musicalRole": "ensemble",
+  "practiceVirtue": "thoughtful-turn-taking",
+  "palette": { "outline": "#201923", "dark": "#7A2D2D", "primary": "#E45650", "light": "#FFD36A" },
+  "companion": {
+    "sourceSvg": "../../../../concept-art/library-expansion/characters/cymbi/cymbi-companion-64x64-v1.svg",
+    "nativePng": "../../../../concept-art/library-expansion/characters/cymbi/cymbi-companion-64x64-v1.png",
+    "previewPng": "../../../../concept-art/library-expansion/characters/cymbi/cymbi-companion-preview-8x-v1.png",
+    "width": 64,
+    "height": 64
+  },
+  "accessibility": "Cymbi, a friendly red ladybug whose two round wing covers form a cymbal pair.",
+  "voicePremise": "Social without pressure; makes space for shared sound and thoughtful turns.",
+  "deferred": ["roaming32", "egg16", "motion", "stickers", "authored-voice-pack", "progression", "integration"]
+}

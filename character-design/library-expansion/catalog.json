@@ -1,0 +1,18 @@
+{
+  "libraryVersion": 1,
+  "status": "app-local-companion-review",
+  "canonicalRainbowHeartIllustration": false,
+  "starterCharactersChanged": false,
+  "candidateCount": 6,
+  "candidates": [
+    { "id": "ringlet", "name": "Ringlet", "musicalRole": "listening", "practiceVirtue": "careful-attention" },
+    { "id": "brumbo", "name": "Brumbo", "musicalRole": "dynamics", "practiceVirtue": "gentle-control" },
+    { "id": "plinka", "name": "Plinka", "musicalRole": "improvisation", "practiceVirtue": "playful-curiosity" },
+    { "id": "puffino", "name": "Puffino", "musicalRole": "expression", "practiceVirtue": "personal-choice" },
+    { "id": "cymbi", "name": "Cymbi", "musicalRole": "ensemble", "practiceVirtue": "thoughtful-turn-taking" },
+    { "id": "spirlo", "name": "Spirlo", "musicalRole": "phrasing", "practiceVirtue": "patient-pacing" }
+  ],
+  "reviewBoard": "../../concept-art/library-expansion/musical-zoo-library-review-board-v1.png",
+  "styleLock": "STYLE_LOCK.md",
+  "deferred": ["roaming32", "egg16", "motion", "stickers", "voice-packs", "progression", "app-integration"]
+}

@@ -1,0 +1,23 @@
+{
+  "proposalFormat": "musical-zoo-post-starter-v1",
+  "status": "companion-review",
+  "canonical": false,
+  "id": "puffino",
+  "name": "Puffino",
+  "starterRole": null,
+  "animal": "puffin",
+  "instrument": "accordion-chest",
+  "musicalRole": "expression",
+  "practiceVirtue": "personal-choice",
+  "palette": { "outline": "#201923", "dark": "#254061", "primary": "#4D7FBF", "light": "#FFD77D" },
+  "companion": {
+    "sourceSvg": "../../../../concept-art/library-expansion/characters/puffino/puffino-companion-64x64-v1.svg",
+    "nativePng": "../../../../concept-art/library-expansion/characters/puffino/puffino-companion-64x64-v1.png",
+    "previewPng": "../../../../concept-art/library-expansion/characters/puffino/puffino-companion-preview-8x-v1.png",
+    "width": 64,
+    "height": 64
+  },
+  "accessibility": "Puffino, a friendly blue puffin with a ribbed accordion chest.",
+  "voicePremise": "Colorful but calm; notices musical shape and choice without assigning emotions.",
+  "deferred": ["roaming32", "egg16", "motion", "stickers", "authored-voice-pack", "progression", "integration"]
+}

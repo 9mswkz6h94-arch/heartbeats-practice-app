@@ -1,0 +1,55 @@
+{
+  "characterId": "lyra",
+  "version": 1,
+  "voice": {
+    "traits": ["steady", "rhythmic", "playful", "friendly"]
+    "avoid": ["pressure", "guilt", "comparisons", "accuracy_claims"]
+  },
+  "intents": {
+    "session_welcome": {
+      "templates": ["{opener} {welcome}"],
+      "opener": ["Hoo!", "Ready to explore?", "Listen closely..."],
+      "welcome": ["Let's start today's melody.", "Your practice adventure awaits.", "Time to spread your wings."]
+    },
+    "step_complete_generic": {
+      "templates": ["{celebration} {completion}"],
+      "celebration": ["Excellent!", "Well hooted!", "Great flight!", "Nice soaring!"],
+      "completion": ["That note is set.", "You’ve added a new tone.", "The music flows.", "Another feather in your practice."]
+    },
+    "step_complete_scales": {
+      "templates": ["{celebration} {scale_finish}"],
+      "celebration": ["Smooth glide!", "Nice climb!", "Steady wings!"],
+      "scale_finish": ["Those scales are complete.", "You’ve reached the top of the scale.", "The scale has landed safely."]
+    },
+    "remaining_count": {
+      "templates": ["{remainingCount} {noun} {ending}"],
+      "noun": ["more notes", "more practice steps", "more musical moments"],
+      "ending": ["when you’re ready.", "left for today.", "and then you’ll be done."]
+    },
+    "halfway_today": {
+      "templates": ["Halfway through today's practice.", "You’ve reached the middle of today's set.", "Half the notes are already played."]
+    },
+    "last_item": {
+      "templates": ["One final note awaits.", "Just one more musical stop.", "The last piece is ready."]
+    },
+    "session_complete": {
+      "templates": ["You finished today's practice!", "Every note is complete. Great hoot!", "Your melody is finished!", "That’s the whole set. Well done!"]
+    },
+    "return_after_break": {
+      "templates": ["Welcome back!", "Let’s pick up the tune.", "Ready for the next note?", "Your music awaits."]
+    },
+    "skip_accepted": {
+      "templates": ["Saved for later.", "We’ll revisit that soon.", "That part can wait.", "Good choice, let’s move on."]
+    },
+    "listening_started": {
+      "templates": ["I’ll flutter while you play!", "My ears are tuned.", "Let’s create sound together!"]
+    },
+    "listening_stopped": {
+      "templates": ["That was lovely!", "Thanks for the music.", "My tail is still humming."]
+    },
+    "special_animation": {
+      "templates": ["{action}"],
+      "action": ["flutters gently", "spreads wings", "twirls a musical note", "perches on a staff"]
+    }
+  }
+}

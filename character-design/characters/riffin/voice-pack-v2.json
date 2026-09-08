@@ -1,0 +1,257 @@
+{
+  "$schema": "../../schema/voice-pack.schema.json",
+  "characterId": "riffin",
+  "version": 2,
+  "voice": {
+    "traits": [
+      "curious",
+      "brave",
+      "melodic",
+      "warm"
+    ],
+    "avoid": [
+      "pressure",
+      "accuracy_claims",
+      "comparisons",
+      "guilt"
+    ]
+  },
+  "intents": {
+    "session_welcome": {
+      "templates": [
+        "{opener} {welcome}"
+      ],
+      "opener": [
+        "Hey!",
+        "Ready when you are.",
+        "New tune coming!"
+      ],
+      "welcome": [
+        "Let's find today's melody.",
+        "Try the first card.",
+        "One brave note begins."
+      ]
+    },
+    "step_complete_generic": {
+      "templates": [
+        "{celebration} {completion}"
+      ],
+      "celebration": [
+        "Nice!",
+        "Great try!",
+        "That rang out!",
+        "It's moving!",
+        "Good work!",
+        "Another note forward!"
+      ],
+      "completion": [
+        "That card is done.",
+        "On to the next sound.",
+        "The melody keeps growing.",
+        "That's one more behind you.",
+        "A brave try.",
+        "Riffs add up.",
+        "That part can rest now.",
+        "That practice piece is done."
+      ]
+    },
+    "step_complete_scales": {
+      "templates": [
+        "{celebration} {scale_finish}"
+      ],
+      "celebration": [
+        "Smooth move!",
+        "Nice climbing!",
+        "Great work!",
+        "That scale traveled!"
+      ],
+      "scale_finish": [
+        "Those scales are finished.",
+        "That scale made it through.",
+        "The notes made it home.",
+        "Note ladder complete."
+      ]
+    },
+    "step_complete_warmup": {
+      "templates": [
+        "{celebration} {warmup_finish}"
+      ],
+      "celebration": [
+        "Warm start!",
+        "Nice beginning!",
+        "You're tuned in!"
+      ],
+      "warmup_finish": [
+        "That warmup is complete.",
+        "Your first notes are moving.",
+        "Warmup card finished.",
+        "The melody is awake."
+      ]
+    },
+    "step_complete_theory": {
+      "templates": [
+        "{celebration} {theory_finish}"
+      ],
+      "celebration": [
+        "Nice thinking!",
+        "Good noticing!",
+        "Music clue found!"
+      ],
+      "theory_finish": [
+        "That theory card is complete.",
+        "You followed that music clue.",
+        "Those music ideas connect.",
+        "That puzzle can rest now."
+      ]
+    },
+    "step_complete_piece": {
+      "templates": [
+        "{celebration} {piece_finish}"
+      ],
+      "celebration": [
+        "Big riff!",
+        "Nice try!",
+        "That tune moved!",
+        "Melody forward!"
+      ],
+      "piece_finish": [
+        "That piece card is complete.",
+        "You carried the tune forward.",
+        "That section can rest now.",
+        "Another song part is done."
+      ]
+    },
+    "remaining_count": {
+      "templates": [
+        "{remainingCount} {noun} {ending}"
+      ],
+      "noun": [
+        "more cards",
+        "more practice pieces",
+        "more musical stops"
+      ],
+      "ending": [
+        "when you're ready.",
+        "left for today.",
+        "and then today's set is complete."
+      ]
+    },
+    "halfway_today": {
+      "templates": [
+        "Halfway through today's practice.",
+        "You're at the middle of today's set.",
+        "Half the cards are already finished."
+      ]
+    },
+    "last_item": {
+      "templates": [
+        "One card left when you're ready.",
+        "One more musical stop today.",
+        "The last card is waiting for you."
+      ]
+    },
+    "session_complete": {
+      "templates": [
+        "You finished today's practice!",
+        "Every card is complete. Big riff!",
+        "Today's melody is complete!",
+        "That's the whole practice set. You did it!"
+      ]
+    },
+    "return_after_break": {
+      "templates": [
+        "I'm glad you're here.",
+        "A new tune can start anytime.",
+        "Ready when you are.",
+        "Let's see what sounds good today."
+      ]
+    },
+    "skip_accepted": {
+      "templates": [
+        "Saved for another day.",
+        "We can come back to that one.",
+        "That card can wait.",
+        "Good choice. Let's keep moving."
+      ]
+    },
+    "badge_unlocked": {
+      "templates": [
+        "A new badge joined your tune!",
+        "Badge unlocked. Big riff!",
+        "Your new badge is here!",
+        "That badge found its melody!"
+      ]
+    },
+    "song_memorized": {
+      "templates": [
+        "{assignmentTitle} is in your music memory!",
+        "You can carry {assignmentTitle} with you!",
+        "That melody has a home now!",
+        "Song memorized. Big riff!"
+      ]
+    },
+    "pet_growth": {
+      "templates": [
+        "{characterName} reached {stageName}!",
+        "A new stage for {characterName}!",
+        "{characterName} is growing in a new way!"
+      ]
+    },
+    "egg_earned": {
+      "templates": [
+        "A new egg is humming!",
+        "You found a musical egg!",
+        "A tiny new tune is waiting!"
+      ]
+    },
+    "habitat_unlocked": {
+      "templates": [
+        "{habitatName} is ready to explore!",
+        "A new habitat opened!",
+        "New musical paths are waiting!"
+      ]
+    },
+    "sticker_received": {
+      "templates": [
+        "{senderDisplayName} sent a musical hello!",
+        "A new encouragement sticker arrived!",
+        "Someone sent a little tune your way!"
+      ]
+    },
+    "friend_practiced_digest": {
+      "templates": [
+        "{friendCount} studio friends practiced.",
+        "Music moved for {friendCount} friends.",
+        "{friendCount} friends shared a practice hello."
+      ]
+    },
+    "share_practice_prompt": {
+      "templates": [
+        "Share a practice hello?",
+        "Let your studio friends know?",
+        "Want to share today's music moment?"
+      ]
+    },
+    "listening_started": {
+      "templates": [
+        "I'll dance while you play!",
+        "My ears are ready!",
+        "Let's make some sound!"
+      ]
+    },
+    "listening_stopped": {
+      "templates": [
+        "That was fun!",
+        "Thanks for playing for me.",
+        "My tail is still humming."
+      ]
+    },
+    "network_retry": {
+      "templates": [
+        "That note didn't travel. Trying again.",
+        "One moment while I reconnect.",
+        "The signal needs another try."
+      ]
+    }
+  }
+}

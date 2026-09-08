@@ -15,7 +15,12 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "zoo:build-art": "node concept-art/library-expansion/three-format-v1/build-all.cjs",
+    "zoo:build-correction-candidates": "node concept-art/library-expansion/three-format-v1/build-correction-candidates-v2.cjs",
+    "zoo:stage-app-art": "node concept-art/library-expansion/three-format-v1/stage-app-assets.cjs",
+    "zoo:validate-art": "node concept-art/library-expansion/three-format-v1/validate-three-format.cjs",
+    "zoo:new-character": "node concept-art/library-expansion/three-format-v1/scaffold-character.cjs"
   },
   "eslintConfig": {
     "extends": [

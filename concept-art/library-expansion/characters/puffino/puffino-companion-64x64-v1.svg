@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Puffino proposal: puffin silhouette with an accordion chest. -->
+  <g fill="#201923">
+    <path d="M20 4h24v4h6v7h5v12h5v21h-5v7h-8v6H36v-6h-8v6H17v-6H9v-7H4V27h5V15h5V8h6V4z"/>
+  </g>
+  <g fill="#254061">
+    <path d="M21 7h22v4h6v8h4v10H11V19h4v-8h6V7z"/>
+    <path d="M7 30h12v20H7V30zm38 0h12v20H45V30z"/>
+    <path d="M13 46h38v8h-7v5h-8v-6h-8v6h-8v-5h-7v-8z"/>
+  </g>
+  <g fill="#4D7FBF">
+    <path d="M16 15h32v13h5v4H11v-4h5V15z"/>
+    <path d="M9 32h10v16H9V32zm36 0h10v16H45V32z"/>
+    <path d="M14 31h36v18H14V31z"/>
+  </g>
+  <g fill="#FFD77D">
+    <path d="M17 16h10v9H17v-9zm20 0h10v9H37v-9z"/>
+    <path d="M25 24h14v3h7v5h-7v3H25v-3h-7v-5h7v-3z"/>
+    <path d="M18 34h5v12h-5V34zm8 0h4v12h-4V34zm8 0h4v12h-4V34zm8 0h4v12h-4V34z"/>
+    <path d="M19 53h9v6h-9v-6zm17 0h9v6h-9v-6z"/>
+  </g>
+  <g fill="#201923">
+    <path d="M20 19h3v4h-3v-4zm21 0h3v4h-3v-4z"/>
+    <path d="M29 27h6v3h-6v-3z"/>
+    <path d="M24 33h2v14h-2V33zm7 0h2v14h-2V33zm7 0h2v14h-2V33z"/>
+  </g>
+</svg>

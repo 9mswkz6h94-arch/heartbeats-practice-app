@@ -1,0 +1,21 @@
+{
+  "id": "handheld-color-v1",
+  "outline": "#201923",
+  "uiBackgroundLight": "#E9F0D0",
+  "spriteColorLimit": 4,
+  "transparentBackground": true,
+  "sourceFormat": "svg",
+  "productionFormat": "png",
+  "scaling": "integer-nearest-neighbor",
+  "canvasSizes": {
+    "companion": [64, 64],
+    "roaming": [32, 32],
+    "egg": [16, 16],
+    "sticker": [64, 64]
+  },
+  "animationFrameLimits": {
+    "idle": 2,
+    "dance": 2,
+    "celebrate": 2
+  }
+}

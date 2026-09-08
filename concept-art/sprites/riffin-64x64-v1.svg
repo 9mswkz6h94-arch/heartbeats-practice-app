@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Four-color production palette: #201923 #7A321C #E86F21 #FFD27A -->
+  <!-- Outline and silhouette: tall ears, compact stance, and tuning-peg tail. -->
+  <g fill="#201923">
+    <path d="M10 3h12v3h3v7h14V6h3V3h12v18h-3v7h-4v4H17v-4h-4v-7h-3V3z"/>
+    <path d="M17 30h30v3h5v7h3v9h-4v10H39v-8H25v8H13V49H9v-9h3v-7h5v-3z"/>
+    <path d="M48 31h5v-4h3v-4h3v-2h3v5h-2v3h3v4h-3v3h3v4h-3v4h-6v-3h-6V31z"/>
+  </g>
+
+  <!-- Dark wood: inner ears, paws, sound hole, and guitar-neck tail. -->
+  <g fill="#7A321C">
+    <path d="M13 6h6v10h-6V6zm32 0h6v10h-6V6z"/>
+    <path d="M12 40h7v9h-7v-9zm33 0h7v9h-7v-9z"/>
+    <path d="M50 31h4v-3h3v-4h2v4h-2v4h3v2h-3v5h3v2h-7v-3h-3v-7z"/>
+    <path d="M23 39h18v11H23V39z"/>
+  </g>
+
+  <!-- Coral fox body. -->
+  <g fill="#E86F21">
+    <path d="M13 16h38v10h-4v4H17v-4h-4V16z"/>
+    <path d="M18 31h28v3h4v7h2v7h-5v10h-6v-9H23v9h-7V48h-4v-7h3v-7h3v-3z"/>
+    <path d="M50 32h3v-3h2v9h-5v-6z"/>
+  </g>
+
+  <!-- Cream face, resonator rim, muzzle, ear highlights, and toes. -->
+  <g fill="#FFD27A">
+    <path d="M15 7h3v8h-3V7zm31 0h3v8h-3V7z"/>
+    <path d="M17 18h8v7h-8v-7zm22 0h8v7h-8v-7z"/>
+    <path d="M24 23h16v6H24v-6z"/>
+    <path d="M21 35h22v3h3v14h-5v3H23v-3h-4V38h2v-3z"/>
+    <path d="M16 55h7v3h-7v-3zm25 0h7v3h-7v-3z"/>
+    <path d="M58 23h3v3h-3v-3zm2 8h3v3h-3v-3zm-2 7h3v3h-3v-3z"/>
+  </g>
+
+  <!-- Face details. -->
+  <g fill="#201923">
+    <path d="M19 20h3v3h-3v-3zm23 0h3v3h-3v-3z"/>
+    <path d="M30 23h4v3h-4v-3zm-3 4h3v2h4v-2h3v3H27v-3z"/>
+  </g>
+
+  <!-- One dark sound hole with exactly three visible strings. -->
+  <path fill="#201923" d="M24 39h16v11H24V39z"/>
+  <g fill="#FFD27A">
+    <path d="M27 38h2v14h-2V38zm4 0h2v14h-2V38zm4 0h2v14h-2V38z"/>
+  </g>
+</svg>

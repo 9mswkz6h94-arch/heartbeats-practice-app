@@ -1,0 +1,143 @@
+{
+  "$schema": "../../schema/voice-pack.schema.json",
+  "characterId": "riffin",
+  "version": 1,
+  "voice": {
+    "traits": [
+      "curious",
+      "brave",
+      "melodic",
+      "warm"
+    ],
+    "avoid": [
+      "pressure",
+      "accuracy_claims",
+      "comparisons",
+      "guilt"
+    ]
+  },
+  "intents": {
+    "session_welcome": {
+      "templates": [
+        "{opener} {welcome}"
+      ],
+      "opener": [
+        "Hey!",
+        "Ready when you are.",
+        "I hear a new tune coming."
+      ],
+      "welcome": [
+        "Let's find today's melody.",
+        "Let's try the first card.",
+        "One brave note starts everything."
+      ]
+    },
+    "step_complete_generic": {
+      "templates": [
+        "{celebration} {completion}"
+      ],
+      "celebration": [
+        "Nice!",
+        "Great try!",
+        "That rang out!",
+        "You got it moving!",
+        "Good work!",
+        "Another note forward!"
+      ],
+      "completion": [
+        "That card is done.",
+        "On to the next sound.",
+        "The melody keeps growing.",
+        "That's one more behind you.",
+        "You gave that one a real try.",
+        "Riff by riff, it adds up.",
+        "That part can rest now.",
+        "You finished that piece of practice."
+      ]
+    },
+    "step_complete_scales": {
+      "templates": [
+        "{celebration} {scale_finish}"
+      ],
+      "celebration": [
+        "Smooth move!",
+        "Nice climbing!",
+        "Great work!",
+        "That scale traveled!"
+      ],
+      "scale_finish": [
+        "Those scales are finished.",
+        "You carried that scale all the way through.",
+        "The notes made it home.",
+        "That ladder of notes is done."
+      ]
+    },
+    "remaining_count": {
+      "templates": [
+        "{remainingCount} {noun} {ending}"
+      ],
+      "noun": [
+        "more cards",
+        "more practice pieces",
+        "more musical stops"
+      ],
+      "ending": [
+        "when you're ready.",
+        "left for today.",
+        "and then today's set is complete."
+      ]
+    },
+    "halfway_today": {
+      "templates": [
+        "Halfway through today's practice.",
+        "You're at the middle of today's set.",
+        "Half the cards are already finished."
+      ]
+    },
+    "last_item": {
+      "templates": [
+        "One card left when you're ready.",
+        "One more musical stop today.",
+        "The last card is waiting for you."
+      ]
+    },
+    "session_complete": {
+      "templates": [
+        "You finished today's practice!",
+        "Every card is complete. Big riff!",
+        "Today's melody is complete!",
+        "That's the whole practice set. You did it!"
+      ]
+    },
+    "return_after_break": {
+      "templates": [
+        "I'm glad you're here.",
+        "A new tune can start anytime.",
+        "Ready when you are.",
+        "Let's see what sounds good today."
+      ]
+    },
+    "skip_accepted": {
+      "templates": [
+        "Saved for another day.",
+        "We can come back to that one.",
+        "That card can wait.",
+        "Good choice. Let's keep moving."
+      ]
+    },
+    "listening_started": {
+      "templates": [
+        "I'll dance while you play!",
+        "My ears are ready!",
+        "Let's make some sound!"
+      ]
+    },
+    "listening_stopped": {
+      "templates": [
+        "That was fun!",
+        "Thanks for playing for me.",
+        "My tail is still humming."
+      ]
+    }
+  }
+}

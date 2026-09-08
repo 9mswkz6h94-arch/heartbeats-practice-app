@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "responseLevels": ["micro", "progress", "milestone"],
+  "intents": {
+    "session_welcome": { "level": "micro", "variables": ["studentDisplayName"] },
+    "step_complete_generic": { "level": "micro", "variables": ["assignmentTitle"] },
+    "step_complete_warmup": { "level": "micro", "variables": ["assignmentTitle"] },
+    "step_complete_scales": { "level": "micro", "variables": ["assignmentTitle"] },
+    "step_complete_theory": { "level": "micro", "variables": ["assignmentTitle"] },
+    "step_complete_piece": { "level": "micro", "variables": ["assignmentTitle"] },
+    "remaining_count": { "level": "progress", "variables": ["remainingCount"] },
+    "halfway_today": { "level": "progress", "variables": [] },
+    "last_item": { "level": "progress", "variables": [] },
+    "session_complete": { "level": "milestone", "variables": [] },
+    "return_after_break": { "level": "micro", "variables": ["studentDisplayName"] },
+    "skip_accepted": { "level": "micro", "variables": [] },
+    "badge_unlocked": { "level": "milestone", "variables": ["badgeName"] },
+    "song_memorized": { "level": "milestone", "variables": ["assignmentTitle"] },
+    "pet_growth": { "level": "milestone", "variables": ["characterName", "stageName"] },
+    "egg_earned": { "level": "milestone", "variables": [] },
+    "habitat_unlocked": { "level": "milestone", "variables": ["habitatName"] },
+    "sticker_received": { "level": "milestone", "variables": ["senderDisplayName"] },
+    "friend_practiced_digest": { "level": "progress", "variables": ["friendCount"] },
+    "share_practice_prompt": { "level": "milestone", "variables": [] },
+    "listening_started": { "level": "micro", "variables": [] },
+    "listening_stopped": { "level": "micro", "variables": [] },
+    "network_retry": { "level": "micro", "variables": [] }
+  }
+}

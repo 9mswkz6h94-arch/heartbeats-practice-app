@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <g transform="translate(0 -1)">
+  <!-- Riffin V2 production source: four colors, transparent background, integer pixel geometry. -->
+  <g fill="#201923">
+    <!-- Tall fox ears and head silhouette. -->
+    <path d="M9 3h12v3h3v7h16V6h3V3h12v19h-3v6h-5v4H17v-4h-5v-6H9V3z"/>
+    <!-- Guitar-bodied stance: upper bout, waist, lower bout, and feet. -->
+    <path d="M23 30h18v3h6v4h4v7h-3v3h4v9h-5v4H37v-6H27v6H17v-4h-5v-9h4v-3h-3v-7h4v-4h6v-3z"/>
+    <!-- Short guitar-neck tail with three separated tuning pegs. -->
+    <path transform="translate(-3 0)" d="M46 34h6v-5h3v-5h3v-3h4v6h-3v3h4v5h-4v3h4v5h-4v4h-7v-4h-6v-9z"/>
+  </g>
+
+  <g fill="#7A321C">
+    <!-- Inner ears. -->
+    <path d="M12 6h6v11h-6V6zm34 0h6v11h-6V6z"/>
+    <!-- Paws and tail neck. -->
+    <path d="M14 39h6v9h-6v-9zm30 0h6v9h-6v-9z"/>
+    <path transform="translate(-3 0)" d="M49 35h4v-5h3v-5h2v6h-2v4h4v2h-4v5h4v2h-7v-4h-4v-5z"/>
+    <!-- Single rounded sound hole. -->
+    <path d="M25 40h14v2h2v9h-2v2H25v-2h-2v-9h2v-2z"/>
+  </g>
+
+  <g fill="#E86F21">
+    <!-- Fox head. -->
+    <path d="M12 16h40v9h-4v4h-7v2H23v-2h-7v-4h-4v-9z"/>
+    <!-- Coral guitar-body silhouette with visible waist. -->
+    <path d="M24 32h16v3h6v4h2v5h-5v4h6v7h-4v4h-7v-6H26v6h-7v-4h-4v-7h6v-4h-5v-5h2v-4h6v-3z"/>
+    <path transform="translate(-3 0)" d="M49 35h3v-4h2v11h-5v-7z"/>
+  </g>
+
+  <g fill="#FFD27A">
+    <!-- Ear light, wide friendly eyes, and muzzle. -->
+    <path d="M14 7h3v9h-3V7zm33 0h3v9h-3V7z"/>
+    <path d="M16 18h9v7h-9v-7zm23 0h9v7h-9v-7z"/>
+    <path d="M23 23h18v6H23v-6z"/>
+    <!-- Warm resonator face follows upper bout, waist, and lower bout. -->
+    <path d="M24 35h16v2h4v6h-3v3h4v7h-4v3H23v-3h-4v-7h4v-3h-3v-6h4v-2z"/>
+    <!-- Feet and tuning pegs. -->
+    <path d="M18 56h9v3h-9v-3zm19 0h9v3h-9v-3z"/>
+    <path transform="translate(-3 0)" d="M58 22h4v4h-4v-4zm1 9h4v4h-4v-4zm-1 8h4v4h-4v-4z"/>
+  </g>
+
+  <g fill="#201923">
+    <!-- Face: curious eyes, nose, and small open smile. -->
+    <path d="M19 20h3v3h-3v-3zm23 0h3v3h-3v-3z"/>
+    <path d="M30 23h4v3h-4v-3zm-4 4h4v2h4v-2h4v3H26v-3z"/>
+    <!-- Reassert the one dark sound hole above its cream rim. -->
+    <path d="M25 40h14v2h2v9h-2v2H25v-2h-2v-9h2v-2z"/>
+  </g>
+
+  <!-- Exactly three visible strings cross the sound hole. -->
+  <g fill="#FFD27A">
+    <path d="M26 38h2v16h-2V38zm5 0h2v16h-2V38zm5 0h2v16h-2V38z"/>
+  </g>
+</g>
+</svg>

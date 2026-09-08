@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/character-manifest.schema.json",
+  "schemaVersion": 1,
+  "characterVersion": 1,
+  "id": "character-id",
+  "name": "Character name",
+  "starterRole": null,
+  "animal": "animal",
+  "instrument": "instrument",
+  "musicalRole": "role",
+  "practiceVirtue": "virtue",
+  "palette": {
+    "outline": "#201923",
+    "dark": "#000000",
+    "primary": "#000000",
+    "light": "#FFFFFF"
+  },
+  "assets": {
+    "companion64": null,
+    "roaming32": null,
+    "egg16": null,
+    "idleFrames": [],
+    "danceFrames": [],
+    "celebrateFrames": [],
+    "stickers": { "celebrate": null, "encourage": null, "connect": null }
+  },
+  "accessibility": {
+    "character": "",
+    "egg": "",
+    "stickers": { "celebrate": "", "encourage": "", "connect": "" }
+  },
+  "interactions": {
+    "voicePack": "voice-pack-v1.json",
+    "implementedIntentCount": 0,
+    "reviewedCombinationCount": 0
+  },
+  "legacy": false,
+  "status": "concept"
+}

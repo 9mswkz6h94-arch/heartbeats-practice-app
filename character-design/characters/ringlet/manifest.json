@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/character-manifest.schema.json",
+  "schemaVersion": 1,
+  "characterVersion": 1,
+  "id": "ringlet",
+  "name": "Ringlet",
+  "starterRole": null,
+  "animal": "rabbit",
+  "instrument": "hand-bell",
+  "musicalRole": "listening",
+  "practiceVirtue": "careful-attention",
+  "palette": {
+    "outline": "#201923",
+    "dark": "#4A3F7A",
+    "primary": "#8B7FD1",
+    "light": "#FFE9B8"
+  },
+  "assets": {
+    "companion64": null,
+    "roaming32": null,
+    "egg16": null,
+    "idleFrames": [],
+    "danceFrames": [],
+    "celebrateFrames": [],
+    "stickers": { "celebrate": null, "encourage": null, "connect": null }
+  },
+  "accessibility": {
+    "character": "Ringlet, a friendly rabbit and hand-bell creature.",
+    "egg": "Ringlet's periwinkle starter egg with a small dangling clapper mark.",
+    "stickers": {
+      "celebrate": "Ringlet celebrates your practice with a bright chime.",
+      "encourage": "Ringlet says take your time and listen closely.",
+      "connect": "Ringlet invites you to listen together."
+    }
+  },
+  "interactions": {
+    "voicePack": "voice-pack-v1.json",
+    "implementedIntentCount": 11,
+    "reviewedCombinationCount": 106
+  },
+  "legacy": false,
+  "status": "concept"
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schema/voice-pack.schema.json",
+  "characterId": "character-id",
+  "version": 1,
+  "voice": {
+    "traits": ["trait-one", "trait-two", "trait-three"],
+    "avoid": ["pressure", "accuracy_claims", "comparisons", "guilt"]
+  },
+  "intents": {
+    "step_complete_generic": {
+      "templates": ["{celebration} {completion}"],
+      "celebration": ["Nice try!"],
+      "completion": ["That card is done."]
+    },
+    "skip_accepted": {
+      "templates": ["Saved for another day."]
+    },
+    "session_complete": {
+      "templates": ["Today's practice is complete!"]
+    }
+  }
+}

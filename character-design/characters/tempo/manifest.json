@@ -1,0 +1,56 @@
+{
+  "$schema": "../../schema/character-manifest.schema.json",
+  "schemaVersion": 1,
+  "characterVersion": 1,
+  "id": "tempo",
+  "name": "Tempo",
+  "starterRole": "rhythm",
+  "animal": "frog",
+  "instrument": "hand-drum",
+  "musicalRole": "rhythm",
+  "practiceVirtue": "steady-persistence",
+  "palette": {
+    "outline": "#201923",
+    "dark": "#2E5C4E",
+    "primary": "#4FA383",
+    "light": "#FFD866"
+  },
+  "assets": {
+    "companion64": "../../../concept-art/sprites/tempo-64x64-v1.png",
+    "roaming32": "../../../concept-art/sprites/tempo-32x32-v1.png",
+    "egg16": "../../../concept-art/sprites/tempo-egg-16x16-v1.png",
+    "idleFrames": [
+      "../../../concept-art/sprites/tempo-idle-1-64x64-v1.png",
+      "../../../concept-art/sprites/tempo-idle-2-64x64-v1.png"
+    ],
+    "danceFrames": [
+      "../../../concept-art/sprites/tempo-dance-1-64x64-v1.png",
+      "../../../concept-art/sprites/tempo-dance-2-64x64-v1.png"
+    ],
+    "celebrateFrames": [
+      "../../../concept-art/sprites/tempo-celebrate-1-64x64-v1.png",
+      "../../../concept-art/sprites/tempo-celebrate-2-64x64-v1.png"
+    ],
+    "stickers": {
+      "celebrate": "../../../concept-art/sprites/tempo-sticker-celebrate-64x64-v1.png",
+      "encourage": "../../../concept-art/sprites/tempo-sticker-encourage-64x64-v1.png",
+      "connect": "../../../concept-art/sprites/tempo-sticker-connect-64x64-v1.png"
+    }
+  },
+  "accessibility": {
+    "character": "Tempo, a friendly frog and hand-drum creature.",
+    "egg": "Tempo's jade starter egg with a warm drumhead patch.",
+    "stickers": {
+      "celebrate": "Tempo celebrates your practice with a big beat.",
+      "encourage": "Tempo says keep a steady pace, one beat at a time.",
+      "connect": "Tempo invites you to share a beat."
+    }
+  },
+  "interactions": {
+    "voicePack": "voice-pack-v1.json",
+    "implementedIntentCount": 11,
+    "reviewedCombinationCount": 106
+  },
+  "legacy": false,
+  "status": "concept"
+}

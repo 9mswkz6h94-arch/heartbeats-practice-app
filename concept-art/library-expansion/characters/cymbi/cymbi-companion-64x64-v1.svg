@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Cymbi proposal: ladybug silhouette with paired cymbal wings. -->
+  <g fill="#201923">
+    <path d="M12 13h5V7h4v6h22V7h4v6h5v6h5v8h5v22h-6v6h-9v5H17v-5H8v-6H2V27h5v-8h5v-6z"/>
+    <path d="M4 49h7v4H6v5H2v-6h2v-3zm49 0h7v3h2v6h-4v-5h-5v-4zM14 54h6v8h-5v-4h-4v-4h3zm30 0h6v4h-4v4h-5v-8h3z"/>
+  </g>
+  <g fill="#7A2D2D">
+    <path d="M10 20h44v8h5v19h-7v6H12v-6H5V28h5v-8z"/>
+    <path d="M17 15h30v11H17V15z"/>
+  </g>
+  <g fill="#E45650">
+    <path d="M13 17h38v10h5v19h-7v5H15v-5H8V27h5V17z"/>
+    <path d="M23 13h18v5H23v-5z"/>
+  </g>
+  <g fill="#FFD36A">
+    <path d="M9 29h18v3h3v14h-3v3H9v-3H6V32h3v-3z"/>
+    <path d="M37 29h18v3h3v14h-3v3H37v-3h-3V32h3v-3z"/>
+    <path d="M18 18h9v7h-9v-7zm19 0h9v7h-9v-7z"/>
+    <path d="M25 24h14v5H25v-5z"/>
+  </g>
+  <g fill="#201923">
+    <path d="M21 20h3v3h-3v-3zm19 0h3v3h-3v-3z"/>
+    <path d="M30 24h4v3h-4v-3zm-5 4h5v2h4v-2h5v3H25v-3z"/>
+    <path d="M16 34h5v3h-5v-3zm27 0h5v3h-5v-3zm-27 8h5v3h-5v-3zm27 0h5v3h-5v-3z"/>
+  </g>
+</svg>

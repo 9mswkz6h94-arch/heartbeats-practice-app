@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rainbowheart.studio/schemas/musical-zoo-character-art-library-v1.json",
+  "title": "Musical Zoo accepted character art library",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "libraryVersion", "status", "acceptedBy", "acceptedOn", "scope", "formats", "characters"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schemaVersion": { "const": 1 },
+    "libraryVersion": { "type": "integer", "minimum": 1 },
+    "status": { "const": "accepted-art-package" },
+    "acceptedBy": { "type": "string", "minLength": 1 },
+    "acceptedOn": { "type": "string", "format": "date" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["app", "projectId", "appLocal", "canonicalRainbowHeartIllustration", "appIntegrationApproved"],
+      "properties": {
+        "app": { "type": "string", "minLength": 1 },
+        "projectId": { "type": "string", "minLength": 1 },
+        "appLocal": { "const": true },
+        "canonicalRainbowHeartIllustration": { "const": false },
+        "appIntegrationApproved": { "type": "boolean" }
+      }
+    },
+    "formats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["habitat", "companion", "stickers"],
+      "properties": {
+        "habitat": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sourceStem", "outputStem", "previewStem", "width", "height", "previewScale", "maximumOpaqueColors"],
+          "properties": {
+            "sourceStem": { "const": "habitat-source" },
+            "outputStem": { "const": "habitat-32-v1" },
+            "previewStem": { "const": "habitat-preview-8x-v1" },
+            "width": { "const": 32 },
+            "height": { "const": 32 },
+            "previewScale": { "const": 8 },
+            "maximumOpaqueColors": { "const": 16 }
+          }
+        },
+        "companion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sourceStem", "outputStem", "previewStem", "width", "height", "previewScale"],
+          "properties": {
+            "sourceStem": { "const": "companion-master" },
+            "outputStem": { "const": "companion-64-v1" },
+            "previewStem": { "const": "companion-preview-8x-v1" },
+            "width": { "const": 64 },
+            "height": { "const": 64 },
+            "previewScale": { "const": 8 }
+          }
+        },
+        "stickers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sourceStem", "cleanStem", "outputSuffix", "width", "height", "poses"],
+          "properties": {
+            "sourceStem": { "const": "sticker-sheet-source" },
+            "cleanStem": { "const": "sticker-sheet-clean-v1" },
+            "outputSuffix": { "const": "768-v1" },
+            "width": { "const": 768 },
+            "height": { "const": 768 },
+            "poses": {
+              "type": "array",
+              "prefixItems": [
+                { "const": "celebrate" },
+                { "const": "encourage" },
+                { "const": "connect" }
+              ],
+              "items": false,
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        }
+      }
+    },
+    "characters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "animal", "instrument", "musicalRole", "practiceVirtue", "silhouetteAnchor", "anatomyInvariant", "avoid", "status", "acceptedSources"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "name": { "type": "string", "minLength": 1 },
+          "animal": { "type": "string", "minLength": 1 },
+          "instrument": { "type": "string", "minLength": 1 },
+          "musicalRole": { "type": "string", "minLength": 1 },
+          "practiceVirtue": { "type": "string", "minLength": 1 },
+          "silhouetteAnchor": { "type": "string", "minLength": 1 },
+          "anatomyInvariant": { "type": "string", "minLength": 1 },
+          "avoid": { "type": "string", "minLength": 1 },
+          "status": { "const": "accepted-art-package" },
+          "acceptedSources": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["companionMaster", "habitatSource", "stickerSheetSource"],
+            "properties": {
+              "companionMaster": { "type": "integer", "minimum": 1 },
+              "habitatSource": { "type": "integer", "minimum": 1 },
+              "stickerSheetSource": { "type": "integer", "minimum": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}
