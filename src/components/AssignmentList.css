@@ -1,7 +1,19 @@
 .assignment-list { margin-top: var(--space-6); padding-top: var(--space-5); border-top: 2px solid var(--color-ink); }
-.assignment-list h3 { margin: 0 0 var(--space-4); font-size: 25px; }
+.assignment-list h2 { margin: 0 0 var(--space-4); font-size: 25px; }
 .assignment-list > p { margin: 0; padding: var(--space-4); border-left: 6px solid var(--color-border); background: var(--color-paper); color: var(--color-text-muted); }
 .assignment-list > p.error { border-color: var(--color-danger); background: var(--danger-bg); color: var(--color-danger); }
+.assignment-edit-form { margin-bottom: var(--space-5); padding: var(--space-4); display: grid; gap: var(--space-3); border: 2px solid var(--color-ink); border-top: 6px solid var(--color-accent-secondary, var(--color-ink)); background: var(--color-cut-paper); }
+.assignment-edit-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.assignment-edit-heading span { color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 9px; text-transform: uppercase; }
+.assignment-edit-heading h3 { margin: var(--space-1) 0 0; font-size: 20px; }
+.assignment-edit-heading button { min-height: 48px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); font: inherit; font-weight: 600; }
+.assignment-edit-form > label,
+.assignment-edit-grid label { display: grid; gap: var(--space-1); font-size: 11px; font-weight: 700; }
+.assignment-edit-form input,
+.assignment-edit-form select { min-width: 0; min-height: 48px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); border-bottom: 2px solid var(--color-ink); background: var(--color-surface); color: var(--color-text); font: inherit; }
+.assignment-edit-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--space-3); }
+.assignment-edit-save { min-height: 48px; padding: var(--space-2) var(--space-4); border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-white); font: inherit; font-weight: 700; cursor: pointer; }
+.assignment-edit-form > small { color: var(--color-text-muted); }
 .assignments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px),1fr)); gap: var(--space-4); }
 .assignment-card { min-width: 0; display: flex; flex-direction: column; border: 1px solid var(--color-border); border-top: 4px solid var(--color-ink); background: var(--color-surface-raised); }
 .card-header { padding: var(--space-4); display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); border-bottom: 1px solid var(--color-border); }
@@ -21,4 +33,5 @@
 .btn-action:hover:not(:disabled) { border-color: var(--color-ink); }
 .btn-action:disabled { opacity: .55; cursor: wait; }
 .btn-memorize.memorized { border: 2px solid var(--color-complete); color: var(--color-complete); }
-@media (max-width: 520px) { .card-header { flex-direction: column; } .card-actions { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .assignment-edit-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .card-header, .assignment-edit-heading { flex-direction: column; } .assignment-edit-heading button { width: 100%; } .card-actions { grid-template-columns: 1fr; } }

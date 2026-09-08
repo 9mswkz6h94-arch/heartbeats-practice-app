@@ -1,0 +1,163 @@
+/* GENERATED FILE — source: ../themes/rainbow-heart.tokens.json; generator: generate-css.mjs */
+/* Rainbow Heart Brand Kit 2.0.0 · Rainbow Heart OS 0.6.0 */
+
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/inter/Inter-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("./assets/fonts/fraunces/Fraunces-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Space Mono";
+  src: url("./assets/fonts/space-mono/SpaceMono-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Space Mono";
+  src: url("./assets/fonts/space-mono/SpaceMono-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:where([data-rh-theme="rainbow-heart"]) {
+  --rh-font-interface: Inter, Arial, Helvetica, sans-serif;
+  --rh-font-display: Fraunces, Georgia, "Times New Roman", serif;
+  --rh-font-measurement: "Space Mono", Consolas, "Liberation Mono", monospace;
+  --rh-color-canvas: #ffffff;
+  --rh-color-surface: #ffffff;
+  --rh-color-surface-raised: #ffffff;
+  --rh-color-surface-soft: #f8f9fa;
+  --rh-color-text: #241e20;
+  --rh-color-text-muted: #544c50;
+  --rh-color-border: #c9c3c6;
+  --rh-color-border-strong: #241e20;
+  --rh-color-action: #6c5ce7;
+  --rh-color-action-dark: #5545c5;
+  --rh-color-action-soft: #eeeaff;
+  --rh-color-action-text: #ffffff;
+  --rh-color-focus: #185adb;
+  --rh-color-live: #a34700;
+  --rh-color-on-deck: #6c5ce7;
+  --rh-color-complete: #17603a;
+  --rh-color-danger: #9b1c24;
+  --rh-color-warning: #7a4508;
+  --rh-radius-surface: 18px;
+  --rh-radius-feature: 22px 22px 34px 18px;
+  --rh-radius-control: 12px;
+  --rh-radius-pill: 999px;
+  --rh-border-ordinary: 1px;
+  --rh-border-focal: 3px;
+  --rh-focus-width: 3px;
+  --rh-shadow-ordinary: none;
+  --rh-shadow-focal-ink: 5px 6px 0 #241e20;
+  --rh-logo-red: #ff1717;
+  --rh-logo-orange: #ff904e;
+  --rh-logo-yellow: #ffde59;
+  --rh-logo-green: #60e027;
+  --rh-logo-cyan: #00baff;
+  --rh-logo-violet: #8b51fe;
+  --rh-spectrum-logo: linear-gradient(90deg, #ff1717 0.000% 16.667%, #ff904e 16.667% 33.333%, #ffde59 33.333% 50.000%, #60e027 50.000% 66.667%, #00baff 66.667% 83.333%, #8b51fe 83.333% 100.000%);
+  color: var(--rh-color-text);
+  background: var(--rh-color-canvas);
+  font-family: var(--rh-font-interface);
+  font-synthesis: none;
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-display {
+  font-family: var(--rh-font-display);
+  font-size: clamp(2.25rem, 6vw, 5.75rem);
+  font-style: normal;
+  font-variation-settings: "SOFT" 0, "WONK" 0;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.96;
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-measurement {
+  font-family: var(--rh-font-measurement);
+  font-variant-numeric: tabular-nums;
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-surface {
+  background: var(--rh-color-surface);
+  border: var(--rh-border-ordinary) solid var(--rh-color-border);
+  border-radius: var(--rh-radius-surface);
+  box-shadow: var(--rh-shadow-ordinary);
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-feature {
+  background: var(--rh-color-surface);
+  border: var(--rh-border-focal) solid var(--rh-color-border-strong);
+  border-radius: var(--rh-radius-feature);
+  box-shadow: var(--rh-shadow-focal-ink);
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-control {
+  border-radius: var(--rh-radius-control);
+}
+
+:where([data-rh-theme="rainbow-heart"]) :is(.rh-tag, .rh-filter, .rh-compact-status, .rh-segmented-choice) {
+  border-radius: var(--rh-radius-pill);
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-interactive {
+  min-block-size: 48px;
+  min-inline-size: 48px;
+}
+
+:where([data-rh-theme="rainbow-heart"]) :focus-visible {
+  outline: var(--rh-focus-width) solid var(--rh-color-focus);
+  outline-offset: 3px;
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-spectrum-logo {
+  background-color: var(--rh-logo-cyan);
+  background-image: var(--rh-spectrum-logo);
+}
+
+:where([data-rh-theme="rainbow-heart"]) .rh-primary-mark {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+  background: var(--rh-color-surface);
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where([data-rh-theme="rainbow-heart"]) *,
+  :where([data-rh-theme="rainbow-heart"]) *::before,
+  :where([data-rh-theme="rainbow-heart"]) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where([data-rh-theme="rainbow-heart"]) .rh-spectrum-logo {
+    background-color: Canvas;
+    background-image: none;
+    border: 2px solid CanvasText;
+    color: CanvasText;
+  }
+
+  :where([data-rh-theme="rainbow-heart"]) .rh-feature {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+}

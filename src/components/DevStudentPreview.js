@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import StudentPracticeCards from "./StudentPracticeCards";
 import StudentRepertoire from "./StudentRepertoire";
-import SightReading from "./SightReading";
 import PetWidget from "./PetWidget";
 import PetCollection from "./PetCollection";
 import "./DevStudentPreview.css";
@@ -75,7 +74,6 @@ export default function DevStudentPreview({ teacherId }) {
             <PetWidget studentId={selectedStudent.id} readOnly />
             <PetCollection studentId={selectedStudent.id} readOnly />
             <StudentPracticeCards studentId={selectedStudent.id} readOnly />
-            <SightReading studentId={selectedStudent.id} readOnly />
             <StudentRepertoire studentId={selectedStudent.id} />
           </div>
         </div>

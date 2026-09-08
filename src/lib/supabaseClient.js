@@ -1,7 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const isMockIsolatedReview = process.env.REACT_APP_REVIEW_DATA_MODE === "mock-isolated";
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL
+  || (isMockIsolatedReview ? "http://127.0.0.1:54321" : null);
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY
+  || (isMockIsolatedReview ? "mock-isolated-review-key" : null);
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Missing Supabase environment variables");

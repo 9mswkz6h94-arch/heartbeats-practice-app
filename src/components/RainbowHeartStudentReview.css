@@ -1,0 +1,801 @@
+.rainbow-heart-review {
+  --color-ink: var(--rh-color-text);
+  --color-paper: var(--rh-color-surface);
+  --color-canvas: var(--rh-color-canvas);
+  --color-cut-paper: var(--rh-color-surface-soft);
+  --color-rule: var(--rh-color-border);
+  --color-graphite: var(--rh-color-text-muted);
+  --color-white: var(--rh-color-surface-raised);
+  --color-focus: var(--rh-color-focus);
+  --color-complete: var(--rh-color-complete);
+  --color-danger: var(--rh-color-danger);
+  --color-warning: var(--rh-color-warning);
+  --color-surface: var(--rh-color-surface);
+  --color-surface-raised: var(--rh-color-surface-raised);
+  --color-text: var(--rh-color-text);
+  --color-text-muted: var(--rh-color-text-muted);
+  --color-border: var(--rh-color-border);
+  --color-action: var(--rh-color-action);
+  --color-action-text: var(--rh-color-action-text);
+  --font-interface: var(--rh-font-interface);
+  --font-display: var(--rh-font-display);
+  --font-measurement: var(--rh-font-measurement);
+  --shape-surface-radius: var(--rh-radius-surface);
+  --shape-control-radius: var(--rh-radius-control);
+  --effect-surface-shadow: none;
+  --success-bg: color-mix(in srgb, var(--rh-color-complete) 9%, white);
+  --warning-bg: color-mix(in srgb, var(--rh-color-warning) 9%, white);
+  --danger-bg: color-mix(in srgb, var(--rh-color-danger) 9%, white);
+  --primary: var(--rh-color-action);
+  --primary-dark: var(--rh-color-action-dark);
+  --primary-light: var(--rh-color-action-soft);
+  --text: var(--rh-color-text);
+  --text-muted: var(--rh-color-text-muted);
+  --bg: var(--rh-color-surface);
+  --bg-subtle: var(--rh-color-canvas);
+  --border: var(--rh-color-border);
+  --radius: var(--rh-radius-surface);
+  --radius-sm: var(--rh-radius-control);
+  box-sizing: border-box;
+  width: 100%;
+  min-height: calc(100vh - var(--sandbox-banner-height));
+  background: var(--rh-color-canvas);
+  color: var(--rh-color-text);
+  font-family: var(--rh-font-interface);
+}
+
+.rainbow-heart-review::before {
+  display: block;
+  width: 100%;
+  height: 8px;
+  flex: 0 0 8px;
+  background-color: var(--rh-logo-cyan);
+  background-image: var(--rh-spectrum-logo);
+  content: "";
+}
+
+.rainbow-heart-review :is(h2, h3, h4, h5, h6) {
+  font-family: var(--rh-font-interface);
+  font-weight: 700;
+}
+
+.rainbow-heart-review :is(.hud-view-title, .parent-dashboard-header h1, .family-setup-heading h1) {
+  font-family: var(--rh-font-display);
+  font-variation-settings: "SOFT" 0, "WONK" 0;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.rainbow-heart-review :is(button, input, select, textarea, .btn-add-calendar) {
+  border-radius: var(--rh-radius-control);
+  font-family: var(--rh-font-interface);
+}
+
+.rainbow-heart-review :is(button, input, select, textarea, a[href]) {
+  min-height: 48px;
+}
+
+.rainbow-heart-review button {
+  min-width: 48px;
+}
+
+.rainbow-heart-review :is(
+  .teacher-sidebar-context,
+  .teacher-studio-pulse,
+  .teacher-studio-panel,
+  .teacher-roster,
+  .teacher-roster-card,
+  .teacher-student-context,
+  .teacher-student-section,
+  .teacher-assignment-composer,
+  .teacher-current-assignments article,
+  .teacher-suggested-assignment,
+  .teacher-progress-card,
+  .teacher-family-grid article,
+  .parent-family-code,
+  .kid-panel,
+  .pin-reset-editor,
+  .reschedule-editor,
+  .lesson-info-row,
+  .parent-assignment,
+  .notif-settings,
+  .comm-log,
+  .family-setup-privacy,
+  .family-person-card,
+  .family-roster-summary
+) {
+  border-color: var(--rh-color-border);
+  border-radius: var(--rh-radius-surface);
+  background-color: var(--rh-color-surface);
+  background-image: none;
+  box-shadow: none;
+}
+
+.rainbow-heart-review :is(
+  .teacher-sidebar-context,
+  .teacher-studio-pulse,
+  .teacher-studio-panel,
+  .teacher-roster,
+  .teacher-roster-card,
+  .teacher-student-context,
+  .teacher-student-section,
+  .teacher-assignment-composer,
+  .teacher-current-assignments article,
+  .teacher-suggested-assignment,
+  .teacher-progress-card,
+  .teacher-family-grid article,
+  .parent-family-code,
+  .kid-panel,
+  .family-setup-privacy,
+  .family-person-card,
+  .family-roster-summary
+) {
+  border-width: 1px;
+}
+
+.rainbow-heart-review :is(
+  .teacher-sidebar-context,
+  .teacher-studio-planning,
+  .teacher-assignment-composer,
+  .teacher-suggested-assignment,
+  .family-setup-privacy,
+  .family-roster-summary
+) {
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-review :is(
+  .teacher-studio-time-row.time-next > button,
+  .teacher-studio-planning > button,
+  .teacher-student-section-heading > button,
+  .teacher-assignment-composer button,
+  .teacher-suggested-assignment button,
+  .btn-pin-save,
+  .btn-add-calendar,
+  .btn-notif-save,
+  .btn-comm-send,
+  .family-review-button
+) {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action);
+  color: var(--rh-color-action-text);
+}
+
+.rainbow-heart-review :is(
+  .teacher-studio-time-row.time-next > button,
+  .teacher-studio-planning > button,
+  .teacher-student-section-heading > button,
+  .teacher-assignment-composer button,
+  .teacher-suggested-assignment button,
+  .btn-pin-save,
+  .btn-add-calendar,
+  .btn-notif-save,
+  .btn-comm-send,
+  .family-review-button
+):hover {
+  border-color: var(--rh-color-action-dark);
+  background: var(--rh-color-action-dark);
+}
+
+.rainbow-heart-review .hud-brand-mark {
+  border-color: var(--rh-color-action);
+  border-radius: var(--rh-radius-control);
+  background: var(--rh-color-action);
+}
+
+.rainbow-heart-review .hud-brand-text {
+  font-family: var(--rh-font-interface);
+  font-weight: 700;
+}
+
+.rainbow-heart-review :is(.parent-kid-name, .parent-assignment-title, .family-person-legend, .family-roster-initial) {
+  font-family: var(--rh-font-interface);
+  font-weight: 700;
+}
+
+.rainbow-heart-review .parent-kid-name {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.rainbow-heart-review :is(
+  .teacher-studio-pulse-card > strong,
+  .teacher-studio-week-days strong,
+  .teacher-studio-performance-date strong,
+  .teacher-progress-stats strong
+) {
+  font-family: var(--rh-font-measurement);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rainbow-heart-review .hud-sidebar,
+.rainbow-heart-review .hud-topbar,
+.rainbow-heart-review .parent-dashboard-header,
+.rainbow-heart-review .family-setup-heading {
+  border-color: var(--rh-color-border);
+  background: var(--rh-color-surface);
+}
+
+.rainbow-heart-review .hud-nav-item.active,
+.rainbow-heart-review .kid-tab.active {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-review .hud-nav-item.active .hud-nav-index {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action);
+  color: var(--rh-color-action-text);
+}
+
+.rainbow-heart-review .teacher-student-tabs button.active {
+  border-bottom-color: var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-review :is(
+  .teacher-roster-status,
+  .parent-kid-status,
+  .parent-category-chip,
+  .family-age-chip,
+  .family-primary-chip
+) {
+  border-radius: var(--rh-radius-pill);
+}
+
+.rainbow-heart-review .teacher-family-request {
+  border: 1px solid var(--rh-color-border) !important;
+  border-left: 3px solid var(--rh-color-warning) !important;
+  background: var(--warning-bg) !important;
+}
+
+.rainbow-heart-review :is(.reschedule-pending-row, .parent-pending-note) {
+  border-left-width: 3px;
+}
+
+.rainbow-heart-review :is(.teacher-roster-heading, .teacher-student-identity, .teacher-student-section-heading, .teacher-studio-performance) {
+  background: var(--rh-color-surface-soft);
+}
+
+.rainbow-heart-review .teacher-studio-pulse-card.pulse-04,
+.rainbow-heart-review .teacher-studio-week-days > div.today {
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-review .teacher-studio-time-row.time-next .teacher-studio-time-line {
+  background: var(--rh-color-complete);
+}
+
+.rainbow-heart-review .teacher-practice-bars span {
+  background: var(--rh-color-action);
+}
+
+.rainbow-heart-review .teacher-repertoire-list span {
+  border-radius: var(--rh-radius-pill);
+  background: var(--rh-color-surface-soft);
+}
+
+.rainbow-heart-review .family-permission-toggle {
+  border-radius: var(--rh-radius-control);
+  background: var(--rh-color-surface-soft);
+}
+
+.rainbow-heart-review .family-avatar-options button.selected {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-review .family-permission-toggle input {
+  accent-color: var(--rh-color-action);
+}
+
+/* The review chooser sits above this dashboard. A fixed dashboard height
+   would create a second vertical scrollbar when the Zoo expands, so the
+   mock student surface grows with its content and uses one page scroll. */
+.scaffold-sandbox-offset > .rainbow-heart-review {
+  height: auto;
+}
+
+.rainbow-heart-student-review .dashboard-header {
+  position: relative;
+  flex-shrink: 0;
+  min-height: 120px;
+  padding: var(--space-5) var(--space-7);
+  border-bottom: 1px solid var(--rh-color-border);
+  background: var(--rh-color-surface);
+}
+
+.rainbow-heart-student-review .dashboard-context {
+  margin: 0 0 var(--space-1);
+  color: var(--rh-color-text-muted);
+  font-family: var(--rh-font-measurement);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.rainbow-heart-student-review .dashboard-header h1.rh-display {
+  margin: 0;
+  max-width: 14ch;
+  color: var(--rh-color-text);
+  font-family: var(--rh-font-display);
+  font-size: clamp(38px, 5vw, 56px);
+  font-style: normal;
+  font-variation-settings: "SOFT" 0, "WONK" 0;
+  font-weight: 600;
+  letter-spacing: -.04em;
+  line-height: .98;
+}
+
+.rainbow-heart-student-review .btn-logout {
+  min-width: 104px;
+  padding: 10px 16px;
+  border: 1px solid var(--rh-color-border-strong);
+  border-radius: var(--rh-radius-control);
+  background: var(--rh-color-surface);
+  color: var(--rh-color-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rainbow-heart-student-review .btn-logout:hover {
+  border-color: var(--rh-color-action);
+  background: #eeeaff;
+}
+
+.rainbow-heart-student-review .student-dashboard-content {
+  max-width: 1040px;
+  padding: var(--space-6) var(--space-5) 112px;
+  overflow: visible;
+  flex: 0 0 auto;
+}
+
+.rainbow-heart-student-review .practice-container {
+  gap: var(--space-6);
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.rainbow-heart-student-review :is(h2, h3, h4, h5, h6) {
+  font-family: var(--rh-font-interface);
+  font-weight: 700;
+}
+
+.rainbow-heart-student-review :is(
+  button,
+  input,
+  select,
+  textarea,
+  summary
+) {
+  font-family: var(--rh-font-interface);
+}
+
+.rainbow-heart-student-review :is(
+  .practice-header,
+  .practice-card-tile,
+  .badge-showcase,
+  .badge-item,
+  .musical-zoo,
+  .zoo-district,
+  .zoo-practice-postbox,
+  .zoo-map,
+  .zoo-founding-care,
+  .habitat-residency-editor
+) {
+  border-radius: var(--rh-radius-surface);
+}
+
+.rainbow-heart-student-review :is(
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  .zoo-friend-option,
+  .habitat-residency-action
+) {
+  border-radius: var(--rh-radius-control);
+}
+
+.rainbow-heart-student-review :is(.practice-header, .badge-showcase) {
+  overflow: hidden;
+  border: 1px solid var(--rh-color-border);
+  background: var(--rh-color-surface);
+}
+
+.rainbow-heart-student-review .practice-header {
+  border-top: 1px solid var(--rh-color-border);
+}
+
+.rainbow-heart-student-review .streak-badge {
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-student-review .counter {
+  border-color: var(--rh-color-border);
+  background: var(--rh-color-surface);
+}
+
+.rainbow-heart-student-review :is(.streak-label, .remaining-label, .step-number, .badge-date) {
+  font-family: var(--rh-font-measurement);
+  font-variant-numeric: tabular-nums;
+}
+
+.rainbow-heart-student-review .streak-count {
+  font-family: var(--rh-font-interface);
+  font-weight: 700;
+}
+
+.rainbow-heart-student-review .remaining {
+  color: var(--rh-color-action);
+  font-family: var(--rh-font-measurement);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rainbow-heart-student-review .practice-card-tile {
+  min-height: 184px;
+  border: 1px solid var(--rh-color-border);
+  border-left: 4px solid var(--rh-color-border-strong);
+  border-radius: var(--rh-radius-surface);
+  background: var(--rh-color-surface-raised);
+  transition: border-color .16s ease, background-color .16s ease;
+}
+
+.rainbow-heart-student-review .practice-card-tile:hover {
+  border-color: var(--rh-color-action);
+  border-left-color: var(--rh-color-action);
+  background: var(--rh-color-surface);
+}
+
+.rainbow-heart-student-review .tile-assignment-title {
+  font-family: var(--rh-font-interface);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.rainbow-heart-student-review :is(.instrument-tag, .zoo-district-heading > span, .zoo-map-heading > span) {
+  border-radius: var(--rh-radius-pill);
+  background: var(--rh-color-action-soft);
+  color: var(--rh-color-text);
+}
+
+.rainbow-heart-student-review .tile-action {
+  border-color: var(--rh-color-border);
+}
+
+.rainbow-heart-student-review .tap-hint {
+  color: var(--rh-color-action);
+}
+
+.rainbow-heart-student-review .badge-showcase {
+  border-top: 1px solid var(--rh-color-border);
+}
+
+.rainbow-heart-student-review .badge-showcase h3 {
+  margin-bottom: var(--space-4);
+  font-size: 22px;
+}
+
+.rainbow-heart-student-review .badge-item {
+  border-color: var(--rh-color-border);
+  background: var(--rh-color-surface);
+}
+
+.rainbow-heart-student-review .badge-name {
+  font-family: var(--rh-font-interface);
+  font-weight: 700;
+}
+
+.rainbow-heart-student-review .musical-zoo {
+  overflow: hidden;
+  border: 1px solid var(--rh-color-border-strong);
+  background: var(--rh-color-surface-raised);
+}
+
+.rainbow-heart-student-review .musical-zoo-header {
+  padding: var(--space-4) var(--space-5);
+  background: var(--rh-color-surface-soft);
+}
+
+.rainbow-heart-student-review .musical-zoo h2 {
+  font-size: 26px;
+}
+
+.rainbow-heart-student-review :is(
+  .musical-zoo-toggle,
+  .zoo-destination-toolbar button,
+  .zoo-care-header-actions button,
+  .zoo-care-name-form button[type="submit"]
+) {
+  border-color: var(--rh-color-action);
+  border-radius: var(--rh-radius-control);
+  background: var(--rh-color-action);
+  color: var(--rh-color-action-text);
+}
+
+.rainbow-heart-student-review .zoo-districts {
+  background: color-mix(in srgb, var(--rh-color-canvas) 72%, var(--rh-color-surface));
+}
+
+.rainbow-heart-student-review :is(.zoo-practice-postbox, .zoo-founding-care, .zoo-map) {
+  overflow: hidden;
+  border: 1px solid var(--rh-color-border);
+  background: var(--rh-color-surface);
+}
+
+.rainbow-heart-student-review .zoo-practice-postbox {
+  background: var(--rh-color-surface-soft);
+}
+
+.rainbow-heart-student-review .zoo-founding-care {
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-student-review .zoo-map {
+  background: var(--rh-color-surface-soft);
+}
+
+.rainbow-heart-student-review :is(.zoo-sticker-options button, .zoo-companion-options button, .zoo-map-card) {
+  border-radius: var(--rh-radius-control);
+  background: var(--rh-color-surface-raised);
+}
+
+.rainbow-heart-student-review .zoo-map-card {
+  --destination-color: var(--rh-color-action);
+  border-top-width: 1px;
+}
+
+.rainbow-heart-student-review .zoo-map-card:hover,
+.rainbow-heart-student-review .zoo-map-card:focus-visible {
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-student-review .zoo-companion-options button {
+  border-top-color: var(--rh-color-border-strong);
+}
+
+.rainbow-heart-student-review .zoo-companion-options button:hover,
+.rainbow-heart-student-review .zoo-companion-options button:focus-visible,
+.rainbow-heart-student-review .zoo-companion-options button[aria-pressed="true"] {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+  box-shadow: inset 0 0 0 1px var(--rh-color-action);
+}
+
+.rainbow-heart-student-review .zoo-companion-options button[aria-pressed="true"] .zoo-companion-choice-state {
+  color: var(--rh-color-action);
+}
+
+.rainbow-heart-student-review .zoo-companion-current {
+  border-color: var(--rh-color-border);
+  border-radius: var(--rh-radius-control);
+}
+
+.rainbow-heart-student-review .zoo-sticker-options button:hover,
+.rainbow-heart-student-review .zoo-sticker-options button:focus-visible {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-student-review .zoo-destination-toolbar {
+  background: var(--rh-color-surface-soft);
+}
+
+.rainbow-heart-student-review .zoo-care-status {
+  border-color: var(--rh-color-border);
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-student-review .floating-companion-bubble {
+  border: 1px solid var(--rh-color-border-strong);
+  border-radius: var(--rh-radius-surface);
+  background: var(--rh-color-surface);
+  color: var(--rh-color-text);
+  box-shadow: none;
+}
+
+.rainbow-heart-student-review .floating-companion-bubble::after {
+  border-color: var(--rh-color-border-strong);
+  background: var(--rh-color-surface);
+}
+
+@media (forced-colors: active) {
+  .rainbow-heart-review::before {
+    height: 4px;
+    flex-basis: 4px;
+    border-top: 2px solid CanvasText;
+    border-bottom: 2px solid CanvasText;
+    background: Canvas;
+  }
+}
+
+@media (max-width: 600px) {
+  .rainbow-heart-student-review .dashboard-header {
+    min-height: 108px;
+    padding: var(--space-4);
+  }
+
+  .rainbow-heart-student-review .dashboard-header h1.rh-display {
+    font-size: 40px;
+  }
+
+  .rainbow-heart-student-review .student-dashboard-content {
+    padding: var(--space-4) var(--space-3) 104px;
+  }
+
+  .rainbow-heart-student-review .practice-container {
+    gap: var(--space-5);
+  }
+
+  .rainbow-heart-student-review .musical-zoo-header {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rainbow-heart-student-review .practice-card-tile {
+    transition: none;
+  }
+}
+
+/* Production-connected local shell. This layer changes presentation only; it
+   deliberately leaves authentication, practice history, streaks, and rewards
+   in their existing data paths. */
+.rainbow-heart-app {
+  justify-content: flex-start;
+  background: var(--rh-color-canvas);
+}
+
+.rainbow-heart-app > :not(.hud):not(.dashboard) {
+  width: 100%;
+}
+
+.rainbow-heart-app > .hud {
+  height: calc(100vh - var(--sandbox-banner-height) - 8px);
+  min-height: calc(100vh - var(--sandbox-banner-height) - 8px);
+}
+
+.rainbow-heart-app > .dashboard {
+  height: auto;
+  min-height: calc(100vh - var(--sandbox-banner-height) - 8px);
+}
+
+.rainbow-heart-app .App-header {
+  margin-bottom: var(--space-6);
+  border-color: var(--rh-color-border);
+  background: transparent;
+}
+
+.rainbow-heart-app :is(.App-header h1, .auth-selection h2, .auth-form h2, .loading h1) {
+  color: var(--rh-color-text);
+  font-family: var(--rh-font-display);
+  font-variation-settings: "SOFT" 0, "WONK" 0;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.rainbow-heart-app :is(.app-kicker, .section-index, .auth-context, .family-code-label, .family-code-value, .pin-recap-pin) {
+  font-family: var(--rh-font-measurement);
+  font-variant-numeric: tabular-nums;
+}
+
+.rainbow-heart-app :is(.auth-selection, .auth-form, .kid-card, .family-code-card, .student-note) {
+  border: 1px solid var(--rh-color-border);
+  border-radius: var(--rh-radius-surface);
+  background: var(--rh-color-surface);
+  box-shadow: none;
+}
+
+.rainbow-heart-app :is(.auth-selection, .auth-form) {
+  overflow: hidden;
+}
+
+.rainbow-heart-app .auth-form h2 {
+  margin-bottom: var(--space-5);
+}
+
+.rainbow-heart-app .role-selection-list .btn {
+  overflow: hidden;
+  border: 1px solid var(--rh-color-border-strong);
+  border-radius: var(--rh-radius-control);
+  background: var(--rh-color-surface-raised);
+  color: var(--rh-color-text);
+}
+
+.rainbow-heart-app .role-selection-list .btn:hover,
+.rainbow-heart-app .role-selection-list .btn:focus-visible {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-app .role-index {
+  border-right: 1px solid var(--rh-color-action);
+  background: var(--rh-color-action);
+  color: var(--rh-color-action-text);
+}
+
+.rainbow-heart-app .role-copy strong,
+.rainbow-heart-app :is(.kid-card-title, .kid-picker-name) {
+  font-family: var(--rh-font-interface);
+  font-weight: 700;
+}
+
+.rainbow-heart-app :is(.form-group input, .form-group select) {
+  border: 1px solid var(--rh-color-border);
+  border-radius: var(--rh-radius-control);
+  background: var(--rh-color-surface-raised);
+}
+
+.rainbow-heart-app :is(.form-group input, .form-group select):focus {
+  border-color: var(--rh-color-focus);
+  outline-color: var(--rh-color-focus);
+}
+
+.rainbow-heart-app :is(.btn-submit, .btn-back-header, .toggle-btn, .btn-add-kid, .btn-copy-codes, .btn-remove-kid, .avatar-option, .kid-picker-card, .pin-key) {
+  border-radius: var(--rh-radius-control);
+}
+
+.rainbow-heart-app .btn-submit {
+  border: 1px solid var(--rh-color-action);
+  background: var(--rh-color-action);
+  color: var(--rh-color-action-text);
+}
+
+.rainbow-heart-app .btn-submit:hover:not(:disabled) {
+  border-color: var(--rh-color-action-dark);
+  background: var(--rh-color-action-dark);
+}
+
+.rainbow-heart-app :is(.btn-back-header, .toggle-btn, .btn-add-kid, .btn-copy-codes, .btn-remove-kid, .avatar-option, .kid-picker-card, .pin-key) {
+  border-color: var(--rh-color-border);
+  background: var(--rh-color-surface-raised);
+}
+
+.rainbow-heart-app :is(.btn-back-header, .toggle-btn, .btn-add-kid, .btn-copy-codes, .avatar-option, .kid-picker-card, .pin-key):hover,
+.rainbow-heart-app :is(.btn-back-header, .toggle-btn, .btn-add-kid, .btn-copy-codes, .avatar-option, .kid-picker-card, .pin-key):focus-visible {
+  border-color: var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+  color: var(--rh-color-text);
+}
+
+.rainbow-heart-app .avatar-option.selected {
+  border: 2px solid var(--rh-color-action);
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-app :is(.kid-badge-created, .kid-badge-error) {
+  border-radius: var(--rh-radius-pill);
+}
+
+.rainbow-heart-app .kid-card {
+  border-top: 1px solid var(--rh-color-border);
+}
+
+.rainbow-heart-app .kid-card.kid-created {
+  border-top: 3px solid var(--rh-color-complete);
+}
+
+.rainbow-heart-app .kid-card.kid-error {
+  border-top: 3px solid var(--rh-color-danger);
+}
+
+.rainbow-heart-app .family-code-card {
+  background: var(--rh-color-action-soft);
+}
+
+.rainbow-heart-app .pin-recap-row {
+  border-color: var(--rh-color-border);
+  background: var(--rh-color-surface-raised);
+}
+
+@media (max-width: 900px) {
+  .rainbow-heart-app > .hud {
+    height: auto;
+    min-height: calc(100vh - 8px);
+  }
+}

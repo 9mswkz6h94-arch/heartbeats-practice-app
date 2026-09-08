@@ -39,7 +39,7 @@ export default function RescheduleRequests({ teacherId }) {
 
   return (
     <section className="resched-panel">
-      <h3 className="resched-panel-title">Reschedule requests ({requests.length})</h3>
+      <h2 className="resched-panel-title">Reschedule requests ({requests.length})</h2>
       <div className="resched-list">
         {requests.map((r) => (
           <div key={r.id} className="resched-row">

@@ -1,65 +1,18 @@
 import { supabase } from "./supabaseClient";
+import { fetchStudentStats } from "./studentStats";
+import { BADGES, getBadgeProgress } from "./badgeCatalog";
+
+export { BADGES, getBadgeProgress } from "./badgeCatalog";
 
 // Badge definitions
-export const BADGES = {
-  streak_7: {
-    id: "streak_7",
-    name: "Week Warrior",
-    description: "7 consecutive days of practice",
-    icon: "🔥",
-    condition: "streak",
-    threshold: 7,
-  },
-  streak_30: {
-    id: "streak_30",
-    name: "Monthly Master",
-    description: "30 consecutive days of practice",
-    icon: "⭐",
-    condition: "streak",
-    threshold: 30,
-  },
-  songs_5: {
-    id: "songs_5",
-    name: "Song Starter",
-    description: "Memorize 5 songs",
-    icon: "🎵",
-    condition: "songs_memorized",
-    threshold: 5,
-  },
-  songs_10: {
-    id: "songs_10",
-    name: "Song Master",
-    description: "Memorize 10 songs",
-    icon: "🎼",
-    condition: "songs_memorized",
-    threshold: 10,
-  },
-  practice_50: {
-    id: "practice_50",
-    name: "Practice Pro",
-    description: "Complete 50 practice sessions",
-    icon: "💪",
-    condition: "practice_sessions",
-    threshold: 50,
-  },
-};
+export const BADGE_EVENT = "heartbeats:badges-awarded";
 
 /**
  * Check and award badges for a student based on their progress
  */
 export const checkAndAwardBadges = async (studentId) => {
   try {
-    // Get student's completion stats
-    const { data: completions } = await supabase
-      .from("completions")
-      .select("completed_at")
-      .eq("student_id", studentId);
-
-    // Get assignments marked as memorized (via repertoire)
-    const { data: repertoire } = await supabase
-      .from("repertoire")
-      .select("id")
-      .eq("student_id", studentId);
+    const stats = await fetchStudentStats(studentId);
 
     // Get already awarded badges
     const { data: awardedBadges } = await supabase
@@ -69,31 +22,11 @@ export const checkAndAwardBadges = async (studentId) => {
 
     const awardedBadgeIds = awardedBadges?.map((b) => b.badge_id) || [];
 
-    // Calculate stats
-    const practiceCount = completions?.length || 0;
-    const songsCount = repertoire?.length || 0;
-    const uniqueDays = new Set(
-      completions?.map((c) => c.completed_at.split("T")[0]) || []
-    ).size;
-
-    // Check each badge condition
-    const badgesToAward = [];
-
-    if (uniqueDays >= 7 && !awardedBadgeIds.includes("streak_7")) {
-      badgesToAward.push(BADGES.streak_7);
-    }
-    if (uniqueDays >= 30 && !awardedBadgeIds.includes("streak_30")) {
-      badgesToAward.push(BADGES.streak_30);
-    }
-    if (songsCount >= 5 && !awardedBadgeIds.includes("songs_5")) {
-      badgesToAward.push(BADGES.songs_5);
-    }
-    if (songsCount >= 10 && !awardedBadgeIds.includes("songs_10")) {
-      badgesToAward.push(BADGES.songs_10);
-    }
-    if (practiceCount >= 50 && !awardedBadgeIds.includes("practice_50")) {
-      badgesToAward.push(BADGES.practice_50);
-    }
+    const badgesToAward = Object.values(BADGES).filter(
+      (badge) =>
+        getBadgeProgress(stats, badge).earned &&
+        !awardedBadgeIds.includes(badge.id)
+    );
 
     // Award new badges
     if (badgesToAward.length > 0) {
@@ -107,6 +40,10 @@ export const checkAndAwardBadges = async (studentId) => {
         .insert(badgeInserts);
 
       if (error) throw error;
+
+      window.dispatchEvent(
+        new CustomEvent(BADGE_EVENT, { detail: { badges: badgesToAward } })
+      );
 
       return badgesToAward;
     }
@@ -137,4 +74,18 @@ export const getStudentBadges = async (studentId) => {
     console.error("Error fetching badges:", err);
     return [];
   }
+};
+
+export const getBadgeShowcase = async (studentId) => {
+  const [earnedBadges, stats] = await Promise.all([
+    getStudentBadges(studentId),
+    fetchStudentStats(studentId),
+  ]);
+  const earnedById = new Map(earnedBadges.map((badge) => [badge.id, badge]));
+
+  return Object.values(BADGES).map((badge) => ({
+    ...badge,
+    ...getBadgeProgress(stats, badge),
+    earned_at: earnedById.get(badge.id)?.earned_at || null,
+  }));
 };

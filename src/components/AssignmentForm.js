@@ -9,16 +9,35 @@ import "./AssignmentForm.css";
 
 const BUCKET = "assignment-attachments";
 
-export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
-  const [title, setTitle] = useState("");
-  const [instrumentType, setInstrumentType] = useState("Piano");
+function matchingInstrument(value) {
+  if (!value) return "Piano";
+  return instrumentTypes.find((type) => value.toLowerCase().includes(type.toLowerCase())) || "Custom";
+}
+
+export default function AssignmentForm({
+  teacherId,
+  onAssignmentCreated,
+  initialStudentId = "",
+  studentName = "",
+  lockStudent = false,
+  initialDraft = null,
+  initialInstrumentType = "Piano",
+}) {
+  const [title, setTitle] = useState(initialDraft?.title || "");
+  const [instrumentType, setInstrumentType] = useState(() => matchingInstrument(initialInstrumentType));
   const [category, setCategory] = useState("pieces");
-  const [description, setDescription] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState("");
+  const [description, setDescription] = useState(initialDraft?.description || "");
+  const [selectedStudent, setSelectedStudent] = useState(initialStudentId);
   const [deadline, setDeadline] = useState("");
   const [badgeReward, setBadgeReward] = useState("none");
   const [students, setStudents] = useState([]);
-  const [practiceSteps, setPracticeSteps] = useState([]);
+  const [practiceSteps, setPracticeSteps] = useState(() =>
+    (initialDraft?.steps || []).map((step, index) => ({
+      id: `draft-step-${index}`,
+      title: step,
+      description: "",
+    }))
+  );
   const [attachmentFile, setAttachmentFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,6 +45,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+    if (lockStudent) return undefined;
     const fetchStudents = async () => {
       const { data, error: fetchError } = await supabase
         .from("students")
@@ -41,7 +61,12 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
     };
 
     fetchStudents();
-  }, [teacherId]);
+    return undefined;
+  }, [teacherId, lockStudent]);
+
+  useEffect(() => {
+    if (initialStudentId) setSelectedStudent(initialStudentId);
+  }, [initialStudentId]);
 
   const handleAddStep = () => {
     setPracticeSteps([...practiceSteps, { id: Date.now(), title: "", description: "" }]);
@@ -150,7 +175,7 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
       setAttachmentFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       setSuccess(true);
-      onAssignmentCreated?.();
+      onAssignmentCreated?.(assignmentData[0]);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err.message);
@@ -165,26 +190,32 @@ export default function AssignmentForm({ teacherId, onAssignmentCreated }) {
     <div className="assignment-form-container">
       <h2>Create New Assignment</h2>
 
-      <div className="student-selector-sticky">
-        <div className="form-group">
-          <label htmlFor="student">Student *</label>
-          <select
-            id="student"
-            value={selectedStudent}
-            onChange={(e) => setSelectedStudent(e.target.value)}
-            required
-            disabled={loading}
-            className="sticky-select"
-          >
-            <option value="">Select a student...</option>
-            {students.map((student) => (
-              <option key={student.id} value={student.id}>
-                {student.name} ({student.email})
-              </option>
-            ))}
-          </select>
+      {lockStudent ? (
+        <div className="student-selector-sticky" aria-label="Selected student">
+          <div className="form-group"><span>Student</span><strong>{studentName}</strong></div>
         </div>
-      </div>
+      ) : (
+        <div className="student-selector-sticky">
+          <div className="form-group">
+            <label htmlFor="student">Student *</label>
+            <select
+              id="student"
+              value={selectedStudent}
+              onChange={(e) => setSelectedStudent(e.target.value)}
+              required
+              disabled={loading}
+              className="sticky-select"
+            >
+              <option value="">Select a student...</option>
+              {students.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.name} ({student.email})
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="assignment-form">
         <div className="form-section">

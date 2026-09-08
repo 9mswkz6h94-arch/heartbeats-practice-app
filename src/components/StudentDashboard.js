@@ -1,33 +1,25 @@
 import React from "react";
-import { supabase } from "../lib/supabaseClient";
 import StudentPracticeCards from "./StudentPracticeCards";
 import StudentRepertoire from "./StudentRepertoire";
-import SightReading from "./SightReading";
-import PetWidget from "./PetWidget";
-import PetCollection from "./PetCollection";
+import StudentZooExperience from "./StudentZooExperience";
+import BadgeShowcase from "./BadgeShowcase";
 import "./Dashboard.css";
 import "./StudentDashboard.css";
 
 export default function StudentDashboard({ studentId, onLogout }) {
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    onLogout();
-  };
-
   return (
-    <div className="dashboard">
+    <div className="dashboard rainbow-heart-student-review">
       <header className="dashboard-header">
         <div><p className="dashboard-context">Student workspace</p><h1>Today’s practice</h1></div>
-        <button type="button" onClick={handleLogout} className="btn-logout">
-          Log out
+        <button type="button" onClick={onLogout} className="btn-logout">
+          Switch account
         </button>
       </header>
 
       <main className="student-dashboard-content">
-        <PetWidget studentId={studentId} />
-        <PetCollection studentId={studentId} />
+        <StudentZooExperience studentId={studentId} />
         <StudentPracticeCards studentId={studentId} />
-        <SightReading studentId={studentId} />
+        <BadgeShowcase studentId={studentId} />
         <StudentRepertoire studentId={studentId} />
       </main>
     </div>

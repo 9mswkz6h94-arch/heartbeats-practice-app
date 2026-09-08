@@ -2,3 +2,83 @@
 .review-state h2 { margin: 0 0 var(--space-3); font-size: 25px; }
 .review-state p { margin: 0; color: var(--color-text-muted); }
 .review-state-loading { border-left-style: double; }
+
+.review-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.review-space-nav {
+  position: sticky;
+  top: 38px;
+  z-index: 90;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(252, 252, 248, 0.96);
+  backdrop-filter: blur(10px);
+}
+
+.review-space-label {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.review-space-buttons {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.review-space-button {
+  flex: 0 0 auto;
+  min-height: 48px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-space-button:hover,
+.review-space-button:focus-visible {
+  border-color: var(--color-ink);
+}
+
+.review-space-button.active {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-surface);
+}
+
+@media (max-width: 640px) {
+  .review-space-nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+    padding-inline: 12px;
+  }
+
+  .review-space-buttons { width: 100%; }
+}

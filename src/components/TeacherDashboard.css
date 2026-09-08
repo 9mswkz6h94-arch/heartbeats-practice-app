@@ -25,7 +25,7 @@
 .hud-view-context,
 .dashboard-context { margin: 0 0 var(--space-1); color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
 .hud-view-title { margin: 0; font-family: var(--font-display); font-size: 32px; font-weight: 600; }
-.hud-content { flex: 1; overflow-y: auto; padding: var(--space-6) var(--space-6) var(--space-7); }
+.hud-content { flex: 1; overflow-y: auto; padding: var(--space-6) var(--space-6) var(--space-7); align-items: stretch; justify-content: flex-start; }
 .create-assignment-section { width: 100%; max-width: 900px; }
 
 @media (max-width: 900px) {

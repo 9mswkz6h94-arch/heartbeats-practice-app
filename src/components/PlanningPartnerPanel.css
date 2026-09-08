@@ -1,0 +1,22 @@
+.planning-partner-panel { margin-top: var(--space-4); padding: var(--space-4); border: 2px solid var(--color-ink); border-top: 6px solid var(--color-accent-secondary, var(--color-ink)); background: var(--color-paper); color: var(--color-text); }
+.planning-partner-panel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.planning-partner-panel > header p,
+.planning-partner-answer span { margin: 0; color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+.planning-partner-panel h3 { margin: var(--space-1) 0 0; font-family: var(--font-display); font-size: 22px; }
+.planning-partner-panel > header button { min-height: 48px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); background: transparent; color: var(--color-text); font: inherit; font-weight: 600; cursor: pointer; }
+.planning-partner-privacy { margin: var(--space-3) 0; color: var(--color-text-muted); font-size: 12px; line-height: 1.5; }
+.planning-partner-prompts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.planning-partner-prompts button { min-height: 44px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); background: var(--color-cut-paper); color: var(--color-text); font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
+.planning-partner-panel form { margin-top: var(--space-4); }
+.planning-partner-panel form > label { display: block; margin-bottom: var(--space-1); font-size: 12px; font-weight: 700; }
+.planning-partner-panel form > div { display: grid; grid-template-columns: 1fr auto; gap: var(--space-2); }
+.planning-partner-panel input { min-width: 0; min-height: 48px; padding: var(--space-3); border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); font: inherit; }
+.planning-partner-panel form button { min-height: 48px; padding: var(--space-2) var(--space-4); border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-white); font: inherit; font-weight: 700; cursor: pointer; }
+.planning-partner-panel button:disabled,
+.planning-partner-panel form button:disabled { opacity: .55; cursor: not-allowed; }
+.planning-partner-answer { margin-top: var(--space-3); padding: var(--space-3); border-left: 5px solid var(--color-complete); background: var(--success-bg); }
+.planning-partner-answer p { margin: var(--space-1) 0 0; line-height: 1.55; }
+@media (max-width: 560px) {
+  .planning-partner-panel form > div { grid-template-columns: 1fr; }
+  .planning-partner-panel form button { width: 100%; }
+}

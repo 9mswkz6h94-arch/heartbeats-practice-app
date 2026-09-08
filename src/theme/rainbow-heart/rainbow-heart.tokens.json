@@ -1,0 +1,209 @@
+{
+  "identity": "rainbow-heart",
+  "version": "2.0.0",
+  "systemCompatibility": "0.6.0",
+  "tokenStatus": "mixed",
+  "acceptedDecision": "0014",
+  "maturity": {
+    "identityFraming": "accepted",
+    "typographyRoles": "accepted",
+    "fontAssets": "accepted",
+    "geometry": "accepted",
+    "logoSpectrum": "accepted",
+    "coreSemanticColors": "accepted",
+    "stateSemanticColors": "proposed",
+    "focalInkEdge": "accepted-limited",
+    "primaryRasterMark": "accepted",
+    "productionMarkSet": "open",
+    "photographyAndIllustration": "open",
+    "motion": "proposed",
+    "applicationCompliance": "app-specific"
+  },
+  "framing": {
+    "coreCharacter": "working-studio-warmth",
+    "experiencePromise": "handmade-welcome",
+    "colorDiscipline": "logo-led-spectrum",
+    "handmadeMeaning": "actual drawing, lettering, human evidence, and language—not muted color"
+  },
+  "color": {
+    "status": "mixed",
+    "canvas": "#ffffff",
+    "surface": "#ffffff",
+    "surfaceRaised": "#ffffff",
+    "surfaceSoft": "#f8f9fa",
+    "text": "#241e20",
+    "textMuted": "#544c50",
+    "border": "#c9c3c6",
+    "borderStrong": "#241e20",
+    "action": "#6c5ce7",
+    "actionDark": "#5545c5",
+    "actionSoft": "#eeeaff",
+    "actionText": "#ffffff",
+    "focus": "#185adb",
+    "live": "#a34700",
+    "onDeck": "#6c5ce7",
+    "complete": "#17603a",
+    "danger": "#9b1c24",
+    "warning": "#7a4508"
+  },
+  "font": {
+    "status": "accepted",
+    "interface": "Inter, Arial, Helvetica, sans-serif",
+    "display": "Fraunces, Georgia, Times New Roman, serif",
+    "measurement": "Space Mono, Consolas, Liberation Mono, monospace",
+    "mono": "Space Mono, Consolas, Liberation Mono, monospace",
+    "deprecatedAliases": {
+      "mono": "measurement"
+    },
+    "fontFaces": {
+      "interface": [
+        "400-normal",
+        "600-normal",
+        "700-normal"
+      ],
+      "display": [
+        "500-normal",
+        "600-normal",
+        "700-normal"
+      ],
+      "measurement": [
+        "400-normal",
+        "700-normal"
+      ]
+    },
+    "delivery": "local-bundled",
+    "displayTreatment": {
+      "weightRange": [
+        500,
+        700
+      ],
+      "style": "normal",
+      "opticalSizing": "auto",
+      "softAxisDefault": 0,
+      "wonkAxisDefault": 0,
+      "scope": "short-focal-display-and-public-section-headings"
+    }
+  },
+  "shape": {
+    "status": "accepted",
+    "surfaceRadius": "18px",
+    "featureRadius": "22px 22px 34px 18px",
+    "controlRadius": "12px",
+    "pillRadius": "999px",
+    "pillRoles": [
+      "tag",
+      "filter",
+      "compact-status",
+      "true-segmented-choice"
+    ]
+  },
+  "border": {
+    "status": "accepted",
+    "ordinaryWidth": "1px",
+    "focalWidth": "3px",
+    "focusWidth": "3px"
+  },
+  "effect": {
+    "status": "mixed",
+    "ordinarySurfaceShadow": "none",
+    "focalInkOffset": "5px 6px 0 #241e20",
+    "focalInkOffsetLimit": "one focal brand surface per viewport",
+    "decorativeGradient": "logo-spectrum-composite-only"
+  },
+  "decorativeSpectrumArchitecture": {
+    "status": "accepted",
+    "decision": "0014",
+    "register": "logo-spectrum",
+    "expressionLevels": [
+      "quiet",
+      "standard",
+      "celebratory"
+    ],
+    "maximumRegistersPerSurface": 1,
+    "maximumFocalMomentsPerViewport": 1,
+    "semanticUseAllowed": false,
+    "categoryUseAllowed": false,
+    "intensityMethod": "change area and prominence, not hue values"
+  },
+  "coreVisualRecipe": {
+    "name": "Rainbow Heart Logo-Derived Core Recipe",
+    "version": "2.0.0",
+    "status": "accepted",
+    "decision": "0014",
+    "musicAccidentals": "ascii-in-aligned-ui; namespaced-tested-symbol-face-in-notation",
+    "logoSpectrum": {
+      "kind": "six-stop-hard-edge-composite",
+      "stops": [
+        "#ff1717",
+        "#ff904e",
+        "#ffde59",
+        "#60e027",
+        "#00baff",
+        "#8b51fe"
+      ],
+      "source": "owner-supplied-primary-logo-raster",
+      "semanticUseAllowed": false,
+      "categoryUseAllowed": false
+    }
+  },
+  "mark": {
+    "status": "mixed",
+    "primary": {
+      "status": "accepted-primary-raster",
+      "path": "assets/marks/rainbow-heart-studio-primary.png",
+      "widthPx": 600,
+      "heightPx": 600,
+      "background": "white",
+      "source": "owner-supplied"
+    },
+    "productionVariants": {
+      "status": "open",
+      "required": [
+        "transparent",
+        "vector",
+        "monochrome",
+        "small-size"
+      ]
+    }
+  },
+  "historicalEvidence": {
+    "styleGuide1": {
+      "decision": "0012",
+      "interface": "Atkinson Hyperlegible",
+      "display": "Georgia",
+      "registers": [
+        "craft",
+        "studio-brights"
+      ],
+      "status": "superseded-preserved"
+    },
+    "originalWebsite": {
+      "commit": "7f23813",
+      "interface": "Inter",
+      "display": "Fraunces",
+      "formerLiveBrightSequence": [
+        "#ff6b6b",
+        "#ff9f43",
+        "#feca57",
+        "#1dd1a1",
+        "#54a0ff",
+        "#a29bfe",
+        "#fd79a8"
+      ]
+    }
+  },
+  "open": [
+    "transparent-vector-monochrome-and-small-size-mark-variants",
+    "photography-and-illustration-language",
+    "state-semantic-color-refinement",
+    "motion-recipes",
+    "per-application-migration-and-deployment",
+    "per-application-rendered-accessibility-evidence"
+  ],
+  "export": {
+    "kind": "versioned-reference-export",
+    "brandKitVersion": "2.0.0",
+    "sourceOfTruth": "../themes/rainbow-heart.tokens.json",
+    "generatedBy": "brand-kit/generate-css.mjs"
+  }
+}

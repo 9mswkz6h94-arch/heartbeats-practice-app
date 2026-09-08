@@ -8,6 +8,12 @@ import {
   randomPin,
   getSecondaryClient,
 } from "../lib/familyAuth";
+import {
+  GUARDIAN_RELATIONSHIPS,
+  birthdayError,
+  calculateAge,
+  normalizeOptionalText,
+} from "../lib/familyProfile";
 import "./AuthForms.css";
 import "./FamilySignup.css";
 
@@ -15,10 +21,27 @@ function blankKid() {
   return {
     localId: crypto.randomUUID(),
     name: "",
+    preferredName: "",
+    birthday: "",
+    pronouns: "",
+    schoolGrade: "",
     instrument: INSTRUMENTS[0],
     avatar: AVATARS[Math.floor(Math.random() * AVATARS.length)],
     pin: randomPin(),
     state: "waiting", // waiting | created | error
+    errorMsg: null,
+  };
+}
+
+function blankGuardian() {
+  return {
+    localId: crypto.randomUUID(),
+    name: "",
+    relationship: "Grandparent",
+    email: "",
+    phone: "",
+    receivesStudioContact: false,
+    state: "waiting",
     errorMsg: null,
   };
 }
@@ -32,13 +55,22 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
   const [parentName, setParentName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [primaryRelationship, setPrimaryRelationship] = useState("Parent");
+  const [parentPhone, setParentPhone] = useState("");
   const [kids, setKids] = useState([blankKid()]);
+  const [guardians, setGuardians] = useState([]);
   const [family, setFamily] = useState(null); // { id, code }
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
   const updateKid = (localId, patch) => {
     setKids((prev) => prev.map((k) => (k.localId === localId ? { ...k, ...patch } : k)));
+  };
+
+  const updateGuardian = (localId, patch) => {
+    setGuardians((prev) => prev.map((guardian) => (
+      guardian.localId === localId ? { ...guardian, ...patch } : guardian
+    )));
   };
 
   const handleParentSubmit = async (e) => {
@@ -100,6 +132,10 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
         family_id: familyInfo.id,
         avatar: kid.avatar,
         instrument: kid.instrument,
+        preferred_name: normalizeOptionalText(kid.preferredName),
+        birthday: normalizeOptionalText(kid.birthday),
+        pronouns: normalizeOptionalText(kid.pronouns),
+        school_grade: normalizeOptionalText(kid.schoolGrade),
         status: "pending",
       },
     ]);
@@ -111,10 +147,25 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
         student_id: studentId,
         parent_email: parentEmail,
         parent_name: parentName.trim() || null,
+        parent_phone: normalizeOptionalText(parentPhone),
+        relationship: primaryRelationship,
+        can_manage_family: true,
         parent_auth_user_id: (await supabase.auth.getUser()).data?.user?.id || null,
       },
     ]);
     if (linkError) throw linkError;
+  };
+
+  const createAdditionalGuardian = async (guardian, familyInfo) => {
+    const { error: guardianError } = await supabase.from("family_guardians").insert([{
+      family_id: familyInfo.id,
+      name: guardian.name.trim(),
+      relationship: normalizeOptionalText(guardian.relationship),
+      email: normalizeOptionalText(guardian.email)?.toLowerCase() || null,
+      phone: normalizeOptionalText(guardian.phone),
+      receives_studio_contact: guardian.receivesStudioContact,
+    }]);
+    if (guardianError) throw guardianError;
   };
 
   const handleKidsSubmit = async (e) => {
@@ -128,6 +179,18 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
     }
     if (kids.some((k) => !/^\d{4}$/.test(k.pin))) {
       setError("Every PIN must be exactly 4 digits.");
+      return;
+    }
+    const invalidBirthday = kids.find((kid) => birthdayError(kid.birthday));
+    if (invalidBirthday) {
+      setError(`${invalidBirthday.name || "A student"}: ${birthdayError(invalidBirthday.birthday)}`);
+      return;
+    }
+    const invalidGuardian = guardians.find((guardian) => (
+      !guardian.name.trim() || (!guardian.email.trim() && !guardian.phone.trim())
+    ));
+    if (invalidGuardian) {
+      setError("Each additional guardian needs a name and either an email or phone number.");
       return;
     }
 
@@ -147,6 +210,19 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
 
       const parentEmail = email.trim().toLowerCase();
       let anyFailed = false;
+      for (const guardian of guardians.filter((item) => item.state !== "created")) {
+        try {
+          await createAdditionalGuardian(guardian, fam);
+          updateGuardian(guardian.localId, { state: "created", errorMsg: null });
+        } catch (err) {
+          anyFailed = true;
+          updateGuardian(guardian.localId, {
+            state: "error",
+            errorMsg: err.message || "Failed",
+          });
+        }
+      }
+
       for (const kid of toCreate) {
         try {
           await createOneKid(kid, fam, parentEmail);
@@ -158,7 +234,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
       }
 
       if (anyFailed) {
-        setError("Some kids couldn't be added — see below. Fix and press the button again; kids already added won't be duplicated.");
+        setError("Some family details couldn't be saved — see below. Fix them and try again; completed records won't be duplicated.");
       } else {
         setStep(3);
       }
@@ -196,6 +272,33 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                   required
                   disabled={busy}
                 />
+              </div>
+              <div className="kid-row-split">
+                <div className="form-group">
+                  <label htmlFor="parent-relationship">Relationship to student</label>
+                  <select
+                    id="parent-relationship"
+                    value={primaryRelationship}
+                    onChange={(e) => setPrimaryRelationship(e.target.value)}
+                    disabled={busy}
+                  >
+                    {GUARDIAN_RELATIONSHIPS.map((relationship) => (
+                      <option key={relationship} value={relationship}>{relationship}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="parent-phone">Phone <span className="optional-label">optional</span></label>
+                  <input
+                    id="parent-phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={parentPhone}
+                    onChange={(e) => setParentPhone(e.target.value)}
+                    placeholder="(555) 555-0147"
+                    disabled={busy}
+                  />
+                </div>
               </div>
               <div className="form-group">
                 <label htmlFor="parent-email">Email</label>
@@ -278,6 +381,59 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
 
                   <div className="kid-row-split">
                     <div className="form-group">
+                      <label>Preferred name <span className="optional-label">optional</span></label>
+                      <input
+                        aria-label={`Kid ${idx + 1} preferred name`}
+                        type="text"
+                        value={kid.preferredName}
+                        onChange={(e) => updateKid(kid.localId, { preferredName: e.target.value })}
+                        placeholder="What should we call them?"
+                        disabled={busy || kid.state === "created"}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Birthday <span className="optional-label">private</span></label>
+                      <input
+                        aria-label={`Kid ${idx + 1} birthday`}
+                        type="date"
+                        value={kid.birthday}
+                        max={new Date().toISOString().slice(0, 10)}
+                        onChange={(e) => updateKid(kid.localId, { birthday: e.target.value })}
+                        disabled={busy || kid.state === "created"}
+                      />
+                      <span className="field-note">
+                        {kid.birthday ? `Age ${calculateAge(kid.birthday)} · ` : ""}Used for age-appropriate teaching, never shown to other families.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="kid-row-split">
+                    <div className="form-group">
+                      <label>Pronouns <span className="optional-label">optional</span></label>
+                      <input
+                        aria-label={`Kid ${idx + 1} pronouns`}
+                        type="text"
+                        value={kid.pronouns}
+                        onChange={(e) => updateKid(kid.localId, { pronouns: e.target.value })}
+                        placeholder="e.g., they / them"
+                        disabled={busy || kid.state === "created"}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Grade <span className="optional-label">optional</span></label>
+                      <input
+                        aria-label={`Kid ${idx + 1} grade`}
+                        type="text"
+                        value={kid.schoolGrade}
+                        onChange={(e) => updateKid(kid.localId, { schoolGrade: e.target.value })}
+                        placeholder="e.g., 4th"
+                        disabled={busy || kid.state === "created"}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="kid-row-split">
+                    <div className="form-group">
                       <label>Instrument</label>
                       <select
                         aria-label={`Kid ${idx + 1} instrument`}
@@ -336,6 +492,105 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
               >
                 + Add another kid
               </button>
+
+              <section className="guardian-section" aria-labelledby="additional-guardians-title">
+                <div className="guardian-section-heading">
+                  <div>
+                    <p className="section-eyebrow">Optional</p>
+                    <h3 id="additional-guardians-title">Other guardians & caregivers</h3>
+                    <p>
+                      Add trusted adults the studio may contact. This does not create a login or share student access.
+                    </p>
+                  </div>
+                </div>
+
+                {guardians.map((guardian, idx) => (
+                  <div key={guardian.localId} className={`guardian-card guardian-${guardian.state}`}>
+                    <div className="kid-card-header">
+                      <span className="kid-card-title">Contact {idx + 1}</span>
+                      {guardian.state === "created" && <span className="kid-badge-created">✓ Saved</span>}
+                      {guardian.state === "error" && <span className="kid-badge-error">Failed — will retry</span>}
+                      {guardian.state !== "created" && (
+                        <button
+                          type="button"
+                          className="btn-remove-kid"
+                          onClick={() => setGuardians((prev) => prev.filter((item) => item.localId !== guardian.localId))}
+                          disabled={busy}
+                          aria-label={`Remove additional guardian ${idx + 1}`}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="form-group">
+                      <label>Name</label>
+                      <input
+                        aria-label={`Additional guardian ${idx + 1} name`}
+                        type="text"
+                        value={guardian.name}
+                        onChange={(e) => updateGuardian(guardian.localId, { name: e.target.value })}
+                        disabled={busy || guardian.state === "created"}
+                      />
+                    </div>
+                    <div className="kid-row-split">
+                      <div className="form-group">
+                        <label>Relationship</label>
+                        <select
+                          aria-label={`Additional guardian ${idx + 1} relationship`}
+                          value={guardian.relationship}
+                          onChange={(e) => updateGuardian(guardian.localId, { relationship: e.target.value })}
+                          disabled={busy || guardian.state === "created"}
+                        >
+                          {GUARDIAN_RELATIONSHIPS.map((relationship) => (
+                            <option key={relationship} value={relationship}>{relationship}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Phone</label>
+                        <input
+                          aria-label={`Additional guardian ${idx + 1} phone`}
+                          type="tel"
+                          value={guardian.phone}
+                          onChange={(e) => updateGuardian(guardian.localId, { phone: e.target.value })}
+                          disabled={busy || guardian.state === "created"}
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label>Email</label>
+                      <input
+                        aria-label={`Additional guardian ${idx + 1} email`}
+                        type="email"
+                        value={guardian.email}
+                        onChange={(e) => updateGuardian(guardian.localId, { email: e.target.value })}
+                        disabled={busy || guardian.state === "created"}
+                      />
+                      <span className="field-note">At least one email or phone number is required.</span>
+                    </div>
+                    <label className="guardian-consent">
+                      <input
+                        type="checkbox"
+                        checked={guardian.receivesStudioContact}
+                        onChange={(e) => updateGuardian(guardian.localId, { receivesStudioContact: e.target.checked })}
+                        disabled={busy || guardian.state === "created"}
+                      />
+                      This person may receive studio reminders and schedule messages.
+                    </label>
+                    {guardian.errorMsg && <div className="error-message" role="alert">{guardian.errorMsg}</div>}
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="btn-add-guardian"
+                  onClick={() => setGuardians((prev) => [...prev, blankGuardian()])}
+                  disabled={busy}
+                >
+                  + Add a guardian or caregiver
+                </button>
+              </section>
 
               {error && <div className="error-message" role="alert">{error}</div>}
               <button type="submit" className="btn-submit" disabled={busy}>

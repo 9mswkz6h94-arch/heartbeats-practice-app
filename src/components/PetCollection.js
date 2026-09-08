@@ -80,7 +80,7 @@ export default function PetCollection({ studentId, readOnly = false }) {
 
   return (
     <div className="pet-collection">
-      <h3 className="pet-collection-title">Pet collection</h3>
+      <h2 className="pet-collection-title">Pet collection</h2>
 
       {error && <p className="pet-collection-error" role="alert">{error}</p>}
 

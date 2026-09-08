@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import "./StudentRepertoire.css";
 
@@ -7,11 +7,7 @@ export default function StudentRepertoire({ studentId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchMemorizedSongs();
-  }, [studentId]);
-
-  const fetchMemorizedSongs = async () => {
+  const fetchMemorizedSongs = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -40,7 +36,11 @@ export default function StudentRepertoire({ studentId }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [studentId]);
+
+  useEffect(() => {
+    fetchMemorizedSongs();
+  }, [fetchMemorizedSongs]);
 
   const getCategoryLabel = (category) => {
     const labels = {

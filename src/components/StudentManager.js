@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { DAY_OPTIONS } from "../lib/calendarLink";
 import "./StudentManager.css";
 
-export default function StudentManager({ teacherId }) {
+export default function StudentManager({ teacherId, onChanged }) {
   const [students, setStudents] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,21 +15,13 @@ export default function StudentManager({ teacherId }) {
   const [editingLessonFor, setEditingLessonFor] = useState(null);
   const [lessonDraft, setLessonDraft] = useState({ day_of_week: 1, start_time: "16:00", duration_minutes: 30, location: "" });
   const [lessonSaving, setLessonSaving] = useState(false);
-  const [editingSightReadingFor, setEditingSightReadingFor] = useState(null);
-  const [sightReadingDraft, setSightReadingDraft] = useState({ enabled: true, level: "beginner" });
-  const [sightReadingSaving, setSightReadingSaving] = useState(false);
 
-  useEffect(() => {
-    fetchStudents();
-    fetchLessons();
-  }, [teacherId]);
-
-  const fetchLessons = async () => {
+  const fetchLessons = useCallback(async () => {
     const { data } = await supabase.from("lessons").select("*").eq("teacher_id", teacherId);
     const byStudent = {};
     (data || []).forEach((l) => { byStudent[l.student_id] = l; });
     setLessons(byStudent);
-  };
+  }, [teacherId]);
 
   const startEditLesson = (studentId) => {
     const existing = lessons[studentId];
@@ -57,41 +49,16 @@ export default function StudentManager({ teacherId }) {
     } else {
       setEditingLessonFor(null);
       fetchLessons();
+      onChanged?.();
     }
   };
 
-  const startEditSightReading = (student) => {
-    setSightReadingDraft({
-      enabled: student.sightreading_enabled !== false,
-      level: student.sightreading_level || "beginner",
-    });
-    setEditingSightReadingFor(student.id);
-  };
-
-  const saveSightReading = async (studentId) => {
-    setSightReadingSaving(true);
-    const { error: saveError } = await supabase
-      .from("students")
-      .update({
-        sightreading_enabled: sightReadingDraft.enabled,
-        sightreading_level: sightReadingDraft.level,
-      })
-      .eq("id", studentId);
-    setSightReadingSaving(false);
-    if (saveError) {
-      setError(saveError.message);
-    } else {
-      setEditingSightReadingFor(null);
-      fetchStudents();
-    }
-  };
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     setFetching(true);
     const { data, error: fetchError } = await supabase
       .from("students")
       .select(
-        "id, name, email, auth_user_id, created_at, status, avatar, instrument, family_id, sightreading_enabled, sightreading_level"
+        "id, name, email, auth_user_id, created_at, status, avatar, instrument, family_id"
       )
       .eq("teacher_id", teacherId)
       .order("name");
@@ -102,7 +69,12 @@ export default function StudentManager({ teacherId }) {
       setStudents(data || []);
     }
     setFetching(false);
-  };
+  }, [teacherId]);
+
+  useEffect(() => {
+    fetchStudents();
+    fetchLessons();
+  }, [fetchLessons, fetchStudents]);
 
   const handleApproveStudent = async (studentId) => {
     const { error: approveError } = await supabase
@@ -113,6 +85,7 @@ export default function StudentManager({ teacherId }) {
       setError(approveError.message);
     } else {
       fetchStudents();
+      onChanged?.();
     }
   };
 
@@ -137,6 +110,7 @@ export default function StudentManager({ teacherId }) {
       setEmail("");
       setSuccess(true);
       fetchStudents();
+      onChanged?.();
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err.message);
@@ -151,6 +125,7 @@ export default function StudentManager({ teacherId }) {
     }
     await supabase.from("students").delete().eq("id", studentId);
     fetchStudents();
+    onChanged?.();
   };
 
   const pendingStudents = students.filter((s) => s.status === "pending");
@@ -275,13 +250,6 @@ export default function StudentManager({ teacherId }) {
                       : "Set lesson time"}
                   </button>
                 )}
-                {editingSightReadingFor !== student.id && (
-                  <button className="btn-edit-lesson" onClick={() => startEditSightReading(student)}>
-                    {student.sightreading_enabled === false
-                      ? "Sight reading: off"
-                      : `Sight reading: ${(student.sightreading_level || "beginner") === "beginner" ? "beginner" : "intermediate"}`}
-                  </button>
-                )}
                 <button
                   className="btn-remove-student"
                   onClick={() => handleRemoveStudent(student.id)}
@@ -289,36 +257,6 @@ export default function StudentManager({ teacherId }) {
                 >
                   Remove
                 </button>
-                {editingSightReadingFor === student.id && (
-                  <div className="lesson-editor">
-                    <label className="sightreading-enabled-toggle">
-                      <input
-                        type="checkbox"
-                        checked={sightReadingDraft.enabled}
-                        onChange={(e) => setSightReadingDraft({ ...sightReadingDraft, enabled: e.target.checked })}
-                      />
-                      Show Sight Reading
-                    </label>
-                    <select
-                      value={sightReadingDraft.level}
-                      disabled={!sightReadingDraft.enabled}
-                      onChange={(e) => setSightReadingDraft({ ...sightReadingDraft, level: e.target.value })}
-                    >
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                    </select>
-                    <button
-                      className="btn-approve-student"
-                      disabled={sightReadingSaving}
-                      onClick={() => saveSightReading(student.id)}
-                    >
-                      {sightReadingSaving ? "Saving..." : "Save"}
-                    </button>
-                    <button className="btn-remove-student" onClick={() => setEditingSightReadingFor(null)}>
-                      Cancel
-                    </button>
-                  </div>
-                )}
                 {editingLessonFor === student.id && (
                   <div className="lesson-editor">
                     <select

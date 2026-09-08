@@ -1,0 +1,20 @@
+.rhythm-riverbank { border: 1px solid var(--color-border); border-top: 5px solid #247e92; background: #edf7f5; }
+.riverbank-heading { padding: var(--space-4); display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); border-bottom: 1px solid var(--color-border); background: #e3f4f7; }
+.riverbank-heading h3 { margin: 3px 0 5px; font-size: clamp(23px, 3vw, 30px); }
+.riverbank-heading p:last-child { max-width: 650px; margin: 0; color: var(--color-text-muted); font-size: 12px; line-height: 1.5; }
+.riverbank-heading-actions { display: flex; align-items: center; gap: var(--space-2); }
+.riverbank-heading-actions > span { flex: 0 0 auto; padding: 4px 7px; border: 1px solid #6f9eaa; background: #f4fbfc; color: #155a68; font-family: var(--font-measurement); font-size: 9px; font-weight: 700; text-transform: uppercase; }
+.riverbank-heading-actions > button { min-height: 48px; padding: 9px 12px; border: 1px solid var(--color-ink); border-radius: 0; background: var(--color-ink); color: var(--color-white); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.riverbank-world-notes { padding: var(--space-4); display: grid; grid-template-columns: minmax(180px, .7fr) minmax(0, 1.3fr); gap: var(--space-4); border-top: 1px solid var(--color-border); background: #e3f4f7; }
+.riverbank-world-notes h4 { margin: 3px 0 0; font-size: 18px; }
+.riverbank-world-notes ul { margin: 0; padding: 0; display: grid; gap: 7px; list-style: none; }
+.riverbank-world-notes li { position: relative; min-height: 28px; padding: 6px 8px 6px 27px; border: 1px solid #91b2b9; background: #f4fbfc; color: var(--color-text-muted); font-size: 11px; line-height: 1.4; }
+.riverbank-world-notes li::before { position: absolute; left: 9px; top: 7px; color: #155a68; content: "◆"; font-size: 9px; }
+.riverbank-toolbar { background: #e3f4f7; }
+@media (max-width: 620px) {
+  .riverbank-heading { align-items: stretch; flex-direction: column; }
+  .riverbank-heading-actions { align-items: stretch; flex-direction: column; }
+  .riverbank-heading-actions > span { width: fit-content; }
+  .riverbank-heading-actions > button { width: 100%; }
+  .riverbank-world-notes { grid-template-columns: 1fr; }
+}

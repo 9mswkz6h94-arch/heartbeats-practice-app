@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { checkAndAwardBadges } from "../lib/badgeLogic";
 import {
@@ -8,6 +8,7 @@ import {
   setStepStatus,
 } from "../lib/practiceStatus";
 import { cheerForPractice } from "./PetWidget";
+import { computeStreak } from "../lib/studentStats";
 import PracticeCardDetail from "./PracticeCardDetail";
 import "./StudentPracticeCards.css";
 
@@ -18,18 +19,12 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
   const [error, setError] = useState(null);
   const [streak, setStreak] = useState(0);
   const [selectedStep, setSelectedStep] = useState(null);
-  const [refresh, setRefresh] = useState(0);
-
-  useEffect(() => {
-    fetchAssignmentsAndStatus();
-    fetchStreak();
-  }, [studentId, refresh]);
 
   const getTodayDate = () => {
     return new Date().toISOString().split("T")[0];
   };
 
-  const fetchAssignmentsAndStatus = async () => {
+  const fetchAssignmentsAndStatus = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -102,9 +97,9 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [readOnly, studentId]);
 
-  const fetchStreak = async () => {
+  const fetchStreak = useCallback(async () => {
     try {
       const { data: completions } = await supabase
         .from("completions")
@@ -117,14 +112,19 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
         const uniqueDays = new Set(
           completions.map((c) => c.completed_at.split("T")[0])
         );
-        setStreak(uniqueDays.size);
+        setStreak(computeStreak(uniqueDays));
       } else {
         setStreak(0);
       }
     } catch (err) {
       console.error("Error fetching streak:", err);
     }
-  };
+  }, [studentId]);
+
+  useEffect(() => {
+    fetchAssignmentsAndStatus();
+    fetchStreak();
+  }, [fetchAssignmentsAndStatus, fetchStreak]);
 
   const handleStepComplete = async (step) => {
     if (readOnly) {
@@ -174,6 +174,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
     if (readOnly) {
       setDailyStatus({ ...dailyStatus, [step.id]: "skipped" });
       setSelectedStep(null);
+      cheerForPractice("skip_accepted");
       return;
     }
 
@@ -187,6 +188,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       setDailyStatus(newStatus);
 
       setSelectedStep(null);
+      cheerForPractice("skip_accepted");
     } catch (err) {
       console.error("Error skipping step:", err);
     }

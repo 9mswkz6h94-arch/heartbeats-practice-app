@@ -152,7 +152,7 @@ function renderTab(container, exercise, currentFlatIndex, results) {
 // detection) or by tap (manual note-name fallback — no mic permission or
 // quiet room required), then logs the session so it feeds the same
 // streak/pet-XP pipeline every other practice activity uses.
-export default function SightReading({ studentId, readOnly = false }) {
+export default function SightReading({ studentId, readOnly = false, startImmediately = false }) {
   const [enabled, setEnabled] = useState(true);
   const [instrument, setInstrument] = useState(null);
   const [notation, setNotation] = useState("staff"); // 'staff' | 'tab'
@@ -164,7 +164,7 @@ export default function SightReading({ studentId, readOnly = false }) {
   const [micStatus, setMicStatus] = useState("idle"); // idle | requesting | listening | denied | unsupported
   const [flash, setFlash] = useState(null); // 'correct' | 'wrong' | null
   const [sessionDone, setSessionDone] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(startImmediately);
   const [forceContinue, setForceContinue] = useState(false);
   const [isPortrait, setIsPortrait] = useState(
     () => window.matchMedia("(orientation: portrait)").matches
@@ -385,7 +385,7 @@ export default function SightReading({ studentId, readOnly = false }) {
     return (
       <div className="sightreading-container sightreading-start-screen">
         <p className="sightreading-kicker">Optional practice</p>
-        <h3>Sight reading</h3>
+        <h2>Sight reading</h2>
         <p>Read music on the staff — by ear or by tapping the note name.</p>
         <button type="button" className="btn-primary" onClick={() => setStarted(true)}>
           Start sight reading
@@ -413,7 +413,7 @@ export default function SightReading({ studentId, readOnly = false }) {
   return (
     <div className={`sightreading-container ${flash ? `flash-${flash}` : ""}`}>
       <div className="sightreading-header">
-        <h3>Sight reading</h3>
+        <h2>Sight reading</h2>
         <div className="sightreading-level-toggle">
           <button
             type="button"

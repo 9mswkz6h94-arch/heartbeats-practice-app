@@ -27,4 +27,25 @@
 .pin-recap-row:last-child { border-bottom: 1px solid var(--color-border); }
 .pin-recap-kid { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
 .pin-recap-pin { flex: 0 0 auto; color: var(--color-text); font-family: var(--font-measurement); font-weight: 600; letter-spacing: .08em; }
-@media (max-width: 520px) { .kid-row-split { grid-template-columns: 1fr; gap: 0; } .pin-recap-row { align-items: flex-start; flex-direction: column; } }
+.optional-label { color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+.field-note { display: block; margin-top: var(--space-1); color: var(--color-text-muted); font-size: 12px; line-height: 1.45; }
+.guardian-section { margin: var(--space-6) 0 var(--space-5); padding: var(--space-4); border: 1px solid var(--color-border); background: var(--color-cut-paper); }
+.guardian-section-heading { margin-bottom: var(--space-4); }
+.guardian-section-heading h3 { margin: 0 0 var(--space-1); font-family: var(--font-display); font-size: 22px; }
+.guardian-section-heading p:not(.section-eyebrow) { margin: 0; color: var(--color-text-muted); font-size: 13px; line-height: 1.5; }
+.section-eyebrow { margin: 0 0 var(--space-1); color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.guardian-card { margin-bottom: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-left: 4px solid var(--color-accent-secondary, var(--color-ink)); background: var(--color-paper); }
+.guardian-card.guardian-created { border-left-color: var(--color-complete); }
+.guardian-card.guardian-error { border-left-color: var(--color-danger); }
+.guardian-consent { min-height: 48px; display: flex; align-items: flex-start; gap: var(--space-2); color: var(--color-text); font-size: 13px; line-height: 1.45; cursor: pointer; }
+.guardian-consent input { width: 20px; height: 20px; margin: 0; flex: 0 0 auto; accent-color: var(--color-ink); }
+.btn-add-guardian { width: 100%; min-height: 48px; padding: var(--space-3); border: 1px dashed var(--color-border); background: transparent; color: var(--color-text); font-weight: 600; cursor: pointer; }
+.btn-add-guardian:hover { border-color: var(--color-ink); background: var(--color-surface); }
+@media (max-width: 520px) {
+  .family-signup { max-width: none; }
+  .kid-row-split { grid-template-columns: 1fr; gap: 0; }
+  .kid-card,
+  .guardian-card,
+  .guardian-section { padding: var(--space-3); }
+  .pin-recap-row { align-items: flex-start; flex-direction: column; }
+}

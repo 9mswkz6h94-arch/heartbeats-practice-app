@@ -70,8 +70,8 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
     <div className="parent-dashboard">
       <header className="parent-dashboard-header">
         <div><p className="dashboard-context">Parent workspace</p><h1>Your family</h1></div>
-        <button type="button" className="btn-logout" onClick={async () => { await supabase.auth.signOut(); onLogout(); }}>
-          Log out
+        <button type="button" className="btn-logout" onClick={onLogout}>
+          Switch account
         </button>
       </header>
 

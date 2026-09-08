@@ -1,0 +1,300 @@
+.habitat-world {
+  --habitat-ink: #342a24;
+  --habitat-wood: #70513a;
+  --habitat-wood-dark: #4f392b;
+  --habitat-cream: #fff4d6;
+  --habitat-grass: #91bd63;
+  --habitat-grass-light: #a6cd73;
+  --habitat-grass-dark: #6d984f;
+  --habitat-path: #d8b977;
+  --habitat-path-edge: #b48d53;
+  overflow: hidden;
+  border-top: 2px solid var(--habitat-wood-dark);
+  background: #f7edd7;
+}
+
+.habitat-world-toolbar {
+  min-height: 78px;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: 2px solid var(--habitat-wood-dark);
+  background: var(--habitat-cream);
+}
+
+.habitat-world-toolbar h4 { margin: 3px 0 0; font-size: 17px; }
+.habitat-world-toolbar-actions { flex: 0 0 auto; display: flex; align-items: stretch; gap: 8px; }
+.habitat-world-toolbar-actions > button {
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 2px solid var(--habitat-wood-dark);
+  border-radius: 10px;
+  background: var(--color-ink);
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.habitat-world-toolbar-actions > button[aria-pressed="false"] { background: #fff8e8; color: var(--color-ink); }
+
+.habitat-tile-map {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: var(--habitat-grass);
+  background-image:
+    linear-gradient(90deg, rgba(54, 92, 48, .1) 1px, transparent 1px),
+    linear-gradient(rgba(54, 92, 48, .1) 1px, transparent 1px),
+    linear-gradient(135deg, transparent 0 50%, rgba(255, 255, 255, .055) 50% 100%);
+  background-size: 24px 24px, 24px 24px, 48px 48px;
+}
+
+.habitat-tile-map::after {
+  position: absolute;
+  z-index: 210;
+  inset: 0;
+  border: 8px solid rgba(52, 42, 36, .16);
+  content: "";
+  pointer-events: none;
+}
+
+.habitat-ground-details { position: absolute; z-index: 1; inset: 0; pointer-events: none; }
+.habitat-grass-tuft,
+.habitat-wildflower { position: absolute; color: #507b45; font-family: var(--font-measurement); font-weight: 700; }
+.habitat-grass-tuft { font-size: 18px; letter-spacing: -5px; }
+.habitat-wildflower { color: #fff0a8; font-size: 17px; text-shadow: 11px 6px 0 #f0a76a; }
+.tuft-one { left: 12%; top: 16%; }
+.tuft-two { right: 12%; top: 23%; transform: rotate(12deg); }
+.tuft-three { left: 18%; bottom: 13%; transform: rotate(-9deg); }
+.tuft-four { right: 25%; bottom: 9%; }
+.wildflower-one { left: 31%; top: 11%; }
+.wildflower-two { right: 17%; bottom: 18%; }
+.habitat-pebble { position: absolute; width: 14px; height: 9px; border: 2px solid #6e6d64; border-radius: 3px; background: #aaa99b; }
+.pebble-one { left: 8%; bottom: 26%; }
+.pebble-two { right: 35%; top: 17%; transform: scale(.75); }
+
+.habitat-map-path {
+  position: absolute;
+  z-index: 2;
+  left: -5%;
+  top: 39%;
+  width: 110%;
+  height: 26%;
+  border: 3px solid var(--habitat-path-edge);
+  background-color: var(--habitat-path);
+  background-image: repeating-linear-gradient(90deg, transparent 0 31px, rgba(120, 83, 45, .09) 31px 34px);
+  clip-path: polygon(0 14%, 18% 0, 38% 17%, 59% 3%, 78% 17%, 100% 5%, 100% 88%, 80% 100%, 60% 85%, 39% 100%, 18% 84%, 0 100%);
+  transform: rotate(-3deg);
+}
+
+.world-riverbank .habitat-tile-map { background-color: #8fbc70; }
+.world-riverbank .habitat-tile-map::before {
+  position: absolute;
+  z-index: 0;
+  left: 33%;
+  top: -8%;
+  width: 34%;
+  height: 116%;
+  border-inline: 4px solid #3d7887;
+  background-color: #60a9ba;
+  background-image: repeating-linear-gradient(0deg, transparent 0 24px, rgba(255, 255, 255, .18) 24px 28px, transparent 28px 48px);
+  content: "";
+  transform: rotate(4deg);
+}
+.world-riverbank .habitat-map-path {
+  left: 4%;
+  top: 43%;
+  width: 92%;
+  height: 18%;
+  border-color: var(--habitat-wood-dark);
+  background: repeating-linear-gradient(90deg, #9b704a 0 15px, #c99b62 15px 29px);
+  clip-path: none;
+  transform: none;
+}
+
+.world-commons { border-top: 2px solid var(--habitat-wood-dark); }
+.world-commons .habitat-tile-map { min-height: 320px; background-color: #96c56a; }
+.world-commons .habitat-map-path {
+  left: 1%;
+  top: 38%;
+  width: 98%;
+  height: 28%;
+  clip-path: polygon(0 18%, 19% 0, 39% 18%, 59% 2%, 80% 19%, 100% 7%, 100% 84%, 80% 100%, 60% 82%, 39% 100%, 19% 83%, 0 100%);
+  transform: rotate(-2deg);
+}
+
+.habitat-map-prop { position: absolute; z-index: 3; display: grid; place-items: center; color: #315f43; font-family: var(--font-measurement); font-weight: 700; line-height: 1; }
+.habitat-map-prop > span { display: block; }
+
+.prop-tree-one,
+.prop-commons-tree {
+  width: 56px;
+  height: 58px;
+  border: 3px solid #355f3c;
+  background: #4c8050;
+  box-shadow: -15px 14px 0 #4c8050, 15px 14px 0 #4c8050, 0 31px 0 -18px #76523a;
+}
+.prop-tree-one::before,
+.prop-commons-tree::before {
+  position: absolute;
+  left: 9px;
+  top: 8px;
+  width: 14px;
+  height: 14px;
+  background: #75aa5b;
+  box-shadow: 18px 8px 0 #3e7047, 3px 24px 0 #619854;
+  content: "";
+}
+.prop-tree-one > span,
+.prop-commons-tree > span { display: none; }
+.prop-tree-one { left: 7%; top: 8%; }
+
+.prop-pond,
+.prop-fountain {
+  border: 4px solid #3d7887;
+  border-radius: 50%;
+  background: #72b9c7;
+  color: #effbfd;
+  box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .2);
+}
+.prop-pond { right: 7%; bottom: 7%; width: 132px; height: 76px; font-size: 42px; }
+
+.prop-sign,
+.prop-commons-gate {
+  border: 4px solid var(--habitat-wood-dark);
+  background: #f0c978;
+  color: #7a321c;
+  box-shadow: 5px 5px 0 rgba(52, 42, 36, .18);
+}
+.prop-sign::after,
+.prop-commons-gate::after { position: absolute; left: 50%; top: 100%; width: 8px; height: 24px; background: var(--habitat-wood); content: ""; transform: translateX(-50%); }
+.prop-sign { right: 10%; top: 10%; width: 58px; height: 54px; font-size: 25px; }
+
+.prop-bridge { left: 44%; top: 38%; width: 12%; height: 74px; border: 3px solid var(--habitat-wood-dark); background: repeating-linear-gradient(90deg, #9b704a 0 12px, #c99b62 12px 24px); color: #5c3d27; font-size: 35px; }
+.prop-reeds { left: 25%; top: 8%; color: #3f7448; font-size: 48px; transform: rotate(-8deg); }
+.prop-stone { right: 21%; bottom: 10%; width: 54px; height: 36px; border: 3px solid #6e6d64; border-radius: 12px 12px 6px 6px; background: #aaa99b; color: #70695d; font-size: 17px; }
+.prop-flowers { right: 7%; top: 8%; color: #fff0a8; font-size: 35px; text-shadow: 17px 9px 0 #d77537; }
+.prop-commons-gate { left: 5%; top: 7%; width: 68px; height: 62px; font-size: 28px; }
+.prop-fountain { left: 50%; top: 6%; width: 96px; height: 66px; font-size: 42px; transform: translateX(-50%); }
+.prop-commons-tree { right: 8%; bottom: 7%; }
+
+.habitat-map-scenery { position: absolute; z-index: 4; min-width: 76px; display: grid; justify-items: center; gap: 2px; pointer-events: none; }
+.habitat-map-scenery b { font-size: 43px; line-height: 1; filter: drop-shadow(3px 4px 0 rgba(52, 42, 36, .18)); }
+.habitat-map-scenery small { padding: 3px 5px; border: 2px solid var(--habitat-wood-dark); border-radius: 4px; background: var(--habitat-cream); color: var(--habitat-ink); font-family: var(--font-measurement); font-size: 7px; font-weight: 700; text-transform: uppercase; }
+.habitat-map-scenery.scenery-welcome-patch { left: 7%; bottom: 7%; }
+.habitat-map-scenery.scenery-melody-corner { left: 46%; top: 8%; }
+.habitat-map-scenery.scenery-friendship-nook { right: 7%; top: 43%; }
+
+.habitat-npc {
+  position: absolute;
+  left: var(--npc-x);
+  top: var(--npc-y);
+  width: 82px;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  color: var(--habitat-ink);
+  font: inherit;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  transition: left .82s steps(5, end), top .82s steps(5, end);
+  pointer-events: none;
+}
+.habitat-npc-portrait { width: 58px; height: 58px; display: grid; place-items: center; transform-origin: center bottom; filter: drop-shadow(4px 5px 0 rgba(52, 42, 36, .22)); }
+.habitat-npc-portrait img { width: 58px; height: 58px; object-fit: contain; image-rendering: pixelated; }
+.habitat-npc-portrait > span { font-size: 47px; line-height: 1; }
+.habitat-npc.facing-left .habitat-npc-portrait { transform: scaleX(-1); }
+.habitat-npc.facing-left .habitat-npc-portrait > span { transform: scaleX(-1); }
+.habitat-world.is-roaming .habitat-npc-portrait > img,
+.habitat-world.is-roaming .habitat-npc-portrait > span { animation: habitat-npc-step .9s steps(2, end) infinite; }
+.habitat-npc strong { max-width: 94px; overflow: hidden; padding: 3px 6px; border: 2px solid var(--habitat-wood-dark); border-radius: 4px; background: var(--habitat-cream); font-size: 9px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; box-shadow: 2px 2px 0 rgba(52, 42, 36, .16); }
+.habitat-npc > small { max-width: 94px; padding: 2px 5px; border-radius: 3px; background: rgba(52, 42, 36, .86); color: #fff; font-family: var(--font-measurement); font-size: 6px; letter-spacing: .03em; line-height: 1.2; text-transform: uppercase; }
+.habitat-npc.meeting .habitat-npc-portrait { outline: 4px solid rgba(255, 240, 168, .9); outline-offset: -2px; }
+.habitat-npc.interactive { min-height: 58px; cursor: pointer; pointer-events: auto; touch-action: manipulation; }
+.habitat-npc.interactive:hover .habitat-npc-portrait,
+.habitat-npc.interactive:focus-visible .habitat-npc-portrait { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+.habitat-npc.interactive:focus-visible { outline: none; }
+.habitat-npc.greeting .habitat-npc-portrait { animation: habitat-npc-hello .55s steps(3, end); }
+.habitat-npc-hello { position: absolute; left: 50%; top: -22px; min-width: 46px; padding: 5px 7px; border: 2px solid var(--habitat-wood-dark); border-radius: 5px; background: var(--habitat-cream); color: #7a321c; font-family: var(--font-measurement); font-size: 8px; font-weight: 700; line-height: 1; transform: translateX(-50%); white-space: nowrap; }
+
+.habitat-encounter { position: absolute; z-index: 200; left: 50%; top: 24%; min-width: 160px; padding: 8px 10px; display: grid; justify-items: center; border: 3px solid var(--habitat-wood-dark); border-radius: 6px; background: var(--habitat-cream); color: #7a321c; font-family: var(--font-measurement); font-size: 11px; box-shadow: 4px 4px 0 rgba(52, 42, 36, .2); transform: translateX(-50%); }
+.habitat-encounter > span { font-size: 18px; font-weight: 700; }
+
+.habitat-world-status { min-height: 70px; margin: 0; padding: var(--space-3) var(--space-4); display: grid; grid-template-columns: 12px minmax(0, 1fr); align-items: center; gap: var(--space-3); border-top: 3px solid var(--habitat-wood-dark); background: var(--habitat-cream); }
+.habitat-world-indicator { width: 11px; height: 11px; border: 2px solid #70695d; background: #b9b5aa; }
+.habitat-world-indicator.active { border-color: #165b49; background: #3a9d78; }
+.habitat-world-status > span:last-child { display: grid; gap: 2px; color: var(--color-text-muted); font-size: 10px; line-height: 1.4; }
+.habitat-world-status strong { color: var(--color-ink); font-size: 11px; }
+
+@keyframes habitat-npc-step { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3px; } }
+@keyframes habitat-npc-hello { 0%, 100% { translate: 0 0; } 45% { translate: 0 -8px; } }
+
+.habitat-world.compact .habitat-world-toolbar { min-height: 62px; padding: 8px 12px; }
+.habitat-world.compact .habitat-world-toolbar h4 { font-size: 14px; }
+.habitat-world.compact .zoo-district-eyebrow { font-size: 8px; }
+.habitat-world.compact .habitat-tile-map { min-height: 220px; }
+.habitat-world.compact .habitat-world-status { min-height: 54px; padding: 8px 12px; gap: 8px; }
+.habitat-world.compact .habitat-world-status > span:last-child { font-size: 9px; line-height: 1.3; }
+.habitat-world.compact .habitat-world-status strong { font-size: 10px; }
+.habitat-world.compact .habitat-npc { width: 60px; }
+.habitat-world.compact .habitat-npc-portrait,
+.habitat-world.compact .habitat-npc-portrait img { width: 40px; height: 40px; }
+.habitat-world.compact .habitat-npc-portrait > span { font-size: 32px; }
+.habitat-world.compact .habitat-npc strong { max-width: 60px; padding: 2px 4px; font-size: 8px; }
+.habitat-world.compact .habitat-npc > small { display: none; }
+.habitat-world.compact .prop-commons-gate { left: 4%; top: 8%; width: 48px; height: 44px; border-width: 3px; font-size: 20px; }
+.habitat-world.compact .prop-fountain { top: 6%; width: 72px; height: 46px; border-width: 3px; font-size: 28px; }
+.habitat-world.compact .prop-commons-tree { right: 5%; bottom: 5%; transform: scale(.72); }
+
+@media (prefers-reduced-motion: reduce) {
+  .habitat-npc { transition: none; }
+  .habitat-world.is-roaming .habitat-npc-portrait > img,
+  .habitat-world.is-roaming .habitat-npc-portrait > span,
+  .habitat-npc.greeting .habitat-npc-portrait { animation: none; }
+}
+
+@media (max-width: 620px) {
+  .habitat-world-toolbar { align-items: stretch; flex-direction: column; }
+  .habitat-world-toolbar-actions { flex-direction: column; }
+  .habitat-world-toolbar-actions > button { width: 100%; }
+  .habitat-tile-map { min-height: 480px; }
+  .world-commons .habitat-tile-map { min-height: 380px; }
+  .habitat-npc { width: 72px; }
+  .habitat-npc-portrait,
+  .habitat-npc-portrait img { width: 50px; height: 50px; }
+  .habitat-npc-portrait > span { font-size: 42px; }
+  .prop-tree-one { transform: scale(.78); transform-origin: left top; }
+  .prop-pond { width: 96px; height: 56px; }
+  .prop-bridge { left: 41%; width: 18%; }
+  .habitat-map-scenery small { display: none; }
+  .habitat-encounter { top: 10%; }
+  .habitat-world.compact .habitat-world-toolbar { gap: 7px; padding: 8px 10px; }
+  .habitat-world.compact .habitat-world-toolbar-actions { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
+  .habitat-world.compact .habitat-world-toolbar-actions > button { width: 100%; min-width: 0; padding: 7px 8px; }
+  .habitat-world.compact .habitat-tile-map,
+  .world-commons.compact .habitat-tile-map { min-height: 220px; }
+  .habitat-world.compact .habitat-npc { width: 56px; }
+  .habitat-world.compact .habitat-npc-portrait,
+  .habitat-world.compact .habitat-npc-portrait img { width: 36px; height: 36px; }
+  .habitat-world.compact .habitat-npc-portrait > span { font-size: 29px; }
+}
+
+@media (forced-colors: active) {
+  .habitat-tile-map,
+  .habitat-world-toolbar,
+  .habitat-world-status,
+  .habitat-npc strong { background: Canvas; color: CanvasText; }
+  .habitat-ground-details,
+  .habitat-map-path,
+  .habitat-map-prop,
+  .habitat-map-scenery { display: none; }
+  .habitat-npc strong { border-color: CanvasText; }
+}

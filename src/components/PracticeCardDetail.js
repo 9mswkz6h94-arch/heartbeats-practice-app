@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./PracticeCardDetail.css";
 
 export default function PracticeCardDetail({
@@ -10,6 +10,41 @@ export default function PracticeCardDetail({
   readOnly = false,
 }) {
   const [showCelebration, setShowCelebration] = useState(false);
+  const dialogRef = useRef(null);
+  const closeRef = useRef(null);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    closeRef.current?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = dialogRef.current?.querySelectorAll(
+        'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, [onClose]);
 
   const handleComplete = () => {
     setShowCelebration(true);
@@ -20,8 +55,8 @@ export default function PracticeCardDetail({
 
   return (
     <div className="detail-modal-overlay" onClick={onClose}>
-      <div className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="practice-detail-title" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="modal-close" onClick={onClose}>
+      <div ref={dialogRef} className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="practice-detail-title" onClick={(e) => e.stopPropagation()}>
+        <button ref={closeRef} type="button" className="modal-close" onClick={onClose}>
           Close
         </button>
 

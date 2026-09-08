@@ -4,7 +4,7 @@ Read this file first when resuming the migration in a new conversation or agent 
 
 ## Objective
 
-Rebuild the existing Practice App presentation on the neutral Scaffold 0.1.3 foundation. Preserve product behavior, Supabase authorization, student routines, labels, and data semantics. Rainbow Heart identity work happens only after Scaffold is reviewed and accepted.
+Rebuild the existing Practice App presentation on the neutral Scaffold foundation. Preserve product behavior, Supabase authorization, student routines, labels, and data semantics. The technical Scaffold review is complete, and D-020 now authorizes a mock-only Rainbow Heart identity pilot for the student review surface.
 
 ## Safety boundary
 
@@ -18,11 +18,12 @@ Rebuild the existing Practice App presentation on the neutral Scaffold 0.1.3 fou
 
 ## Canonical references
 
-- `C:\Users\John\Documents\Projects\rainbowheart-os\SCAFFOLD_STYLE_GUIDE.md`
-- `C:\Users\John\Documents\Projects\rainbowheart-os\DESIGN_SYSTEM.md`
-- `C:\Users\John\Documents\Projects\rainbowheart-os\DESIGN_CONTRACT.json`
+- `C:\Users\John\.codex\skills\rainbowheart-os\SCAFFOLD_STYLE_GUIDE.md`
+- `C:\Users\John\.codex\skills\rainbowheart-os\RAINBOW_HEART_STYLE_GUIDE.md`
+- `C:\Users\John\.codex\skills\rainbowheart-os\DESIGN_SYSTEM.md`
+- `C:\Users\John\.codex\skills\rainbowheart-os\DESIGN_CONTRACT.json`
 
-Only Scaffold is in scope. All identity work is deferred.
+Scaffold remains the structural foundation. Rainbow Heart identity work is limited to the local mock student review until Jonathan explicitly approves a broader phase.
 
 ## Current state
 
@@ -48,8 +49,13 @@ Foundation slice started on 2026-08-16:
 - Migrated remaining active teacher/admin presentation for assignments, repertoire, reschedule approval, student management, and parent preview.
 - Added `?review=teacher-admin` for long-content/responsive review of requests and assignment operations.
 - Completed automated 200%-equivalent layout checks across teacher, teacher-admin, student, parent, and onboarding fixtures.
+- Replaced the production Teacher Dashboard composition with the unified Studio/Students workspace while preserving the mock-isolated teacher fixture.
+- Added a real teacher-workspace adapter for active students, recurring lesson slots, assignments, practice summaries, guardian links, and private draft counts.
+- Prepared teacher-only Lesson Memory migration `017_lesson_memory.sql` plus client data access, saving/recovery states, and student-scoped assignment handoff. The migration is not applied anywhere yet.
 
-This is not a completed conversion. Component styles still contain hard-coded brand colors, radii, shadows, emoji controls, and one-off type rules.
+The technical Scaffold conversion and automated acceptance review are complete. Any further changes should be targeted review revisions or the separately authorized Rainbow Heart identity phase. The unused standalone `PracticeCard` path is documented legacy code, not part of the active workflow.
+
+On 2026-09-05, the mock `?review=student` surface entered the Rainbow Heart identity pilot at Standard expression with the Craft register. It uses the canonical local brand kit and the Riffin Companion V3 review art. Teacher, parent, authentication, and production surfaces remain on Scaffold.
 
 ## Resume procedure
 
@@ -58,6 +64,7 @@ This is not a completed conversion. Component styles still contain hard-coded br
 3. Never infer deployment approval from permission to edit locally.
 4. Work one documented migration slice at a time.
 5. Run `npm run build` after each slice and update the handoff/review files.
+6. Treat `SQL_MIGRATIONS/017_lesson_memory.sql` as prepared but unapplied until Jonathan separately approves a named Supabase sandbox or production migration.
 
 ## Planned slices
 

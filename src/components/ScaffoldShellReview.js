@@ -1,4 +1,21 @@
 import React, { useState } from "react";
+import PracticeCardDetail from "./PracticeCardDetail";
+import FloatingCompanion from "./FloatingCompanion";
+import MusicalZooStrip from "./MusicalZooStrip";
+import FamilySetupFixture from "./FamilySetupFixture";
+import ParentReviewFixture from "./ParentReviewFixture";
+import TeacherWorkspaceFixture from "./TeacherWorkspaceFixture";
+import { getCharacter, getCharacters } from "../lib/characterRegistry";
+import { getPracticeCompanionReaction } from "../lib/companionReactions";
+import { reviewStickerPages } from "../lib/stickerBook";
+import {
+  createMockMeadowDecorations,
+  createMockRiverbankUnlock,
+  placeMeadowDecoration,
+  recordMeadowDecorationPractice,
+  recordRiverbankPractice,
+  removeMeadowDecoration,
+} from "../lib/zooRewards";
 import "./TeacherDashboard.css";
 import "./Dashboard.css";
 import "./StudentDashboard.css";
@@ -7,29 +24,29 @@ import "./ScaffoldShellReview.css";
 import "./TeacherLessonPrepDashboard.css";
 import "./StudentPracticeCards.css";
 import "./PracticeCardDetail.css";
-import "./SightReading.css";
 import "./BadgeShowcase.css";
-import "./PetWidget.css";
-import "./PetCollection.css";
 import "./CommLog.css";
 import "./NotificationSettings.css";
 import "./FamilySignup.css";
 import "./AssignmentList.css";
 import "./RescheduleRequests.css";
 
-const navItems = ["Studio", "New assignment", "Students"];
+const reviewSpaces = [
+  { id: "student", label: "Student" },
+  { id: "teacher", label: "Teacher workspace" },
+  { id: "parent", label: "Parent" },
+  { id: "parent-signup", label: "Family setup" },
+];
 
-function LessonPrepFixture() {
-  const students = [
-    { name: "Alexandria Montgomery-Rivera", state: "attention", label: "Needs a nudge", streak: 0, week: 1, songs: 2 },
-    { name: "Sam Lee", state: "streak", label: "On a roll", streak: 5, week: 4, songs: 7 },
-  ];
-  return <div className="lesson-prep-container"><section className="pulse" aria-label="Studio at a glance">{[["01","12","sessions this week"],["02","1","needs a nudge"],["03","1","on a roll"],["04","8","students"]].map(([index,value,label])=><div className={`pulse-tile ${index === "02" ? "warm" : ""}`} key={index}><div className="pulse-top"><span className="pulse-index">{index}</span></div><span className="pulse-num">{value}</span><span className="pulse-lab">{label}</span></div>)}</section><div className="prep-content"><section className="students-list"><h2 className="list-title">Studio · today</h2><div className="student-cards">{students.map((student,index)=><button type="button" className={`triage-card status-${student.state} ${index===0?"selected":""}`} key={student.name}><span className="triage-top"><span className="triage-name">{student.name}</span><span className={`triage-pill ${student.state}`}>{student.label}</span></span><span className="triage-meta"><span className="tm"><span className="tm-num">{student.streak}</span><span className="tm-lab">day streak</span></span><span className="tm"><span className="tm-num">{student.week}</span><span className="tm-lab">this week</span></span><span className="tm"><span className="tm-num">{student.songs}</span><span className="tm-lab">songs</span></span></span></button>)}</div></section><section className="student-detail"><div className="detail-head"><h3>Alexandria Montgomery-Rivera</h3><button className="btn-preview-parent">Preview parent view</button><button className="detail-close">Close</button></div><div className="detail-stats">{[["Sessions this week","1"],["Current streak","0 days"],["Songs memorized","2"],["Total completions","38"]].map(([label,value])=><div className="detail-stat" key={label}><span className="detail-stat-label">{label}</span><span className="detail-value">{value}</span></div>)}</div><div className="assignments-section"><h4>Assignments</h4><div className="assignment-item"><div className="assignment-header"><span className="assignment-title">Chromatic warmup across the entire comfortable range</span><span className="assignment-type">Guitar</span></div><div className="assignment-meta"><span>4 steps</span><span>8/16/2026</span></div><button className="btn-reassign">Reset now</button></div></div></section></div></div>;
-}
+const reviewZooCharacters = getCharacters();
 
 function StudentPracticeFixture() {
   const [selectedCard, setSelectedCard] = useState(null);
-  const [sightReadingStarted, setSightReadingStarted] = useState(false);
+  const [companionResponse, setCompanionResponse] = useState(null);
+  const [responseVariation, setResponseVariation] = useState(0);
+  const [selectedCompanion, setSelectedCompanion] = useState(() => getCharacter("riffin"));
+  const [meadowDecorations, setMeadowDecorations] = useState(createMockMeadowDecorations);
+  const [riverbankUnlock, setRiverbankUnlock] = useState(createMockRiverbankUnlock);
   const cards = [
     {
       id: "warmup",
@@ -49,46 +66,101 @@ function StudentPracticeFixture() {
     },
   ];
 
+  const respondToWork = (intent) => {
+    const message = getPracticeCompanionReaction(selectedCompanion?.id, intent, responseVariation);
+    if (intent === "step_complete_generic") {
+      setMeadowDecorations((current) => recordMeadowDecorationPractice(current));
+      setRiverbankUnlock((current) => recordRiverbankPractice(current));
+    }
+    setResponseVariation((current) => current + 1);
+    setCompanionResponse({ message, id: Date.now(), intent });
+    setSelectedCard(null);
+  };
+
+  const respondToZooMoment = (message) => {
+    setCompanionResponse({ message, id: Date.now(), intent: "practice_response" });
+  };
+
+  const chooseCompanion = (companion) => {
+    setSelectedCompanion(companion);
+    setCompanionResponse(null);
+  };
+
   return <div className="practice-container">
+    <MusicalZooStrip
+      meadowDecorations={meadowDecorations}
+      riverbankUnlock={riverbankUnlock}
+      onPlaceMeadowDecoration={(decorationId, spotId) => setMeadowDecorations((current) => placeMeadowDecoration(current, decorationId, spotId))}
+      onRemoveMeadowDecoration={(decorationId) => setMeadowDecorations((current) => removeMeadowDecoration(current, decorationId))}
+      selectedCompanionId={selectedCompanion?.id}
+      onCompanionChange={chooseCompanion}
+      onCompanionResponse={respondToZooMoment}
+      musicalZooFriends={reviewZooCharacters}
+      stickerPages={reviewStickerPages}
+    />
     <div className="practice-header"><div className="header-top"><div className="streak-badge"><span className="streak-label">Current streak</span><span className="streak-count">5 days</span></div><div className="counter"><span className="remaining">2</span><span className="remaining-label">of 4 remaining today</span></div></div></div>
     <div className="practice-grid">{cards.map((card) => <button type="button" className="practice-card-tile" key={card.id} onClick={() => setSelectedCard(card)}><span className="tile-header"><span className="tile-assignment-title">{card.assignment}</span><span className="instrument-tag">{card.instrument}</span></span><span className="tile-body"><span className="step-title">{card.title}</span><span className="step-number">Step {card.step}</span></span><span className="tile-action"><span className="tap-hint">Open practice card</span></span></button>)}</div>
-    {!sightReadingStarted ? <section className="sightreading-container sightreading-start-screen"><p className="sightreading-kicker">Optional practice</p><h3>Sight reading</h3><p>Read music on the staff — by ear or by tapping the note name.</p><button type="button" className="btn-primary" onClick={() => setSightReadingStarted(true)}>Start sight reading</button></section> : <section className="sightreading-container"><div className="sightreading-header"><h3>Sight reading</h3><div className="sightreading-level-toggle"><button type="button" className="active" aria-pressed="true">Beginner</button><button type="button" aria-pressed="false">Intermediate</button></div></div><div className="sightreading-instrument-row"><select className="sightreading-instrument-select" aria-label="Instrument" defaultValue="guitar"><option value="guitar">Guitar</option></select><div className="sightreading-level-toggle"><button type="button" className="active" aria-pressed="true">Standard</button><button type="button" aria-pressed="false">Tab</button></div></div><div className="sightreading-progress">Note 3 of 12 · 2 correct</div><div className="sightreading-staff" role="img" aria-label="Sandbox musical staff preview"><svg width="760" height="150" viewBox="0 0 760 150" aria-hidden="true"><rect width="760" height="150" fill="#fcfcf8"/><g stroke="#0a0a0a">{[45,57,69,81,93].map(y=><line key={y} x1="20" x2="740" y1={y} y2={y}/>)}</g><text x="38" y="91" fontSize="58">𝄞</text><g fill="#0a0a0a">{[150,230,310,390,470,550,630].map((x,i)=><ellipse key={x} cx={x} cy={81-i*6} rx="10" ry="7" transform={`rotate(-15 ${x} ${81-i*6})`}/>)}</g></svg></div><div className="sightreading-controls"><div className="sightreading-mode-picker"><button type="button" className="btn-primary">Play it — use microphone</button><button type="button" className="btn-secondary">Tap the note name</button></div><button type="button" className="btn-link sightreading-skip">Skip this note</button></div></section>}
-    <section className="pet-widget"><div className="pet-emoji-wrap"><div className="pet-emoji-big" aria-hidden="true">🐉</div></div><div className="pet-name-row"><span className="pet-custom-name">Pickles</span><button type="button" className="pet-name-edit-btn">Rename</button></div><div className="pet-stage-label">Growing dragon</div><p className="pet-blurb">Pickles grows whenever practice earns XP. Missing a day never makes your pet sad.</p><div className="pet-bar-track" role="progressbar" aria-label="Pet growth progress" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"><div className="pet-bar-fill" style={{width:"65%"}} /></div><p className="pet-xp-label">13 / 20 XP to next stage</p><div className="pet-listen-row"><button type="button" className="btn-pet-listen">Play for my pet</button></div></section>
-    <section className="pet-collection"><h3 className="pet-collection-title">Pet collection</h3><div className="pet-collection-eggs"><span className="pet-egg-count">2 unhatched eggs</span><button type="button" className="btn-hatch">Hatch</button></div><div className="pet-collection-grid"><div className="pet-creature-card stage-2"><span className="pet-creature-emoji">🐢</span><span className="pet-creature-name">Turtle</span><span className="pet-creature-stage">Growing</span><span className="pet-creature-count">×2</span><button type="button" className="btn-merge">Merge pair</button></div><div className="pet-creature-card stage-3"><span className="pet-creature-emoji">🦊</span><span className="pet-creature-name">Fox</span><span className="pet-creature-stage">Full grown</span></div></div></section>
     <section className="badge-showcase"><h3>Badges earned</h3><div className="badges-grid"><div className="badge-item"><div className="badge-icon">🌱</div><div className="badge-name">First steps</div><div className="badge-description">Completed the first three practice activities.</div><div className="badge-date">8/12/2026</div></div><div className="badge-item"><div className="badge-icon">🔥</div><div className="badge-name">Seven-day streak</div><div className="badge-description">Practiced on seven different days.</div><div className="badge-date">8/16/2026</div></div></div></section>
-    {selectedCard && <div className="detail-modal-overlay" onClick={() => setSelectedCard(null)}><div className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="review-practice-detail-title" onClick={(event) => event.stopPropagation()}><button type="button" className="modal-close" onClick={() => setSelectedCard(null)}>Close</button><div className="preview-banner" role="status">Sandbox preview — nothing here is saved</div><div className="detail-header"><div className="detail-assignment"><h2 id="review-practice-detail-title">{selectedCard.assignment}</h2><span className="detail-instrument">{selectedCard.instrument}</span></div><div className="detail-step-number">Step {selectedCard.step}</div></div><div className="detail-body"><h3 className="detail-step-title">{selectedCard.title}</h3><p className="detail-step-description">{selectedCard.description}</p></div><div className="detail-actions"><button type="button" className="btn-complete">I practiced this</button><button type="button" className="btn-skip">Skip for today</button></div></div></div>}
+    <FloatingCompanion
+      companion={selectedCompanion}
+      response={companionResponse}
+      visualState={companionResponse?.intent === "step_complete_generic" ? "complete" : "practice"}
+    />
+    {selectedCard && <PracticeCardDetail step={{step_number:selectedCard.step,title:selectedCard.title,description:selectedCard.description}} assignment={{title:selectedCard.assignment,instrument_type:selectedCard.instrument}} onComplete={() => respondToWork("step_complete_generic")} onSkip={() => respondToWork("skip_accepted")} onClose={() => setSelectedCard(null)} readOnly />}
   </div>;
 }
 
-function ParentFixture() {
+// Kept as a compatibility export for older visual snapshots; the active
+// parent review uses ParentReviewFixture so every visible control is testable.
+export function ParentFixture() {
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   return <div className="parent-dashboard"><header className="parent-dashboard-header"><div><p className="dashboard-context">Parent workspace</p><h1>Your family</h1></div><button type="button" className="btn-logout">Log out</button></header><main className="parent-dashboard-main"><section className="parent-family-code"><div><p className="parent-code-label">Family code for kid login</p><p className="parent-code-value">RH-4827</p></div><p className="parent-code-hint">On your kid’s device: open the app, choose Student, enter this code, then select their name and enter their PIN.</p></section><nav className="kid-switcher" aria-label="Choose a student"><button type="button" className="kid-tab active" aria-pressed="true"><span className="kid-tab-avatar">🎸</span>Alexandria</button><button type="button" className="kid-tab" aria-pressed="false"><span className="kid-tab-avatar">🎹</span>Sam</button></nav><section className="kid-panel"><div className="kid-panel-header"><span className="parent-kid-avatar">🎸</span><div className="parent-kid-info"><span className="parent-kid-name">Alexandria Montgomery-Rivera</span><span className="parent-kid-instrument">Guitar</span></div><span className="parent-kid-status active">Approved</span></div><button type="button" className="btn-reset-pin">Reset PIN</button><div className="lesson-info-row"><span>Lessons every <strong>Tuesday</strong> at <strong>4:30 PM</strong> — Rainbow Heart Studio</span><a className="btn-add-calendar" href="#parent-calendar-review">Add to Google Calendar</a><button type="button" className="btn-request-reschedule" onClick={() => setRescheduleOpen(true)}>Request a different time</button></div>{rescheduleOpen && <div className="reschedule-editor"><label htmlFor="review-parent-date">New date</label><input id="review-parent-date" type="date" defaultValue="2026-08-25"/><label htmlFor="review-parent-time">New time</label><input id="review-parent-time" type="time" defaultValue="17:30"/><label htmlFor="review-parent-reason">Reason (optional)</label><input id="review-parent-reason" defaultValue="School orientation runs late that afternoon"/><div className="reschedule-editor-actions"><button type="button" className="btn-pin-save">Send request</button><button type="button" className="btn-pin-cancel" onClick={() => setRescheduleOpen(false)}>Cancel</button></div></div>}<div className="reschedule-pending-row"><span>Requested 8/25/2026 at 5:30 PM — school orientation runs late that afternoon</span><span className="reschedule-status">Waiting for teacher</span><button type="button" className="btn-pin-cancel">Cancel request</button></div><div className="week-stats"><div className="week-stat"><span className="week-stat-value">4</span><span className="week-stat-label">sessions this week</span></div><div className="week-stat"><span className="week-stat-value">5</span><span className="week-stat-label">day streak</span></div><div className="week-stat"><span className="week-stat-value">7</span><span className="week-stat-label">songs memorized</span></div></div><h3 className="kid-section-title">This week’s practice</h3><div className="parent-assignment"><div className="parent-assignment-head"><span className="parent-assignment-title">Chromatic warmup across the entire comfortable range</span><span className="parent-category-chip">Technique</span></div><div className="parent-step"><span className="parent-step-mark">Done</span><span className="parent-step-title">Slow and even with relaxed shoulders</span></div><div className="parent-step"><span className="parent-step-mark">Open</span><span className="parent-step-title">Increase the metronome only when every note sounds clear</span></div></div><form className="notif-settings"><h4 className="notif-settings-title">Text notifications</h4><label className="notif-settings-toggle"><input type="checkbox" defaultChecked/>Text me when the teacher sends a flagged message</label><input className="notif-settings-phone" aria-label="Parent phone number" defaultValue="(512) 555-0147"/><div className="notif-settings-actions"><button type="button" className="btn-notif-save">Save</button></div></form><div className="comm-log"><h3 className="comm-log-title">Chat with your teacher</h3><div className="comm-log-list"><div className="comm-msg theirs"><div className="comm-msg-meta"><span className="comm-msg-author">Teacher</span><span className="comm-msg-time">8/16/2026 2:15 PM</span></div><div className="comm-msg-body">Alexandria made a great connection between the warmup and the song today. Keeping the tempo comfortable is the goal this week.</div></div><div className="comm-msg mine"><div className="comm-msg-meta"><span className="comm-msg-author">Parent</span><span className="comm-msg-time">8/16/2026 3:02 PM</span></div><div className="comm-msg-body">Thank you! We’ll keep the metronome slow and let you know how Tuesday goes.</div></div></div><form className="comm-log-compose"><textarea aria-label="Message to teacher" placeholder="Write a message…"/><div className="comm-log-actions"><button type="button" className="btn-comm-send">Send</button></div></form></div></section></main></div>;
 }
 
 function ParentSignupFixture() {
-  return <div className="auth-form-container"><div className="auth-form family-signup"><h2>Add your kids</h2><p className="wizard-sub">Step 2 of 2 — each kid gets an avatar and a 4-digit PIN. No email is needed for them.</p><form><div className="kid-card"><div className="kid-card-header"><span className="kid-card-title">Kid 1</span><span className="kid-badge-created">Ready to add</span></div><div className="form-group"><label htmlFor="review-kid-name">Name</label><input id="review-kid-name" defaultValue="Alexandria Montgomery-Rivera"/></div><div className="kid-row-split"><div className="form-group"><label htmlFor="review-kid-instrument">Instrument</label><select id="review-kid-instrument" defaultValue="Guitar"><option>Guitar</option></select></div><div className="form-group"><label htmlFor="review-kid-pin">Their PIN (4 digits)</label><input id="review-kid-pin" inputMode="numeric" defaultValue="4827"/></div></div><div className="form-group"><span className="form-label">Avatar</span><div className="avatar-picker">{["🎸","🎹","🎤","🥁","🎻"].map((avatar,index)=><button type="button" key={avatar} className={`avatar-option ${index===0?"selected":""}`} aria-pressed={index===0} aria-label={`Use ${avatar} as avatar`}>{avatar}</button>)}</div></div></div><button type="button" className="btn-add-kid">Add another kid</button><button type="button" className="btn-submit">Finish setup</button></form></div></div>;
+  return <FamilySetupFixture />;
 }
 
-function TeacherAdminFixture() {
-  return <div className="hud"><aside className="hud-sidebar"><div className="hud-brand"><span className="hud-brand-mark">HB</span><span><span className="hud-brand-text">Heart Beats</span><span className="hud-brand-context">Teacher workspace</span></span></div><nav className="hud-nav" aria-label="Teacher workspace">{navItems.map((label,index)=><button type="button" key={label} className={`hud-nav-item ${index===2?"active":""}`} aria-current={index===2?"page":undefined}><span className="hud-nav-index">0{index+1}</span><span className="hud-nav-label">{label}</span></button>)}</nav></aside><div className="hud-main"><header className="hud-topbar"><div><p className="hud-view-context">Teacher workspace</p><h1 className="hud-view-title">Students and requests</h1></div></header><main className="hud-content"><div><section className="resched-panel"><h3 className="resched-panel-title">Reschedule requests (1)</h3><div className="resched-row"><div className="resched-info"><span className="resched-student">Alexandria Montgomery-Rivera</span><span className="resched-when">wants 8/25/2026 at 5:30 PM</span><span className="resched-reason">School orientation runs late that afternoon</span></div><input className="resched-note-input" aria-label="Optional note for Alexandria" placeholder="Optional note back to parent"/><div className="resched-actions"><button type="button" className="btn-resched-approve">Approve</button><button type="button" className="btn-resched-decline">Decline</button></div></div></section><section className="assignment-list"><h3>Recent assignments</h3><div className="assignments-grid"><article className="assignment-card"><div className="card-header"><div className="card-title-section"><h4>Chromatic warmup across the entire comfortable range</h4><span className="category-badge">Technique</span></div><span className="instrument-badge">Guitar</span></div><div className="card-body"><div className="assignment-info"><label>Student</label><p>Alexandria Montgomery-Rivera</p></div><div className="assignment-info"><label>Deadline</label><p>August 23, 2026</p></div></div><div className="card-actions"><button type="button" className="btn-action btn-memorize">Mark memorized</button><button type="button" className="btn-action btn-edit">Edit</button><button type="button" className="btn-action btn-duplicate">Duplicate</button></div></article></div></section></div></main></div></div>;
-}
-
-export default function ScaffoldShellReview({ screen }) {
-  if (screen === "teacher") {
-    return <div className="hud"><aside className="hud-sidebar"><div className="hud-brand"><span className="hud-brand-mark">HB</span><span><span className="hud-brand-text">Heart Beats</span><span className="hud-brand-context">Teacher workspace</span></span></div><nav className="hud-nav" aria-label="Teacher workspace">{navItems.map((label, index) => <button key={label} className={`hud-nav-item ${index === 0 ? "active" : ""}`} aria-current={index === 0 ? "page" : undefined}><span className="hud-nav-index">0{index + 1}</span><span className="hud-nav-label">{label}</span></button>)}</nav><div className="hud-side-foot"><div className="hud-user"><span className="hud-user-email">teacher.review@example.com</span></div><button className="hud-logout">Log out</button></div></aside><div className="hud-main"><header className="hud-topbar"><div><p className="hud-view-context">Teacher workspace</p><h1 className="hud-view-title">Studio · today</h1></div></header><main className="hud-content"><LessonPrepFixture /></main></div></div>;
-  }
-
-  if (screen === "teacher-admin") {
-    return <TeacherAdminFixture />;
+function ReviewScreen({ screen }) {
+  if (screen === "teacher" || screen === "teacher-admin") {
+    return <div className="rainbow-heart-review rainbow-heart-teacher-review" data-rh-theme="rainbow-heart" data-rh-expression="standard"><TeacherWorkspaceFixture /></div>;
   }
 
   if (screen === "parent") {
-    return <ParentFixture />;
+    return <div className="rainbow-heart-review rainbow-heart-parent-review" data-rh-theme="rainbow-heart" data-rh-expression="standard"><ParentReviewFixture /></div>;
   }
 
   if (screen === "parent-signup") {
-    return <ParentSignupFixture />;
+    return <div className="rainbow-heart-review rainbow-heart-family-review" data-rh-theme="rainbow-heart" data-rh-expression="standard"><ParentSignupFixture /></div>;
   }
 
-  return <div className="dashboard"><header className="dashboard-header"><div><p className="dashboard-context">Student workspace</p><h1>Today’s practice</h1></div><button className="btn-logout">Log out</button></header><main className="student-dashboard-content"><StudentPracticeFixture /></main></div>;
+  return <div className="dashboard rainbow-heart-review rainbow-heart-student-review" data-rh-theme="rainbow-heart" data-rh-expression="standard"><header className="dashboard-header"><div><p className="dashboard-context">Student workspace</p><h1 className="rh-display">Today’s practice</h1></div><button type="button" className="btn-logout" disabled>Review mode</button></header><main className="student-dashboard-content"><StudentPracticeFixture /></main></div>;
+}
+
+export default function ScaffoldShellReview({ screen, onNavigate }) {
+  const normalizedScreen = screen === "teacher-admin" ? "teacher" : screen;
+  const navigateReview = (nextScreen) => {
+    onNavigate(nextScreen);
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+  };
+  return <>
+    <nav className="review-space-nav" aria-label="Review workspace">
+      <span className="review-space-label">Preview as</span>
+      <div className="review-space-buttons">
+        {reviewSpaces.map((space) => (
+          <button
+            type="button"
+            key={space.id}
+            className={`review-space-button ${normalizedScreen === space.id ? "active" : ""}`}
+            aria-pressed={normalizedScreen === space.id}
+            onClick={() => navigateReview(space.id)}
+          >
+            {space.label}
+          </button>
+        ))}
+      </div>
+    </nav>
+    {screen === "parent-signup" && <h1 className="review-visually-hidden">Family setup</h1>}
+    <ReviewScreen screen={screen} />
+  </>;
 }

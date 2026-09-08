@@ -173,7 +173,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
       <div className="kid-panel-header">
         <span className="parent-kid-avatar">{kid.avatar || "🎵"}</span>
         <div className="parent-kid-info">
-          <span className="parent-kid-name">{kid.name}</span>
+          <h2 className="parent-kid-name">{kid.name}</h2>
           <span className="parent-kid-instrument">{kid.instrument || "—"}</span>
         </div>
         <span className={`parent-kid-status ${kid.status === "active" ? "active" : "pending"}`}>

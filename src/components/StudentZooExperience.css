@@ -1,0 +1,26 @@
+.student-zoo-loading { min-height: 120px; padding: var(--space-5); display: grid; place-items: center; gap: var(--space-2); border: 2px solid var(--color-border); border-top: 5px solid var(--color-accent-secondary, var(--color-ink)); background: var(--color-cut-paper); color: var(--color-text-muted); text-align: center; }
+.student-zoo-loading span { font-family: var(--font-display); font-size: 32px; color: var(--color-accent-secondary, var(--color-ink)); }
+.student-zoo-loading p,
+.student-zoo-notice { margin: 0; }
+.student-zoo-notice { padding: var(--space-3) var(--space-4); border-left: 5px solid var(--color-accent-secondary, var(--color-ink)); background: var(--color-cut-paper); color: var(--color-text-muted); font-size: 13px; }
+.student-zoo-care { border: 2px solid #4f392b; background: #fff8e8; }
+.student-zoo-care-header { padding: var(--space-4); border-bottom: 1px solid var(--color-border); background: #fff4d6; }
+.student-zoo-care-header h3,
+.student-zoo-companions h4 { margin: var(--space-1) 0; font-family: var(--font-display); }
+.student-zoo-care-header p:not(.zoo-district-eyebrow),
+.student-zoo-companions p { margin: 0; color: var(--color-text-muted); font-size: 13px; line-height: 1.5; }
+.student-zoo-companions { padding: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.student-zoo-companion-grid { margin-top: var(--space-3); display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: var(--space-2); }
+.student-zoo-companion-grid button { min-height: 118px; padding: var(--space-3); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); font: inherit; cursor: pointer; }
+.student-zoo-companion-grid button[aria-pressed="true"] { border: 3px solid var(--color-ink); padding: calc(var(--space-3) - 2px); background: var(--color-cut-paper); }
+.student-zoo-companion-grid button > span { min-height: 56px; display: grid; place-items: center; font-size: 42px; }
+.student-zoo-companion-grid img { width: 56px; height: 56px; object-fit: contain; image-rendering: pixelated; }
+.student-zoo-companion-grid small { color: var(--color-text-muted); font-size: 10px; text-transform: uppercase; }
+.student-zoo-care-grid { padding: var(--space-4); display: grid; grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr); gap: var(--space-4); align-items: start; }
+.student-zoo-care-grid .pet-widget,
+.student-zoo-care-grid .pet-collection { margin: 0; }
+@media (max-width: 720px) {
+  .student-zoo-care-grid { grid-template-columns: 1fr; padding: var(--space-3); }
+  .student-zoo-companions,
+  .student-zoo-care-header { padding: var(--space-3); }
+}

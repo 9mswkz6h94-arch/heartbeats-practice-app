@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { supabase } from "./lib/supabaseClient";
 import TeacherLogin from "./components/TeacherLogin";
 import StudentLogin from "./components/StudentLogin";
 import KidLogin from "./components/KidLogin";
 import ParentLogin from "./components/ParentLogin";
 import FamilySignup from "./components/FamilySignup";
-import ParentDashboard from "./components/ParentDashboard";
-import TeacherDashboard from "./components/TeacherDashboard";
-import StudentDashboard from "./components/StudentDashboard";
 import ScaffoldSandboxBanner from "./components/ScaffoldSandboxBanner";
 import ScaffoldShellReview from "./components/ScaffoldShellReview";
 import "./App.css";
+import "./theme/rainbow-heart/rainbow-heart.css";
+import "./components/RainbowHeartStudentReview.css";
+
+const ParentDashboard = lazy(() => import("./components/ParentDashboard"));
+const TeacherDashboard = lazy(() => import("./components/TeacherDashboard"));
+const StudentDashboard = lazy(() => import("./components/StudentDashboard"));
+function WorkspaceLoading() {
+  return <div className="loading" role="status"><p>Opening this workspace…</p></div>;
+}
 
 // Read SSO tokens from URL hash (passed by rainbowheart.studio)
 async function applySSOTokenFromURL() {
@@ -27,11 +33,12 @@ async function applySSOTokenFromURL() {
 }
 
 function App() {
-  const reviewScreen = process.env.REACT_APP_REVIEW_DATA_MODE === "mock-isolated"
-    ? new URLSearchParams(window.location.search).get("review")
-    : null;
+  const [reviewScreen, setReviewScreen] = useState(() => (
+    process.env.REACT_APP_REVIEW_DATA_MODE === "mock-isolated"
+      ? new URLSearchParams(window.location.search).get("review")
+      : null
+  ));
   const [screen, setScreen] = useState("selection");
-  const [userType, setUserType] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [studentId, setStudentId] = useState(null);
@@ -44,6 +51,13 @@ function App() {
   inFamilySignupRef.current = inFamilySignup;
 
   useEffect(() => {
+    // Mock review screens are deliberately disconnected from auth and data.
+    // Do not contact Supabase when reviewing the local fixture shells.
+    if (reviewScreen) {
+      setLoading(false);
+      return undefined;
+    }
+
     let isMounted = true;
 
     const checkAuth = async () => {
@@ -79,7 +93,6 @@ function App() {
         if (inFamilySignupRef.current) return; // wizard routes itself when done
         await resolveSession(session, isMounted);
       } else if (event === "SIGNED_OUT") {
-        setUserType(null);
         setUserId(null);
         setStudentId(null);
         setScreen("selection");
@@ -90,28 +103,40 @@ function App() {
       isMounted = false;
       subscription?.unsubscribe();
     };
-  }, []);
+  }, [reviewScreen]);
 
   // Resolve a Supabase session into app state
   async function resolveSession(session, isMounted) {
     if (!isMounted) return;
 
-    // Use JWT metadata role first (set at signup on rainbowheart.studio).
-    // Fall back to DB lookup for teacher accounts created before this field existed.
-    let resolvedType = session.user.user_metadata?.role;
+    // User metadata is supplied during public signup, so it cannot grant
+    // teacher access. Only an invited teacher profile in `users` may do that.
+    const metadataRole = session.user.user_metadata?.role;
+    const { data: userData } = await supabase
+      .from("users")
+      .select("type")
+      .eq("id", session.user.id)
+      .single();
+
+    let resolvedType = userData?.type || metadataRole;
+    if (resolvedType === "teacher" && userData?.type !== "teacher") {
+      await supabase.auth.signOut();
+      if (!isMounted) return;
+      setAuthError("This account does not have teacher access. Ask the studio administrator for an invitation.");
+      setScreen("selection");
+      return;
+    }
 
     if (!resolvedType) {
-      const { data: userData } = await supabase
-        .from("users")
-        .select("type")
-        .eq("id", session.user.id)
-        .single();
-      resolvedType = userData?.type || "teacher";
+      await supabase.auth.signOut();
+      if (!isMounted) return;
+      setAuthError("We couldn't determine which studio space belongs to this account. Ask the studio administrator for help.");
+      setScreen("selection");
+      return;
     }
 
     if (!isMounted) return;
 
-    setUserType(resolvedType);
     setUserId(session.user.id);
     setUserEmail(session.user.email);
 
@@ -155,12 +180,19 @@ function App() {
   }
 
   if (["teacher", "teacher-admin", "student", "parent", "parent-signup"].includes(reviewScreen)) {
-    return <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset"><ScaffoldShellReview screen={reviewScreen} /></div></>;
+    const handleReviewNavigate = (nextScreen) => {
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set("review", nextScreen);
+      window.history.replaceState(null, "", nextUrl);
+      setReviewScreen(nextScreen);
+    };
+
+    return <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset"><Suspense fallback={<WorkspaceLoading />}><ScaffoldShellReview screen={reviewScreen} onNavigate={handleReviewNavigate} /></Suspense></div></>;
   }
 
   if (loading) {
     return (
-      <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset">
+      <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset rainbow-heart-review rainbow-heart-app" data-rh-theme="rainbow-heart" data-rh-expression="standard">
         <div className="loading" role="status">
           <h1>Heart Beats Practice App</h1>
           <p>Loading your practice space...</p>
@@ -170,18 +202,27 @@ function App() {
   }
 
   const handleTeacherLogin = (type, id, email) => {
-    setUserType(type);
     setUserId(id);
     setUserEmail(email);
     setScreen("teacher-dashboard");
   };
 
-  const handleLogout = () => {
-    setUserType(null);
-    setUserId(null);
-    setUserEmail(null);
-    setStudentId(null);
-    setScreen("selection");
+  const handleLogout = async () => {
+    try {
+      // Account switching only needs to remove this device's session. Using
+      // local scope avoids a remote sign-out failure trapping a family or
+      // tester inside the current account on a shared phone.
+      const { error } = await supabase.auth.signOut({ scope: "local" });
+      if (error) throw error;
+    } catch (err) {
+      console.error("Sign out error:", err);
+    } finally {
+      setUserId(null);
+      setUserEmail(null);
+      setStudentId(null);
+      setAuthError(null);
+      setScreen("selection");
+    }
   };
 
   // Wizard finished: route the (already signed-in) parent to their dashboard.
@@ -213,7 +254,7 @@ function App() {
   );
 
   return (
-    <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset">
+    <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset rainbow-heart-review rainbow-heart-app" data-rh-theme="rainbow-heart" data-rh-expression="standard">
       {screen === "selection" && (
         <>
           <header className="App-header">
@@ -314,15 +355,15 @@ function App() {
       )}
 
       {screen === "teacher-dashboard" && (
-        <TeacherDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} />
+        <Suspense fallback={<WorkspaceLoading />}><TeacherDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} /></Suspense>
       )}
 
       {screen === "student-dashboard" && (
-        <StudentDashboard studentId={studentId} onLogout={handleLogout} />
+        <Suspense fallback={<WorkspaceLoading />}><StudentDashboard studentId={studentId} onLogout={handleLogout} /></Suspense>
       )}
 
       {screen === "parent-dashboard" && (
-        <ParentDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} />
+        <Suspense fallback={<WorkspaceLoading />}><ParentDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} /></Suspense>
       )}
     </div></>
   );

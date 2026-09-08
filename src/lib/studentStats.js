@@ -1,51 +1,39 @@
 import { supabase } from "./supabaseClient";
+import { computeStreak, dayStr, daysBetween, parseDay } from "./rewardMath";
+
+export { computeStreak, dayStr, daysBetween, parseDay } from "./rewardMath";
 
 // Shared per-student practice stats, used by the teacher lesson-prep
 // dashboard and the parent dashboard. Extracted from
 // TeacherLessonPrepDashboard so the two can't drift.
 
 // ── Date helpers (local-day based; timezone-aware refinement is Phase 0c backlog) ──
-export const dayStr = (d) => {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-};
-
-export const parseDay = (s) => {
-  const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, m - 1, d);
-};
-
-export const daysBetween = (a, b) => Math.round((b - a) / 86400000);
-
-// Real consecutive-day streak: walk backwards from today (or yesterday as anchor).
-export function computeStreak(daySet) {
-  if (daySet.size === 0) return 0;
-  const cursor = new Date();
-  if (!daySet.has(dayStr(cursor))) {
-    cursor.setDate(cursor.getDate() - 1);
-    if (!daySet.has(dayStr(cursor))) return 0;
-  }
-  let streak = 0;
-  while (daySet.has(dayStr(cursor))) {
-    streak++;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return streak;
-}
-
 const EMPTY_STATS = {
   completions: 0,
   thisWeek: 0,
   lastWeek: 0,
-  sightReadingSessions: 0,
   songsMemorized: 0,
   streak: 0,
   everPracticed: false,
   lastDaysAgo: Infinity,
   assignments: [],
+  repertoire: [],
+  recentActivity: [0, 0, 0, 0, 0, 0, 0],
 };
+
+export function buildRecentActivity(completions = [], today = new Date()) {
+  const counts = new Map();
+  completions.forEach((completion) => {
+    const key = String(completion.completed_at || "").split("T")[0];
+    if (key) counts.set(key, (counts.get(key) || 0) + 1);
+  });
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (6 - index));
+    return counts.get(dayStr(date)) || 0;
+  });
+}
 
 export async function fetchStudentStats(studentId) {
   try {
@@ -56,7 +44,7 @@ export async function fetchStudentStats(studentId) {
 
     const { data: repertoire } = await supabase
       .from("repertoire")
-      .select("id")
+      .select("id, memorized_at, assignments(title)")
       .eq("student_id", studentId);
 
     const { data: assignments } = await supabase
@@ -69,11 +57,6 @@ export async function fetchStudentStats(studentId) {
       )
       .eq("student_id", studentId)
       .order("created_at", { ascending: false });
-
-    const { data: sightreadingSessions } = await supabase
-      .from("sightreading_attempts")
-      .select("completed_at")
-      .eq("student_id", studentId);
 
     const completionList = completions || [];
     const weekAgo = new Date();
@@ -90,10 +73,6 @@ export async function fetchStudentStats(studentId) {
     }).length;
 
     const daySet = new Set(completionList.map((c) => c.completed_at.split("T")[0]));
-    // Sight-reading sessions count toward "days practiced" / streak just like
-    // any other completion, even though they live in their own table (see
-    // SQL_MIGRATIONS/009_sightreading_attempts.sql for why).
-    (sightreadingSessions || []).forEach((s) => daySet.add(s.completed_at.split("T")[0]));
     const everPracticed = daySet.size > 0;
     const streak = computeStreak(daySet);
 
@@ -107,12 +86,15 @@ export async function fetchStudentStats(studentId) {
       completions: completionList.length,
       thisWeek,
       lastWeek,
-      sightReadingSessions: (sightreadingSessions || []).length,
       songsMemorized: repertoire?.length || 0,
       streak,
       everPracticed,
       lastDaysAgo,
       assignments: assignments || [],
+      repertoire: (repertoire || [])
+        .map((entry) => entry.assignments?.title)
+        .filter(Boolean),
+      recentActivity: buildRecentActivity(completionList),
     };
   } catch (err) {
     console.error("Error fetching student stats:", err);

@@ -1,12 +1,20 @@
 .badge-showcase { width: 100%; min-width: 0; padding: var(--space-5); border: 1px solid var(--color-border); border-top: 4px solid var(--color-ink); background: var(--color-surface-raised); }
-.badge-showcase h3 { margin: 0 0 var(--space-4); font-size: 24px; }
+.badge-showcase h2 { margin: 0 0 var(--space-2); font-size: 24px; }
 .badge-showcase > p { margin: 0; color: var(--color-text-muted); }
 .no-badges { padding: var(--space-4); border-left: 6px solid var(--color-border); background: var(--color-paper); }
 .badges-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: var(--space-3); }
 .badge-item { min-width: 0; padding: var(--space-4); display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: var(--space-1) var(--space-3); align-items: center; border: 1px solid var(--color-border); background: var(--color-surface); }
+.badge-item.locked { opacity: .72; }
+.badge-item.earned { border-top: 4px solid var(--color-complete); }
 .badge-icon { grid-row: 1 / span 3; font-size: 32px; line-height: 1; text-align: center; }
 .badge-name { font-family: var(--font-display); font-size: 17px; font-weight: 600; overflow-wrap: anywhere; }
 .badge-description { color: var(--color-text-muted); font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
 .badge-date { color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; }
+.badge-progress { grid-column: 1 / -1; height: 8px; overflow: hidden; border: 1px solid var(--color-border); background: var(--color-paper); }
+.badge-progress span { display: block; height: 100%; background: var(--color-complete); transition: width .3s ease; }
+.badge-unlock { margin-bottom: var(--space-4); padding: var(--space-4); display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-3); align-items: center; border: 2px solid var(--color-complete); background: var(--color-paper); }
+.badge-unlock-icon { font-size: 40px; }
+.badge-unlock strong, .badge-unlock div span { display: block; }
+.badge-unlock button { min-height: 44px; }
 
 @media (max-width: 500px) { .badge-showcase { padding: var(--space-4); } .badges-grid { grid-template-columns: 1fr; } }

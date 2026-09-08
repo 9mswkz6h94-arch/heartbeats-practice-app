@@ -4,15 +4,15 @@ import { stageInfo, progressToNext, SPECIES_CHOICES } from "../lib/petStages";
 import "./PetWidget.css";
 
 const CHEER_MESSAGES = ["Yay!! 🎉", "You did it!", "Great practice!", "Woo hoo!", "Nice work!"];
-const CHEER_EVENT = "pet-cheer";
+export const PRACTICE_RESPONSE_EVENT = "heartbeats-practice-response";
 
 // Fires whenever a practice card gets completed — PetWidget listens for
 // this to celebrate. A plain window event rather than threading a prop
 // through StudentDashboard, since the two components are unrelated
 // siblings and this is a one-off "hey, something happened" signal, not
 // shared state either component needs to hold.
-export function cheerForPractice() {
-  window.dispatchEvent(new CustomEvent(CHEER_EVENT));
+export function cheerForPractice(intent = "step_complete_generic") {
+  window.dispatchEvent(new CustomEvent(PRACTICE_RESPONSE_EVENT, { detail: { intent } }));
 }
 
 // The practice pet. Growth only — no health bar, no sad face, no
@@ -32,6 +32,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
   const [listening, setListening] = useState(false);
   const [micStatus, setMicStatus] = useState("idle"); // idle | requesting | listening | denied | unsupported
   const [cheerMessage, setCheerMessage] = useState(null);
+  const [rewardMessage, setRewardMessage] = useState(null);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const [savingName, setSavingName] = useState(false);
@@ -50,8 +51,10 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
       .select("xp, stage, name, species, species_chosen")
       .eq("student_id", studentId)
       .maybeSingle();
-    setPet(data || { xp: 0, stage: 0, name: null, species: "chicken", species_chosen: true });
+    const nextPet = data || { xp: 0, stage: 0, name: null, species: "chicken", species_chosen: true };
+    setPet(nextPet);
     setLoading(false);
+    return nextPet;
   }, [studentId]);
 
   useEffect(() => {
@@ -60,7 +63,9 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
 
   // Cheer on completion, regardless of listening/idle state.
   useEffect(() => {
-    function handleCheer() {
+    async function handleCheer(event) {
+      if (event?.detail?.intent !== "step_complete_generic") return;
+      const previousPet = pet;
       setCheerMessage(CHEER_MESSAGES[Math.floor(Math.random() * CHEER_MESSAGES.length)]);
       const el = emojiRef.current;
       if (el) {
@@ -71,10 +76,22 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
         setTimeout(() => el.classList.remove("pet-cheer-bounce"), 650);
       }
       setTimeout(() => setCheerMessage(null), 2200);
+
+      const nextPet = await fetchPet();
+      if (nextPet.xp > (previousPet?.xp || 0)) {
+        if (nextPet.stage > (previousPet?.stage || 0)) {
+          setRewardMessage(`${nextPet.name || "Your pet"} grew to ${stageInfo(nextPet.stage, nextPet.species).name}!`);
+        } else if (nextPet.xp % 5 === 0) {
+          setRewardMessage("+1 practice XP · You found a mystery egg!");
+        } else {
+          setRewardMessage("+1 practice XP");
+        }
+        setTimeout(() => setRewardMessage(null), 3500);
+      }
     }
-    window.addEventListener(CHEER_EVENT, handleCheer);
-    return () => window.removeEventListener(CHEER_EVENT, handleCheer);
-  }, []);
+    window.addEventListener(PRACTICE_RESPONSE_EVENT, handleCheer);
+    return () => window.removeEventListener(PRACTICE_RESPONSE_EVENT, handleCheer);
+  }, [fetchPet, pet]);
 
   function stopListening() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -213,6 +230,8 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
           {info.emoji}
         </div>
       </div>
+
+      {rewardMessage && <p className="pet-reward-message" role="status">{rewardMessage}</p>}
 
       <div className="pet-name-row">
         {pet.name && (!editingName || readOnly) && (

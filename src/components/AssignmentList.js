@@ -8,6 +8,8 @@ export default function AssignmentList({ teacherId, refresh }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [duplicating, setDuplicating] = useState(null);
+  const [editingAssignment, setEditingAssignment] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   useEffect(() => {
     fetchAssignments();
@@ -138,6 +140,42 @@ export default function AssignmentList({ teacherId, refresh }) {
     }
   };
 
+  const openEdit = (assignment) => {
+    setEditingAssignment({
+      id: assignment.id,
+      title: assignment.title || "",
+      instrument_type: assignment.instrument_type || "",
+      category: assignment.category || "pieces",
+      deadline: assignment.deadline ? String(assignment.deadline).slice(0, 10) : "",
+    });
+  };
+
+  const handleSaveEdit = async (event) => {
+    event.preventDefault();
+    if (!editingAssignment?.title.trim()) return;
+    setSavingEdit(true);
+    setError(null);
+    try {
+      const { error: updateError } = await supabase
+        .from("assignments")
+        .update({
+          title: editingAssignment.title.trim(),
+          instrument_type: editingAssignment.instrument_type.trim() || null,
+          category: editingAssignment.category,
+          deadline: editingAssignment.deadline || null,
+        })
+        .eq("id", editingAssignment.id)
+        .eq("teacher_id", teacherId);
+      if (updateError) throw updateError;
+      setEditingAssignment(null);
+      await fetchAssignments();
+    } catch (err) {
+      setError(err.message || "The assignment could not be updated.");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
   const formatDate = (date) => {
     if (!date) return "No deadline";
     return new Date(date).toLocaleDateString("en-US", {
@@ -183,7 +221,37 @@ export default function AssignmentList({ teacherId, refresh }) {
 
   return (
     <div className="assignment-list">
-      <h3>Recent assignments</h3>
+      <h2>Recent assignments</h2>
+      {editingAssignment && (
+        <form className="assignment-edit-form" onSubmit={handleSaveEdit}>
+          <div className="assignment-edit-heading">
+            <div><span>Teacher edit</span><h3>Update assignment details</h3></div>
+            <button type="button" onClick={() => setEditingAssignment(null)} disabled={savingEdit}>Cancel</button>
+          </div>
+          <label>
+            Title
+            <input value={editingAssignment.title} onChange={(event) => setEditingAssignment((current) => ({ ...current, title: event.target.value }))} required />
+          </label>
+          <div className="assignment-edit-grid">
+            <label>
+              Instrument
+              <input value={editingAssignment.instrument_type} onChange={(event) => setEditingAssignment((current) => ({ ...current, instrument_type: event.target.value }))} />
+            </label>
+            <label>
+              Category
+              <select value={editingAssignment.category} onChange={(event) => setEditingAssignment((current) => ({ ...current, category: event.target.value }))}>
+                {assignmentCategories.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+              </select>
+            </label>
+            <label>
+              Deadline
+              <input type="date" value={editingAssignment.deadline} onChange={(event) => setEditingAssignment((current) => ({ ...current, deadline: event.target.value }))} />
+            </label>
+          </div>
+          <button type="submit" className="assignment-edit-save" disabled={savingEdit || !editingAssignment.title.trim()}>{savingEdit ? "Saving…" : "Save assignment"}</button>
+          <small>Practice steps and completed student work stay unchanged.</small>
+        </form>
+      )}
       <div className="assignments-grid">
         {assignments.map((assignment) => (
           <div key={assignment.id} className="assignment-card">
@@ -231,7 +299,7 @@ export default function AssignmentList({ teacherId, refresh }) {
               >
                 {assignment.memorized ? "Memorized" : "Mark memorized"}
               </button>
-              <button type="button" className="btn-action btn-edit">Edit</button>
+              <button type="button" className="btn-action btn-edit" onClick={() => openEdit(assignment)}>Edit</button>
               <button
                 type="button"
                 className="btn-action btn-duplicate"
