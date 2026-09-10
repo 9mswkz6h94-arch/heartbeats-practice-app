@@ -49,7 +49,7 @@
   ],
   "handoff": "DESIGN_HANDOFF.md",
   "referenceViewports": ["390x844", "768x1024", "1024x768", "1440x900"],
-  "deploymentApproved": false,
-  "productionChangesAllowed": false,
-  "nextAction": "Review PRODUCTION_RELEASE_RUNBOOK.md and explicitly authorize the guarded production backup, migrations 016-021, push to origin/main, Netlify deployment, and live smoke test"
+  "deploymentApproved": true,
+  "productionChangesAllowed": true,
+  "nextAction": "Complete the authorized fast-forward production release, verify the exact Netlify deploy, run the live smoke test, and close the production change window"
 }
