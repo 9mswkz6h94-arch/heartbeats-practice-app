@@ -1,9 +1,10 @@
 # Scaffold Review Matrix
 
 **Project:** `proj-004`
-**Design-system version:** `0.7.0`
+**Design-system version:** `0.8.0`
 **Review data mode:** `mock-isolated`
-**Last updated:** 2026-09-09
+**Accessibility profiles:** None selected; existing app-specific accessibility evidence remains in force
+**Last updated:** 2026-09-10
 
 **Status values:** Not started · In progress · Pass · Fail · Blocked · Not applicable
 

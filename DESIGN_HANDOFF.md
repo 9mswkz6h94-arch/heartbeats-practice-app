@@ -4,9 +4,10 @@
 **Project:** `proj-004`
 **Branch:** `codex/practice-scaffold-sandbox`
 **Current phase:** Production ready (awaiting release authorization)
-**Design-system version:** `0.7.0`
+**Design-system version:** `0.8.0`
 **Identity version:** Rainbow Heart Style Guide `2.0.0`
-**Last updated:** 2026-09-09
+**Accessibility profiles:** None selected; existing app-specific accessibility evidence remains recorded below
+**Last updated:** 2026-09-10
 
 ## Product invariants
 
@@ -18,6 +19,7 @@
 
 ## Implemented
 
+- Aligned the app connection records with Rainbow Heart OS `0.8.0` after the preflight validator detected system-version drift. The new cross-cutting Cognitive Accessibility profile is not silently selected; this app retains its existing app-specific accessibility evidence until a separate adoption decision.
 - Local-only worktree and branch separated from `main`.
 - Scaffold semantic palette, font roles, spacing, geometry, effects, and compatibility aliases.
 - Six locally hosted IBM Plex font files at regular and semibold weights.
