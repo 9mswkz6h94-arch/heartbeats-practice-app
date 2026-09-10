@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { normalizeAssignmentSteps } from "../lib/lessonMemory";
 import PlanningPartnerPanel from "./PlanningPartnerPanel";
 import "./LessonMemoryFixture.css";
 
@@ -398,8 +399,11 @@ export default function LessonMemoryFixture({
               <h4>{assignmentDraft.title}</h4>
               <p>{assignmentDraft.description}</p>
               <ol>
-                {assignmentDraft.steps.map((step) => (
-                  <li key={step}>{step}</li>
+                {normalizeAssignmentSteps(assignmentDraft.steps).map((step, index) => (
+                  <li key={`${step.title}-${index}`}>
+                    {step.title}
+                    {step.description && <small>{step.description}</small>}
+                  </li>
                 ))}
               </ol>
               {draftState === "ready" ? (

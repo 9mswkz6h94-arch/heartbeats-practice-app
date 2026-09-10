@@ -138,3 +138,18 @@ This evidence began with the mock-isolated prototype and now includes local live
 
 **Status:** Rainbow Heart 2.0 is in local identity review across four mock surfaces; not approved for production
 **Decision records:** D-026 supersedes D-020's local visual recipe and expands the review boundary; D-021 and D-022 remain accepted Zoo behavior; D-023 and D-024 remain proposed
+
+## Isolated authenticated release rehearsal
+
+This evidence covers the 2026-09-09 local Supabase rehearsal. Exact fingerprints and status codes are recorded in `RELEASE_REHEARSAL_2026-09-09.md`.
+
+| Gate | Status | Evidence | Environment | Follow-up |
+|---|---|---|---|---|
+| Ordered migrations 016–021 | Passed | Applied one at a time with stop-on-error behavior; assignment lifecycle and release schema verifiers passed | Disposable local Supabase | Apply to production only after backup and explicit authorization |
+| Protected data preservation | Passed | All 13 ledger counts preserved; 11 digests match exactly and two profile-table digests changed only because migration 019 added reviewed columns | Synthetic local data | Repeat immediately before/after any authorized production migration |
+| Real-role privacy matrix | Passed | Anonymous tables hidden; private lesson data remains teacher-only; same-family writes/reads succeed; cross-family reads/writes fail; public teacher-profile insert fails | Real local JWT sessions and PostgREST | Keep the matrix in the production runbook |
+| Authenticated workflows | Passed | Teacher draft-to-assignment, reassignment, archive-with-history-preservation, and badge award; parent family/history visibility; student completion and Zoo-preference persistence all completed | Local app with review mode off | Jonathan visual acceptance |
+| Responsive regression | Passed | Authenticated Student, Teacher, Parent, and Family setup show no horizontal overflow at phone/tablet/desktop reference widths | In-app browser | True 200% zoom remains manual |
+| Automated/system validation | Passed | 28 suites / 108 tests, optimized build, migration/art checks, diff check, Rainbow Heart OS 0.7.0 and connected-app metadata | Local terminals | Re-run after any material change |
+| Manual accessibility | Not complete | One tested control exposes the canonical 3px focus outline; controller could not complete a physical Tab traversal or true browser zoom | Local browser/source | Complete keyboard, 200% zoom, reduced motion, and assistive-tech checks |
+| Production boundary | Passed | No production rows exported, no hosted write or migration, no push, no merge, and no deployment | Local governance | Separate explicit authorization required |

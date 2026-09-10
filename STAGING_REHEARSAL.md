@@ -4,7 +4,7 @@ This is the required release gate for the Rainbow Heart redesign. It is delibera
 
 ## Prerequisites
 
-- A disposable Supabase project or local database restored from a sanitized, schema-complete backup.
+- A disposable Supabase project or local database restored from a sanitized, schema-complete backup. A schema-only baseline plus deterministic synthetic fixtures is acceptable for a local rehearsal when every protected ledger is populated before the first fingerprint.
 - Database-owner access to that isolated clone.
 - Three isolated test identities: teacher, parent, and student. Do not reuse production credentials.
 - A local `.env.local` pointing only to the isolated project. Start from `.env.staging.example`, replace its placeholders, and keep review mode unset so real authentication and RLS are exercised.
@@ -35,6 +35,8 @@ Save all command output as release evidence. Substitute only the connection stri
 6. Compare every protected table's count and digest. Any difference blocks release unless the migration intentionally changed that table and the change was separately reviewed. For this set, completion, streak, assignment, repertoire, badge, pet, and creature history must match exactly.
 
 Each migration is transactional. Stop on the first error; do not skip ahead or manually patch the clone until the failure is understood in source control.
+
+If the restored schema depends on extensions that are not enabled in the disposable database, reset that disposable database before retrying. Enable the prerequisite extension explicitly and rerun the restore from the beginning; do not continue from a partial restore.
 
 ## Real-role acceptance matrix
 

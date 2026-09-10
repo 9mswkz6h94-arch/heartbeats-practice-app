@@ -173,7 +173,7 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
             <>
               <h3>{draft.title}</h3>
               {draft.description && <p>{draft.description}</p>}
-              <ol>{(draft.steps || []).map((step) => <li key={step}>{step}</li>)}</ol>
+              <ol>{(draft.steps || []).map((step, index) => <li key={`${step.title}-${index}`}>{step.title}{step.description && <small>{step.description}</small>}</li>)}</ol>
               {draft.status === "approved" ? (
                 <button type="button" onClick={() => setComposerSource("draft")}>Turn into assignment</button>
               ) : (

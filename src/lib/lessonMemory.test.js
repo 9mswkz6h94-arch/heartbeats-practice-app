@@ -55,7 +55,7 @@ test("sorts lesson notes and keeps the private assignment suggestion attached", 
     id: "draft-1",
     title: "Warmup",
     description: "",
-    steps: ["Try once."],
+    steps: [{ title: "Try once.", description: "" }],
     status: "approved",
     assignmentId: null,
   });
@@ -63,4 +63,20 @@ test("sorts lesson notes and keeps the private assignment suggestion attached", 
 
 test("treats malformed draft steps as an empty list", () => {
   expect(normalizeAssignmentDraft({ id: "d", title: "Draft", steps: {}, status: "suggested" }).steps).toEqual([]);
+});
+
+test("normalizes string and structured draft steps for every live consumer", () => {
+  expect(normalizeAssignmentDraft({
+    id: "d",
+    title: "Draft",
+    status: "suggested",
+    steps: [
+      "  Play once.  ",
+      { title: " Listen back. ", description: " Notice one comfortable moment. " },
+      { description: "Missing title" },
+    ],
+  }).steps).toEqual([
+    { title: "Play once.", description: "" },
+    { title: "Listen back.", description: "Notice one comfortable moment." },
+  ]);
 });

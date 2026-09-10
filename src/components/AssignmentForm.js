@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { normalizeAssignmentSteps } from "../lib/lessonMemory";
 import {
   instrumentTypes,
   assignmentCategories,
@@ -32,10 +33,10 @@ export default function AssignmentForm({
   const [badgeReward, setBadgeReward] = useState("none");
   const [students, setStudents] = useState([]);
   const [practiceSteps, setPracticeSteps] = useState(() =>
-    (initialDraft?.steps || []).map((step, index) => ({
+    normalizeAssignmentSteps(initialDraft?.steps).map((step, index) => ({
       id: `draft-step-${index}`,
-      title: step,
-      description: "",
+      title: step.title,
+      description: step.description,
     }))
   );
   const [attachmentFile, setAttachmentFile] = useState(null);

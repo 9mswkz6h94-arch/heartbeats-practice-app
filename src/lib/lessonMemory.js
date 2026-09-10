@@ -18,13 +18,36 @@ export function normalizeLessonNote(row) {
   };
 }
 
+export function normalizeAssignmentStep(step) {
+  if (typeof step === "string") {
+    const title = step.trim();
+    return title ? { title, description: "" } : null;
+  }
+
+  if (!step || typeof step !== "object") return null;
+
+  const title = typeof step.title === "string" ? step.title.trim() : "";
+  if (!title) return null;
+
+  return {
+    title,
+    description: typeof step.description === "string" ? step.description.trim() : "",
+  };
+}
+
+export function normalizeAssignmentSteps(steps) {
+  return Array.isArray(steps)
+    ? steps.map(normalizeAssignmentStep).filter(Boolean)
+    : [];
+}
+
 export function normalizeAssignmentDraft(row) {
   if (!row) return null;
   return {
     id: row.id,
     title: row.title,
     description: row.description || "",
-    steps: Array.isArray(row.steps) ? row.steps : [],
+    steps: normalizeAssignmentSteps(row.steps),
     status: row.status,
     assignmentId: row.assignment_id || null,
   };

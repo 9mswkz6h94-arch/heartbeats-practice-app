@@ -1,5 +1,6 @@
 import { supabase } from "./supabaseClient";
 import { dayName } from "./calendarLink";
+import { normalizeAssignmentDraft } from "./lessonMemory";
 import { fetchStudentStats } from "./studentStats";
 
 function shortName(name = "Student") {
@@ -79,6 +80,7 @@ function mapStudent(student, lesson, familyLink, stats, draft, guardians = []) {
   }));
   const activeAssignment = assignments[0];
   const name = student.name || "Student";
+  const normalizedDraft = normalizeAssignmentDraft(draft);
 
   return {
     id: student.id,
@@ -96,7 +98,7 @@ function mapStudent(student, lesson, familyLink, stats, draft, guardians = []) {
       activeWorkTitle: activeAssignment?.title || "No current assignment",
       activeWorkAge: activeAssignment?.age || "Ready when you are",
       activeWorkStatus: activeAssignment ? "currently active" : "no active work yet",
-      draft: draft || {
+      draft: normalizedDraft || {
         title: activeAssignment?.title || `${shortName(name)}’s next musical step`,
         description: "Continue from today’s lesson notes.",
         steps: [],

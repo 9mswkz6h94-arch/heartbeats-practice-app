@@ -5,7 +5,7 @@ BEGIN;
 
 DO $$
 DECLARE
-  table_name TEXT;
+  release_table_name TEXT;
   protected_tables CONSTANT TEXT[] := ARRAY[
     'lesson_sessions',
     'lesson_notes',
@@ -49,9 +49,9 @@ BEGIN
     RAISE EXCEPTION 'one or more parent_students relationship columns are missing';
   END IF;
 
-  FOREACH table_name IN ARRAY protected_tables LOOP
-    IF to_regclass(format('public.%I', table_name)) IS NULL THEN
-      RAISE EXCEPTION 'required release table public.% is missing', table_name;
+  FOREACH release_table_name IN ARRAY protected_tables LOOP
+    IF to_regclass(format('public.%I', release_table_name)) IS NULL THEN
+      RAISE EXCEPTION 'required release table public.% is missing', release_table_name;
     END IF;
 
     IF NOT EXISTS (
@@ -59,17 +59,17 @@ BEGIN
         FROM pg_class relation
         JOIN pg_namespace namespace ON namespace.oid = relation.relnamespace
        WHERE namespace.nspname = 'public'
-         AND relation.relname = table_name
+         AND relation.relname = release_table_name
          AND relation.relrowsecurity
     ) THEN
-      RAISE EXCEPTION 'row-level security is disabled on public.%', table_name;
+      RAISE EXCEPTION 'row-level security is disabled on public.%', release_table_name;
     END IF;
 
-    IF has_table_privilege('anon', format('public.%I', table_name), 'SELECT')
-       OR has_table_privilege('anon', format('public.%I', table_name), 'INSERT')
-       OR has_table_privilege('anon', format('public.%I', table_name), 'UPDATE')
-       OR has_table_privilege('anon', format('public.%I', table_name), 'DELETE') THEN
-      RAISE EXCEPTION 'anon retains a direct data privilege on public.%', table_name;
+    IF has_table_privilege('anon', format('public.%I', release_table_name), 'SELECT')
+       OR has_table_privilege('anon', format('public.%I', release_table_name), 'INSERT')
+       OR has_table_privilege('anon', format('public.%I', release_table_name), 'UPDATE')
+       OR has_table_privilege('anon', format('public.%I', release_table_name), 'DELETE') THEN
+      RAISE EXCEPTION 'anon retains a direct data privilege on public.%', release_table_name;
     END IF;
   END LOOP;
 

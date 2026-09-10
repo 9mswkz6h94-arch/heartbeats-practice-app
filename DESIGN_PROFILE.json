@@ -50,5 +50,5 @@
   "referenceViewports": ["390x844", "768x1024", "1024x768", "1440x900"],
   "deploymentApproved": false,
   "productionChangesAllowed": false,
-  "nextAction": "Validate ordered migrations 016–021 and the live teacher workflows with isolated teacher, parent, and student accounts, then complete true keyboard and 200% browser-zoom checks before any push or deployment"
+  "nextAction": "Review RELEASE_REHEARSAL_2026-09-09.md, complete manual keyboard, true 200% browser zoom, operating-system reduced-motion, and assistive-technology checks, name the production backup and rollback owner, then request separate authorization for production migrations, push, and deployment"
 }

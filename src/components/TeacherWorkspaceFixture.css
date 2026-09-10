@@ -161,6 +161,7 @@
 .teacher-suggested-assignment > p { margin: 0; color: #4d40b0; font-family: var(--font-measurement); font-size: 8px; font-weight: 700; text-transform: uppercase; }
 .teacher-suggested-assignment h3 { margin: var(--space-3) 0; font-size: 17px; line-height: 1.25; }
 .teacher-suggested-assignment ol { padding-left: 19px; font-size: 11px; line-height: 1.45; }
+.teacher-suggested-assignment li small { display: block; margin-top: 2px; color: var(--color-text-muted); font-size: 10px; text-align: left; }
 .teacher-suggested-assignment button { width: 100%; min-height: 48px; border: 2px solid #5a4cc8; background: #5a4cc8; color: white; font: inherit; font-weight: 700; cursor: pointer; }
 .teacher-suggested-assignment small { display: block; margin-top: 8px; color: var(--color-text-muted); font-size: 9px; text-align: center; }
 .teacher-progress-stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); border-bottom: 1px solid var(--color-border); }

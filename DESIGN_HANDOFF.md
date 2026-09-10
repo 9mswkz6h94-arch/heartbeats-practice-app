@@ -6,7 +6,7 @@
 **Current phase:** Identity review
 **Design-system version:** `0.7.0`
 **Identity version:** Rainbow Heart Style Guide `2.0.0`
-**Last updated:** 2026-09-07
+**Last updated:** 2026-09-09
 
 ## Product invariants
 
@@ -220,7 +220,7 @@
 - The teacher HUD has fixed-window assumptions needing responsive review.
 - No blocking Scaffold implementation work remains. A human visual/read-aloud spot check is recommended during Jonathan's acceptance review.
 - Full manual keyboard traversal, true 200% browser zoom, reduced-motion operating-system review, and assistive-technology review remain incomplete. Native control semantics and focus styles are present, but the browser controller did not activate controls through its synthetic keyboard command during this pass.
-- Migrations `016_invite_only_teachers.sql` through `021_teacher_badge_awards.sql` form the ordered release set. They have not been applied to an isolated Supabase project or production; the complete set still requires SQL execution, privacy-preserving before/after fingerprints, and teacher/parent/student RLS checks before release.
+- Migrations `016_invite_only_teachers.sql` through `021_teacher_badge_awards.sql` passed the isolated local Supabase rehearsal, privacy-preserving fingerprints, both SQL verifiers, and teacher/parent/student RLS checks on 2026-09-09. They have not been applied to production.
 - The live Studio home now exposes the existing recurring lesson schedule locally. A trusted external performance source is still not connected.
 - Publishing an approved suggestion uses the existing assignment creation path and then marks the private draft as published. A later database transaction could make that cross-table handoff fully atomic.
 - All nine accepted Musical Zoo characters are wired into the app-local registry and mock-isolated review. Character-specific habitat walk cycles, companion reaction animation frames, optional eggs, and full voice packs remain future integration gates.
@@ -299,6 +299,7 @@
 | 2026-09-07 | Teacher Badge Studio responsive review | 390×844, 768×1024, 1024×768, and 1440×900 | Pass; no page-level horizontal overflow, broken character images, or tested visible targets below 48×48 CSS pixels. |
 | 2026-09-07 | Teacher Badge Studio automated/system gate | Full test suite, optimized build, diff check, canonical OS, and connected-app validation | Pass; 23 suites/90 tests, successful optimized build with only the existing Node `fs.F_OK` deprecation warning, no whitespace errors, and Rainbow Heart OS 0.7.0 plus connected-app metadata validation. |
 | 2026-09-07 | Local release-readiness integration | Ordered migration checks, live Teacher wiring tests, full suite, art validation, optimized build, and non-breaking dependency remediation | Pass locally; migrations `016`–`021` validate statically, 27 suites/106 tests pass, 9 habitat sprites/9 companions/27 stickers/2 boards validate, and the optimized build compiles without lint warnings. Audit improves from 20 to 14 high transitive findings; isolated database and manual accessibility gates remain open. |
+| 2026-09-09 | Isolated Supabase release rehearsal | Sanitized schema restore, migrations `016`–`021`, before/after fingerprints, SQL verifiers, real-role RLS matrix, authenticated workflows, responsive checks, full validation, and Rainbow Heart OS validation | Pass; all protected ledgers retain their counts, all non-profile ledgers match exactly, expected migration-019 profile shape changes are isolated, role boundaries pass, 28 suites/108 tests and build pass. See `RELEASE_REHEARSAL_2026-09-09.md`. Manual keyboard/true zoom/reduced-motion/assistive-tech and production authorization remain open. |
 
 ## Deferred maintenance findings
 
@@ -310,4 +311,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Restore a sanitized, schema-complete database into an isolated Supabase project and follow `STAGING_REHEARSAL.md`: compare protected data fingerprints, apply ordered migrations `016`–`021`, run both SQL verifiers, and exercise the teacher/parent/student role matrix. Then complete manual keyboard, true 200% zoom, reduced-motion, and assistive-technology review before considering a push or deployment. Physical sampling remains a separate purchase requiring approval; do not contact a vendor, purchase, migrate production, push, or deploy from this handoff.
+Review the completed evidence in `RELEASE_REHEARSAL_2026-09-09.md`, then complete manual keyboard, true 200% zoom, reduced-motion, and assistive-technology review. Name the production backup/rollback owner and decide how the Create React App dependency findings affect the release timetable. Physical sampling remains a separate purchase requiring approval; do not contact a vendor, purchase, migrate production, push, or deploy from this handoff without separate explicit authorization.

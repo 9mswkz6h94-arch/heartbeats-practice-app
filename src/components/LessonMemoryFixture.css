@@ -239,6 +239,7 @@
 .lesson-memory-draft > p { margin: 0; color: var(--color-text-muted); font-size: 12px; line-height: 1.4; }
 .lesson-memory-draft ol { margin: var(--space-3) 0; padding-left: 20px; font-size: 11px; line-height: 1.45; }
 .lesson-memory-draft li + li { margin-top: 5px; }
+.lesson-memory-draft li small { display: block; margin-top: 2px; color: var(--color-text-muted); font-size: 10px; }
 .lesson-memory-draft-actions { display: grid; gap: var(--space-2); }
 .lesson-memory-draft-actions button { min-height: 46px; padding: var(--space-2); border: 1px solid var(--color-ink); border-radius: 0; background: var(--color-surface); color: var(--color-text); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .lesson-memory-draft-actions button:first-child { background: #5a4cc8; color: white; }
