@@ -3,7 +3,7 @@
 **App:** Heart Beats Practice App  
 **Branch:** `codex/practice-scaffold-sandbox`  
 **Environment:** Disposable local Supabase/Docker stack  
-**Result:** Database, authorization, workflow, responsive, test, build, artwork, and governance gates passed. Manual accessibility review and production authorization remain open.
+**Result:** Database, authorization, workflow, responsive, test, build, artwork, governance, and manual accessibility gates passed. Production authorization remains open.
 
 ## Safety boundary
 
@@ -78,11 +78,9 @@ Synthetic primary identities:
 
 ## Remaining release gates
 
-1. Jonathan's visual acceptance review of the authenticated local app.
-2. Manual full keyboard-only traversal, true 200% browser zoom, operating-system reduced-motion review, and assistive-technology spot check.
-3. A named production backup/rollback owner and a fresh production backup immediately before migration.
-4. A deliberate decision on the Create React App dependency findings and migration timetable.
-5. Separate explicit authorization for production migrations, push, and deployment.
+1. Jonathan's review of the guarded production runbook, including named backup/rollback ownership.
+2. A deliberate acceptance or timetable decision for the Create React App dependency findings.
+3. Separate explicit authorization for production backup, migrations, push, deployment, and live smoke testing.
 
 The local rehearsal stack may be discarded and recreated. This file contains no passwords, production row data, student names, birthdays, notes, contact details, transcript content, or service keys.
 
@@ -90,4 +88,4 @@ The local rehearsal stack may be discarded and recreated. This file contains no 
 
 Jonathan visually accepted the local redesign on 2026-09-09. A subsequent mock-isolated companion scan found no horizontal overflow, unnamed visible controls, duplicate IDs, or sub-48px effective targets across Student, Teacher, Parent, and Family setup at the 640px reflow width. The operating environment reported reduced-motion preference and the rendered Student/Zoo surface retained no active animations; transition and animation durations collapsed to 0.01 ms.
 
-The remaining human evidence is physical keyboard traversal, true 200% browser zoom, and a screen-reader listen-through using `MANUAL_ACCESSIBILITY_ACCEPTANCE.md`. Production authorization remains separate.
+Jonathan subsequently confirmed the completed physical keyboard traversal, true 200% browser zoom, and screen-reader listen-through on 2026-09-09. Together with the rendered reduced-motion result, all four checks in `MANUAL_ACCESSIBILITY_ACCEPTANCE.md` passed. Production authorization remains separate.

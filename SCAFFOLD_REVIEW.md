@@ -3,7 +3,7 @@
 **Project:** `proj-004`
 **Design-system version:** `0.7.0`
 **Review data mode:** `mock-isolated`
-**Last updated:** 2026-09-06
+**Last updated:** 2026-09-09
 
 **Status values:** Not started · In progress · Pass · Fail · Blocked · Not applicable
 
@@ -52,10 +52,10 @@ This evidence covers the mock-isolated Student, Teacher workspace, Parent, and F
 | Tablet landscape 1024×768 | Passed | All four surfaces have zero body-level horizontal overflow and unclipped primary headings | In-app browser, `mock-isolated` | Jonathan visual review |
 | Desktop 1440×900 | Passed | All four surfaces have zero body-level horizontal overflow and unclipped primary headings | In-app browser, `mock-isolated` | Jonathan visual review |
 | Minimum 48×48 touch targets | Passed | No visible button, link, text input, select, or textarea measured below 48px in either dimension; parent and family checkbox rows provide 283×54px and 313×90px combined label targets | In-app browser, `mock-isolated` | Recheck if controls change |
-| 200% text zoom | Not tested | All four surfaces pass the 640px layout equivalent with zero horizontal overflow; true browser zoom was not available in the controller | In-app browser, `mock-isolated` | Run true 200% browser-zoom review before production approval |
-| Keyboard-only workflow | Not tested | Native controls and prior focus-management behavior remain in place, but a complete manual Tab traversal was not repeated for this identity slice | Local app | Complete before production approval |
-| Visible focus | Static review only | Canonical Brand Kit 2.0 supplies the 3px focus token and scoped `:focus-visible` treatment | Local source | Confirm manually before production approval |
-| Reduced motion | Static review only | Canonical Brand Kit 2.0 removes effective transition and animation duration under `prefers-reduced-motion` | Local source | Confirm with the operating-system preference before production approval |
+| 200% text zoom | Passed | All four surfaces pass the 640px layout equivalent with zero horizontal overflow; Jonathan confirmed true 200% browser zoom on 2026-09-09 | In-app browser and human review, `mock-isolated` | Recheck after material layout changes |
+| Keyboard-only workflow | Passed | Jonathan confirmed physical Tab/Shift+Tab traversal, activation, Zoo navigation, form order, and practice-dialog focus behavior on 2026-09-09 | Human review, `mock-isolated` | Recheck after interaction changes |
+| Visible focus | Passed | Canonical 3px focus treatment remained visible during the completed keyboard review | Human review, `mock-isolated` | Recheck after control styling changes |
+| Reduced motion | Passed | The operating environment reported `prefers-reduced-motion: reduce`; Student/Zoo retained no active animation and effective durations collapsed to 0.01 ms | In-app browser and operating-system preference | Recheck after motion changes |
 | Safe review boundary | Passed | Each route retains the visible `mock-isolated` banner and deterministic fixture; identity wrappers do not change behavior, data access, auth, or privacy | Local source and browser | Keep production Scaffold until separately approved |
 | Test/build/system validation | Passed | 17 suites / 61 tests, optimized production build, canonical OS 0.6 validation, Brand Kit 2.0 validation, and connected-app metadata validation all pass | Project and canonical OS terminals | Re-run after material identity changes |
 
@@ -86,7 +86,7 @@ This evidence covers D-028 and remains local-only pending Jonathan’s review.
 | Teacher calendar and data | Passed | Calendar expands from real recurring lesson slots; roster search filters; progress uses seven-day completion counts and real repertoire titles | Unit tests and interactive mock review | Connect a performance source separately if approved |
 | Parent review interactions | Passed | Active mock fixture supports child switching, reschedule/cancel, notification preference, and local messaging without Supabase access | In-app browser, `mock-isolated` | Real paths remain covered by their existing components |
 | Responsive matrix | Passed | Student, Teacher, Parent, and Family setup at 360, 640, 1024, and 1440px: zero horizontal overflow, duplicate IDs, broken images, unnamed buttons, or enabled controls below 40px | In-app browser, `mock-isolated` | Repeat after material layout changes |
-| Manual keyboard / true zoom | Not complete | Controls are native and focus styling remains present, but the controller’s synthetic key activation did not trigger the focused review-navigation button; true 200% browser zoom was unavailable | Local browser/source | Manual keyboard, 200% zoom, reduced motion, and assistive-tech checks remain release gates |
+| Manual accessibility | Passed | Jonathan confirmed physical keyboard traversal, true 200% browser zoom, reduced-motion behavior, and screen-reader listening on 2026-09-09; companion scans retain semantic names, 48px targets, and reflow | Human review plus local browser/source | Recheck after material interaction or layout changes |
 | Automated/system validation | Passed | 22 test suites / 77 tests, clean optimized build, `git diff --check`, Rainbow Heart OS 0.6, Scaffold Kit 1.0.1, Brand Kit 2.0, and connected-app metadata validation | Local terminals | Re-run before any approved push |
 | Production boundary | Passed | No migrations applied; no live record write; no push, merge, or deployment | Local governance | Jonathan review and separate authorization required |
 
@@ -100,22 +100,22 @@ This additional evidence covers only the local `?review=student` pilot. The earl
 | Tablet portrait 768×1024 | Passed | No page overflow or clipped primary heading | In-app browser, mock fixture | Human visual spot check |
 | Tablet landscape 1024×768 | Passed | No page overflow or clipped primary heading | In-app browser, mock fixture | Human visual spot check |
 | Desktop 1440×900 | Passed | No page overflow; Rainbow Heart fonts, geometry, and Craft band render as intended | In-app browser, mock fixture | Human visual approval |
-| Keyboard-only workflow | Not tested | Native controls and existing dialog focus behavior are preserved, but a complete manual Tab traversal was not repeated for this visual slice | Local app | Complete before production approval |
-| Visible focus | Static review only | Existing global focus-visible treatment remains in source | Local source | Confirm manually before production approval |
+| Keyboard-only workflow | Passed | Jonathan confirmed physical Tab/Shift+Tab traversal, activation, and dialog focus containment/restoration on 2026-09-09 | Human review, `mock-isolated` | Recheck after interaction changes |
+| Visible focus | Passed | The global 3px focus-visible treatment remained visible during the completed keyboard review | Human review, `mock-isolated` | Recheck after control styling changes |
 | Minimum 48×48 touch targets | Passed | All visible controls measured at or above 48×48 at all four reference viewports | In-app browser, mock fixture | Recheck if controls change |
-| 200% text zoom | Not tested | The 640px layout equivalent passes without overflow; true browser zoom was not available in this controller | In-app browser, mock fixture | Run true browser-zoom review before production approval |
-| Reduced motion | Static review only | Theme-specific transitions are removed under `prefers-reduced-motion`; controller could not emulate the preference | Local source | Confirm with OS preference before production approval |
+| 200% text zoom | Passed | The 640px layout equivalent passes without overflow; Jonathan confirmed true 200% browser zoom on 2026-09-09 | In-app browser and human review, mock fixture | Recheck after material layout changes |
+| Reduced motion | Passed | The operating environment reported reduced-motion preference; Student/Zoo retained no active animation and effective durations collapsed to 0.01 ms | In-app browser and operating-system preference | Recheck after motion changes |
 | No horizontal page scrolling | Passed | Zero page-level overflow at 390, 640, 768, 1024, and 1440px widths; the expanded Zoo uses one body scrollbar with no nested vertical scrolling region | In-app browser, mock fixture | Recheck if layout changes |
 | Error and recovery state | Static review only | Identity CSS is scoped to the existing student review and does not alter state logic | Local source | Exercise production-safe error fixture before release |
 | Safe review mode verified | Passed | Persistent banner reports `mock-isolated`; interactions reset on reload and do not call Supabase | Local review route | Keep banner until deployment approval |
 | One-place Musical Zoo | Passed | Selecting a destination hides the Commons and map, exactly one destination remains visible, returning restores the Commons, and destination state persists | In-app browser, mock fixture | Human visual approval |
 | Expanded phone habitat | Passed | At 390×844 the selected destination uses the full 375px content width and the living habitat field grows to 574px; one body scrollbar remains, with no horizontal overflow or undersized visible controls | In-app browser, mock fixture | Recheck if the destination toolbar or habitat controls change |
 | Calm Zoo discovery | Passed | Before the event, the Map exposes four available destinations and Meadow exposes two owned scenery pieces; no locked card, missing-place denominator, unlock progress meter, countdown, or advance teaser is visible. After one mock practice completion, Riverbank and Rainbow Note Garden appear as ordinary available cards | In-app browser, mock fixture | Decide whether calendar arrivals receive a separate prototype |
-| Cozy pixel-world Zoo | Passed for local visual review | The map renders available places as labeled top-down landmarks on a tiled world at all four reference viewports. Travel, return-to-map, stepped route movement, and tap-to-greet were exercised; no locked-place pressure copy returned. | In-app browser, mock fixture | Jonathan visual approval; complete keyboard and true 200% zoom review before production approval |
+| Cozy pixel-world Zoo | Passed for local visual review | The map renders available places as labeled top-down landmarks on a tiled world at all four reference viewports. Travel, return-to-map, stepped route movement, and tap-to-greet were exercised; no locked-place pressure copy returned. | In-app browser, mock fixture | Jonathan accepted the visual and manual accessibility review on 2026-09-09 |
 | Complete Musical Zoo cast | Passed for local visual review | All nine accepted characters appear in the Caretaker and habitat arranger; selection updates the Commons and floating companion; response copy appears only after an event; the Sticker Book contains 27 pages; visible 32px, 64px, and 768px assets load at native resolution | In-app browser, mock fixture plus automated tests | Decide grace-first arrival and ownership before exposing the eight post-starter characters to live students |
-| Unified Teacher Workspace mock flow | Passed | Opened roster, selected Sam, added a teacher note, wrapped the lesson, approved the suggestion, and opened Assignments without a runtime error | In-app browser, `mock-isolated` | Repeat against an isolated Supabase project after migration approval |
+| Unified Teacher Workspace mock flow | Passed | Opened roster, selected Sam, added a teacher note, wrapped the lesson, approved the suggestion, and opened Assignments without a runtime error | In-app browser, `mock-isolated` | The real-role isolated rehearsal subsequently passed |
 | Unified Teacher Workspace phone layout | Passed | At 390×844 the Assignments workspace has no page-level horizontal overflow and no visible control below 48×48 CSS pixels | In-app browser, `mock-isolated` | Recheck after any assignment-form layout change |
-| Lesson Memory authorization | Static review only | Migration enables RLS on all three tables, revokes anonymous access, and defines teacher-only ownership policies; automated source invariants pass | Local source | Apply to isolated Supabase and execute teacher/parent/student session checks |
+| Lesson Memory authorization | Passed in isolated rehearsal | Migration enables RLS on all three tables, revokes anonymous access, and real teacher/parent/student sessions confirmed teacher-only private data | Disposable local Supabase and authenticated browser sessions | Recheck after authorization changes |
 
 ## Teacher Badge Studio local review evidence
 
@@ -123,20 +123,20 @@ This evidence began with the mock-isolated prototype and now includes local live
 
 | Gate | Status | Evidence | Environment | Follow-up |
 |---|---|---|---|---|
-| Information architecture | Passed locally | Badge Studio is a global Teacher destination, absent from each selected student's sub-tabs, and now supplied by the live Teacher adapter | Local source and wiring tests | Repeat with an isolated teacher account |
+| Information architecture | Passed locally | Badge Studio is a global Teacher destination, absent from each selected student's sub-tabs, and now supplied by the live Teacher adapter | Local source, wiring tests, and isolated teacher account | Recheck after navigation changes |
 | Deliberate recognition | Passed | No student is preselected; teacher chooses recipients, editable strength-based copy, a Zoo friend, and a format before a separate confirmation | In-app browser, `mock-isolated` | Test language with teachers and families |
 | Pressure-free language | Passed | Five templates avoid streak, rank, perfect, leaderboard, locked-content, and deficit language | Automated helper tests and source | Add future templates through the same language review |
-| Safe data boundary | Static pass | Migration `021` stores append-only teacher awards beside automatic badges, relationship-scopes RLS, revokes anon, and constrains `order_status` to `not-requested`; no vendor path or address field exists | Migration/API source and tests | Apply and test with isolated teacher, student, and parent sessions |
+| Safe data boundary | Passed in isolated rehearsal | Migration `021` stores append-only teacher awards beside automatic badges, relationship-scopes RLS, revokes anon, and constrains `order_status` to `not-requested`; real teacher/student/parent sessions passed and no vendor path or address field exists | Disposable local Supabase, authenticated browser sessions, source, and tests | Recheck after policy changes |
 | Responsive matrix | Passed | 390×844, 768×1024, 1024×768, and 1440×900 have no horizontal overflow, broken character images, or tested visible controls below 48×48 CSS pixels | In-app browser, `mock-isolated` | Repeat after material layout changes |
-| Automated/system validation | Passed locally | 27 test suites / 106 tests, ordered migration checks, art validation, optimized build without lint warnings, and `git diff --check` | Local terminals | Repeat against isolated database and after manual responsive/accessibility review |
+| Automated/system validation | Passed locally | 28 test suites / 108 tests, ordered migration checks, art validation, optimized build, `git diff --check`, and the isolated database rehearsal passed | Local terminals and disposable local Supabase | Re-run before an authorized release |
 | Physical fulfillment | Research only | Printful 3-inch iron-on/sew-on patch is the recommended sample; pinbacks are adult/family display only; no vendor was contacted and no order was placed | Official vendor sources and local brief | Approve art, price, sample purchase, guardian flow, and compliance owner separately |
 | Plush feasibility | Research only | Makeship, Budsies, and wholesale routes are documented with current campaign/minimum shapes and CPSC gates | Official vendor and CPSC sources | Choose one lead character and commission only one prototype after approval |
-| Manual keyboard / true zoom | Not complete | Native controls and visible focus styling are present, but full keyboard traversal, true 200% zoom, OS reduced motion, and assistive-technology checks were not completed | Local browser/source | Complete before production approval |
+| Manual accessibility | Passed | Jonathan confirmed physical keyboard traversal, true 200% browser zoom, reduced-motion behavior, and screen-reader listening on 2026-09-09 | Human review plus local browser/source | Recheck after material interaction or layout changes |
 | Production boundary | Passed | No migration, real award, student-data write, guardian address, vendor action, payment, push, or deployment occurred | Local governance | Separate explicit authorization required |
 
 ## Identity pilot decision
 
-**Status:** Rainbow Heart 2.0 is in local identity review across four mock surfaces; not approved for production
+**Status:** Rainbow Heart 2.0 is accepted locally and production-ready across four mock surfaces; production release is not yet authorized
 **Decision records:** D-026 supersedes D-020's local visual recipe and expands the review boundary; D-021 and D-022 remain accepted Zoo behavior; D-023 and D-024 remain proposed
 
 ## Isolated authenticated release rehearsal
@@ -151,5 +151,5 @@ This evidence covers the 2026-09-09 local Supabase rehearsal. Exact fingerprints
 | Authenticated workflows | Passed | Teacher draft-to-assignment, reassignment, archive-with-history-preservation, and badge award; parent family/history visibility; student completion and Zoo-preference persistence all completed | Local app with review mode off | Jonathan visual acceptance |
 | Responsive regression | Passed | Authenticated Student, Teacher, Parent, and Family setup show no horizontal overflow at phone/tablet/desktop reference widths | In-app browser | True 200% zoom remains manual |
 | Automated/system validation | Passed | 28 suites / 108 tests, optimized build, migration/art checks, diff check, Rainbow Heart OS 0.7.0 and connected-app metadata | Local terminals | Re-run after any material change |
-| Manual accessibility | Partially complete | Live operating-environment reduced-motion preference collapses animations successfully; all four mock surfaces pass the semantic-name/target/reflow companion scan. Physical Tab traversal, true browser zoom, and screen-reader listening remain human checks | Local browser/source | Complete the three remaining steps in `MANUAL_ACCESSIBILITY_ACCEPTANCE.md` |
+| Manual accessibility | Passed | Jonathan confirmed physical keyboard traversal, true 200% browser zoom, reduced-motion behavior, and screen-reader listening on 2026-09-09; all four mock surfaces also pass the semantic-name/target/reflow companion scan | Human review plus local browser/source | Repeat after material interaction or layout changes |
 | Production boundary | Passed | No production rows exported, no hosted write or migration, no push, no merge, and no deployment | Local governance | Separate explicit authorization required |

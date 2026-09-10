@@ -11,7 +11,7 @@
   "primaryAudience": "Music students, especially children using shared family devices",
   "operatingEnvironment": "Home and studio practice on phones, tablets, and desktop browsers",
   "identityRationale": "Rainbow Heart gives students, teachers, and families one warm, capable Studio identity while preserving the approved Scaffold hierarchy, workflows, and accessibility contract.",
-  "currentPhase": "identity-review",
+  "currentPhase": "production-ready",
   "identityExpression": "standard",
   "decorativeRegister": "logo-spectrum",
   "surfaces": {
@@ -50,5 +50,5 @@
   "referenceViewports": ["390x844", "768x1024", "1024x768", "1440x900"],
   "deploymentApproved": false,
   "productionChangesAllowed": false,
-  "nextAction": "Jonathan completes the keyboard, true 200% browser-zoom, and screen-reader steps in MANUAL_ACCESSIBILITY_ACCEPTANCE.md; then finalize the production backup/rollback runbook and request separate authorization for migrations, push, and deployment"
+  "nextAction": "Review PRODUCTION_RELEASE_RUNBOOK.md and explicitly authorize the guarded production backup, migrations 016-021, push to origin/main, Netlify deployment, and live smoke test"
 }

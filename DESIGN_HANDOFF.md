@@ -3,7 +3,7 @@
 **App:** Heart Beats Practice App
 **Project:** `proj-004`
 **Branch:** `codex/practice-scaffold-sandbox`
-**Current phase:** Identity review (release candidate)
+**Current phase:** Production ready (awaiting release authorization)
 **Design-system version:** `0.7.0`
 **Identity version:** Rainbow Heart Style Guide `2.0.0`
 **Last updated:** 2026-09-09
@@ -72,7 +72,10 @@
 - Roster management remains available inside Students, and guardian messaging remains separate from private Lesson Memory notes.
 - The mock `?review=teacher` workspace remains deterministic and disconnected from Supabase for safe interaction review.
 - App governance metadata is aligned to Rainbow Heart OS `0.7.0`; the four local review surfaces now target Rainbow Heart 2.0 while production remains Scaffold.
-- Jonathan visually accepted the local Rainbow Heart redesign on 2026-09-09. Production remains Scaffold until the remaining accessibility evidence and a separately authorized deployment are complete.
+- Jonathan visually accepted the local Rainbow Heart redesign and confirmed the completed keyboard, true 200% zoom, reduced-motion, and screen-reader checks on 2026-09-09. Production remains Scaffold until a separately authorized release is complete.
+- Added `PRODUCTION_RELEASE_RUNBOOK.md` with named backup/rollback ownership, privacy-preserving fingerprints, ordered migrations, fast-forward-only Git/Netlify release, live smoke tests, rollback triggers, and an explicit production authorization boundary.
+- Verified that `origin/main` auto-deploys to the Netlify site `heartbeats-practice-app`; its current ready deploy is commit `c9de0ae`. A repository-local ignored Netlify link now prevents the user-level Rainbow Heart website link from becoming the accidental CLI target.
+- The next production build requires a gated Netlify configuration correction: the site currently holds legacy `VITE_SUPABASE_*` names, while this Create React App repository reads `REACT_APP_SUPABASE_*`. No value was printed or changed during release preparation.
 
 ## Rainbow Heart 2.0 review expansion (2026-09-06)
 
@@ -220,15 +223,15 @@
 - Category colors embedded in JavaScript need structural cues before neutralization.
 - The teacher HUD has fixed-window assumptions needing responsive review.
 - No blocking Scaffold implementation work remains. A human visual/read-aloud spot check is recommended during Jonathan's acceptance review.
-- Full manual keyboard traversal, true 200% browser zoom, reduced-motion operating-system review, and assistive-technology review remain incomplete. Native control semantics and focus styles are present, but the browser controller did not activate controls through its synthetic keyboard command during this pass.
+- Jonathan confirmed the full manual keyboard traversal, true 200% browser zoom, reduced-motion operating-system review, and assistive-technology spot check on 2026-09-09. The rendered accessibility acceptance gate is complete.
 - Migrations `016_invite_only_teachers.sql` through `021_teacher_badge_awards.sql` passed the isolated local Supabase rehearsal, privacy-preserving fingerprints, both SQL verifiers, and teacher/parent/student RLS checks on 2026-09-09. They have not been applied to production.
 - The live Studio home now exposes the existing recurring lesson schedule locally. A trusted external performance source is still not connected.
 - Publishing an approved suggestion uses the existing assignment creation path and then marks the private draft as published. A later database transaction could make that cross-table handoff fully atomic.
 - All nine accepted Musical Zoo characters are wired into the app-local registry and mock-isolated review. Character-specific habitat walk cycles, companion reaction animation frames, optional eggs, and full voice packs remain future integration gates.
 - The eight post-starter characters remain review-only. A separate product decision is still required for their grace-first arrival, ownership, and cross-device persistence behavior; the current live adapter deliberately filters them out unless that decision is implemented.
-- Teacher-created badges are implemented locally with additive schema and RLS, but isolated-database tests remain incomplete. Award revocation/audit policy and notification choices remain deliberately deferred; the initial live flow is append-only.
+- Teacher-created badges are implemented locally with additive schema and RLS and passed the isolated real-role rehearsal. Award revocation/audit policy and notification choices remain deliberately deferred; the initial live flow is append-only.
 - Physical rewards still need a sampled vendor template, final cost/shipping review, guardian opt-in and address handoff, artwork approval, and a documented consumer-product compliance owner. No vendor has been contacted.
-- Full manual keyboard traversal, true 200% browser zoom, reduced-motion operating-system review, and assistive-technology review remain release gates for Badge Studio as well as the wider app.
+- Badge Studio is included in Jonathan's completed manual accessibility acceptance for the wider app.
 - Non-breaking dependency remediation reduced `npm audit` from 20 high findings to 14. The remaining findings are transitive dependencies of the Create React App 5 build/test toolchain; npm's proposed force fix replaces `react-scripts` with an invalid/breaking version, so a deliberate toolchain migration remains a release-hardening task.
 
 ## Verification log
@@ -300,8 +303,8 @@
 | 2026-09-07 | Teacher Badge Studio responsive review | 390×844, 768×1024, 1024×768, and 1440×900 | Pass; no page-level horizontal overflow, broken character images, or tested visible targets below 48×48 CSS pixels. |
 | 2026-09-07 | Teacher Badge Studio automated/system gate | Full test suite, optimized build, diff check, canonical OS, and connected-app validation | Pass; 23 suites/90 tests, successful optimized build with only the existing Node `fs.F_OK` deprecation warning, no whitespace errors, and Rainbow Heart OS 0.7.0 plus connected-app metadata validation. |
 | 2026-09-07 | Local release-readiness integration | Ordered migration checks, live Teacher wiring tests, full suite, art validation, optimized build, and non-breaking dependency remediation | Pass locally; migrations `016`–`021` validate statically, 27 suites/106 tests pass, 9 habitat sprites/9 companions/27 stickers/2 boards validate, and the optimized build compiles without lint warnings. Audit improves from 20 to 14 high transitive findings; isolated database and manual accessibility gates remain open. |
-| 2026-09-09 | Isolated Supabase release rehearsal | Sanitized schema restore, migrations `016`–`021`, before/after fingerprints, SQL verifiers, real-role RLS matrix, authenticated workflows, responsive checks, full validation, and Rainbow Heart OS validation | Pass; all protected ledgers retain their counts, all non-profile ledgers match exactly, expected migration-019 profile shape changes are isolated, role boundaries pass, 28 suites/108 tests and build pass. See `RELEASE_REHEARSAL_2026-09-09.md`. Manual keyboard/true zoom/reduced-motion/assistive-tech and production authorization remain open. |
-| 2026-09-09 | Local visual acceptance and accessibility companion pass | Jonathan visual review plus mock-isolated 640px semantic/target scan and operating-environment reduced-motion execution | Visual acceptance passed. All four surfaces have no overflow, unnamed controls, duplicate IDs, or sub-48px effective targets; Student/Zoo has no active animation under the live reduced-motion preference. Keyboard, true 200% zoom, and screen-reader listening remain hands-on. |
+| 2026-09-09 | Isolated Supabase release rehearsal | Sanitized schema restore, migrations `016`–`021`, before/after fingerprints, SQL verifiers, real-role RLS matrix, authenticated workflows, responsive checks, full validation, and Rainbow Heart OS validation | Pass; all protected ledgers retain their counts, all non-profile ledgers match exactly, expected migration-019 profile shape changes are isolated, role boundaries pass, 28 suites/108 tests and build pass. See `RELEASE_REHEARSAL_2026-09-09.md`. Production authorization remains open. |
+| 2026-09-09 | Local visual and manual accessibility acceptance | Jonathan visual review; physical keyboard traversal; true 200% browser zoom; screen-reader listening; mock-isolated 640px semantic/target scan; operating-environment reduced-motion execution | Pass. Jonathan confirmed the completed hands-on review. All four surfaces have no overflow, unnamed controls, duplicate IDs, or sub-48px effective targets; Student/Zoo has no active animation under the live reduced-motion preference. See `MANUAL_ACCESSIBILITY_ACCEPTANCE.md`. |
 
 ## Deferred maintenance findings
 
@@ -313,4 +316,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Jonathan completes the three remaining hands-on steps in `MANUAL_ACCESSIBILITY_ACCEPTANCE.md`: keyboard traversal, true 200% browser zoom, and screen-reader listening. Then name the production backup/rollback owner and decide how the Create React App dependency findings affect the release timetable. Physical sampling remains a separate purchase requiring approval; do not contact a vendor, purchase, migrate production, push, or deploy from this handoff without separate explicit authorization.
+Jonathan reviews `PRODUCTION_RELEASE_RUNBOOK.md` and explicitly authorizes—or revises—the guarded production backup, migrations `016`–`021`, push to `origin/main`, Netlify deployment, live smoke test, rollback ownership, and temporary Create React App build-tooling exception. Physical sampling remains a separate purchase requiring approval; do not contact a vendor, purchase, migrate production, push, or deploy from this handoff without separate explicit authorization.

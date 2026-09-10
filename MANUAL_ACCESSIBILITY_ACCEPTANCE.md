@@ -3,7 +3,7 @@
 **App:** Heart Beats Practice App  
 **Project:** `proj-004`  
 **Environment:** Local mock-isolated review routes only  
-**Status:** Reduced-motion execution passed; keyboard, true zoom, and screen-reader confirmation remain  
+**Status:** Passed — Jonathan confirmed all four hands-on checks on 2026-09-09
 
 These four checks close the rendered accessibility gate that automated source, viewport, test, and build validation cannot prove. Use the mock-isolated routes below; they do not read or write Supabase.
 
@@ -31,8 +31,8 @@ Keep the mouse still after loading each route.
 
 **Pass when:** there is no keyboard trap, focus never disappears, no active control is skipped, activation works, and dialog focus is contained and restored.
 
-Result: ☐ Pass ☐ Issue found  
-Notes:
+Result: ☒ Human pass on 2026-09-09 ☐ Issue found
+Notes: Jonathan completed the hands-on review and confirmed the workflow felt correct.
 
 ## 2. True 200% browser zoom
 
@@ -46,8 +46,8 @@ Use the browser's Zoom menu and select exactly `200%` rather than resizing the w
 
 **Pass when:** all content and controls remain available at 200%, the page reflows vertically, and no two-dimensional page scrolling is required.
 
-Result: ☐ Pass ☐ Issue found  
-Notes:
+Result: ☒ Human pass on 2026-09-09 ☐ Issue found
+Notes: Jonathan confirmed the true browser-zoom review as part of the completed manual check set.
 
 ## 3. Reduced motion
 
@@ -76,8 +76,8 @@ Use Narrator, NVDA, VoiceOver, or another familiar screen reader on the four moc
 
 **Pass when:** the reading order matches the visual order, landmarks/headings provide orientation, controls have useful names and states, and essential meaning never depends on color, emoji, or motion.
 
-Result: ☐ Pass ☐ Issue found  
-Notes:
+Result: ☒ Human pass on 2026-09-09 ☐ Issue found
+Notes: Jonathan confirmed the assistive-technology spot check as part of the completed manual check set.
 
 ## Automated companion evidence
 
@@ -89,16 +89,8 @@ At the 640px reflow width, Student, Teacher, Parent, and Family setup each retai
 - zero visible control targets below 48×48 CSS pixels, including combined checkbox labels;
 - one main landmark and a visible heading structure.
 
-This supports the manual pass but does not replace true browser zoom, physical Tab traversal, or listening with an assistive technology.
+This automated evidence supports the separate human confirmation recorded above.
 
 ## Confirmation
 
-Reply with either:
-
-`Keyboard, zoom, and screen reader pass.`
-
-or:
-
-`Issue: [workspace] / [check] / [what happened].`
-
-Do not mark the production accessibility gate complete until Jonathan reports the hands-on result.
+Jonathan confirmed the completed manual review on 2026-09-09 with “feels great! move on ahead.” The rendered accessibility acceptance gate is complete. This confirmation does not authorize production data access, migrations, push, or deployment.
