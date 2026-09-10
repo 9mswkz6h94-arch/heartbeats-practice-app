@@ -15,6 +15,14 @@ function matchingInstrument(value) {
   return instrumentTypes.find((type) => value.toLowerCase().includes(type.toLowerCase())) || "Custom";
 }
 
+function isMissingAtomicPublishFunction(error) {
+  return ["42883", "PGRST202"].includes(error?.code)
+    || (
+      /publish_assignment_draft/i.test(`${error?.message || ""} ${error?.details || ""}`)
+      && /not found|does not exist|could not find/i.test(`${error?.message || ""} ${error?.details || ""}`)
+    );
+}
+
 export default function AssignmentForm({
   teacherId,
   onAssignmentCreated,
@@ -90,6 +98,19 @@ export default function AssignmentForm({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const finishSuccess = (assignment, metadata = {}) => {
+    setTitle("");
+    setDescription("");
+    setDeadline("");
+    setCategory("pieces");
+    setPracticeSteps([]);
+    setAttachmentFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    setSuccess(true);
+    onAssignmentCreated?.(assignment, metadata);
+    setTimeout(() => setSuccess(false), 3000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -107,6 +128,10 @@ export default function AssignmentForm({
         throw new Error("All practice steps must have a title");
       }
 
+      const stepsForPublish = practiceSteps.length > 0
+        ? practiceSteps.map((step) => ({ title: step.title, description: step.description }))
+        : [{ title, description }];
+
       // Upload attachment if provided
       let attachmentUrl = null;
       if (attachmentFile) {
@@ -119,6 +144,27 @@ export default function AssignmentForm({
         uploadedAttachmentPath = path;
         const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
         attachmentUrl = urlData.publicUrl;
+      }
+
+      if (initialDraft?.id) {
+        const { data: publishedData, error: publishError } = await supabase.rpc("publish_assignment_draft", {
+          p_draft_id: initialDraft.id,
+          p_title: title,
+          p_description: description,
+          p_instrument_type: instrumentType,
+          p_category: category,
+          p_deadline: deadline || null,
+          p_attachment_url: attachmentUrl,
+          p_steps: stepsForPublish,
+        });
+
+        if (!publishError) {
+          const publishedAssignment = Array.isArray(publishedData) ? publishedData[0] : publishedData;
+          finishSuccess(publishedAssignment, { draftPublished: true });
+          return;
+        }
+
+        if (!isMissingAtomicPublishFunction(publishError)) throw publishError;
       }
 
       // Create assignment
@@ -148,39 +194,19 @@ export default function AssignmentForm({
       // student, with no way to mark it done. When the teacher skips
       // breaking it down, fall back to a single step from the assignment's
       // own title so it still shows up as one completable card.
-      const stepsToInsert =
-        practiceSteps.length > 0
-          ? practiceSteps.map((step, index) => ({
-              assignment_id: assignmentId,
-              step_number: index + 1,
-              title: step.title,
-              description: step.description,
-              sequence_order: index + 1,
-            }))
-          : [
-              {
-                assignment_id: assignmentId,
-                step_number: 1,
-                title,
-                description,
-                sequence_order: 1,
-              },
-            ];
+      const stepsToInsert = stepsForPublish.map((step, index) => ({
+        assignment_id: assignmentId,
+        step_number: index + 1,
+        title: step.title,
+        description: step.description,
+        sequence_order: index + 1,
+      }));
 
       const { error: stepsError } = await supabase.from("practice_steps").insert(stepsToInsert);
       if (stepsError) throw stepsError;
 
       // Reset form (keep student selected)
-      setTitle("");
-      setDescription("");
-      setDeadline("");
-      setCategory("pieces");
-      setPracticeSteps([]);
-      setAttachmentFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      setSuccess(true);
-      onAssignmentCreated?.(assignmentData[0]);
-      setTimeout(() => setSuccess(false), 3000);
+      finishSuccess(assignmentData[0]);
     } catch (err) {
       const cleanupErrors = [];
 

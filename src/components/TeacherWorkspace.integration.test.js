@@ -43,4 +43,16 @@ describe("live teacher workspace release wiring", () => {
     expect(studentManagerSource).toMatch(/Could not remove student/);
     expect(studentManagerSource).toMatch(/if \(removeError\) throw removeError/);
   });
+
+  test("uses the atomic draft publisher when migration 022 is available", () => {
+    expect(assignmentFormSource).toMatch(/rpc\("publish_assignment_draft"/);
+    expect(assignmentFormSource).toMatch(/draftPublished: true/);
+    expect(source).toMatch(/!metadata\.draftPublished/);
+  });
+
+  test("passes the provider-neutral performance feed into the studio home", () => {
+    expect(source).toMatch(/performanceEvents=\{workspace\.performanceEvents\}/);
+    expect(shellSource).toMatch(/performanceEvents=\{performanceEvents\}/);
+    expect(shellSource).toMatch(/performance calendar not connected yet/i);
+  });
 });

@@ -71,6 +71,33 @@ const releaseMigrations = [
       /INSERT INTO public\.student_badges/i,
     ],
   },
+  {
+    filename: '022_atomic_assignment_publish.sql',
+    required: [
+      /CREATE OR REPLACE FUNCTION public\.publish_assignment_draft/i,
+      /FOR UPDATE/i,
+      /UPDATE public\.assignment_drafts/i,
+      /REVOKE ALL ON FUNCTION public\.publish_assignment_draft/i,
+      /GRANT EXECUTE ON FUNCTION public\.publish_assignment_draft/i,
+    ],
+    forbidden: [
+      /DELETE FROM public\.completions/i,
+      /TRUNCATE\s+(?:TABLE\s+)?public\.(?:completions|assignments|practice_steps)/i,
+    ],
+  },
+  {
+    filename: '023_student_zoo_character_ownership.sql',
+    required: [
+      /ALTER TABLE public\.student_zoo_preferences/i,
+      /ADD COLUMN IF NOT EXISTS owned_character_ids JSONB/i,
+      /jsonb_typeof\(owned_character_ids\) = 'array'/i,
+      /arrival policy is owned by the app/i,
+    ],
+    forbidden: [
+      /DELETE FROM public\.(?:completions|pets|pet_creatures)/i,
+      /TRUNCATE\s+(?:TABLE\s+)?public\.(?:completions|pets|pet_creatures)/i,
+    ],
+  },
 ];
 
 const errors = [];
@@ -127,5 +154,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021).`,
+  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-023).`,
 );

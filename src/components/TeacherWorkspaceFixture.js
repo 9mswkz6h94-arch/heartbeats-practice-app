@@ -197,17 +197,26 @@ function StudioCalendar({ students }) {
   );
 }
 
-function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS, todaySchedule = TODAY_SCHEDULE, summary, renderInbox }) {
+function formatPerformanceDate(startsAt) {
+  if (!startsAt) return "";
+  const date = new Date(startsAt);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
+}
+
+function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS, todaySchedule = TODAY_SCHEDULE, performanceEvents = [], summary, renderInbox }) {
   const [planningOpen, setPlanningOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showPlanOpen, setShowPlanOpen] = useState(false);
   const todayLabel = new Date().toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+  const nextPerformance = performanceEvents[0];
+  const performanceDate = formatPerformanceDate(nextPerformance?.startsAt);
   const pulseCards = summary
     ? [
         ["01", String(todaySchedule.length), "lessons today", todaySchedule.length ? "Your teaching rhythm is ready" : "No lessons scheduled today"],
         ["02", String(summary.lessonSlots || 0), "lesson slots this week", "From the recurring studio schedule"],
         ["03", String(summary.openLoops || 0), "open loops", summary.openLoops ? "Private drafts to revisit" : "Nothing waiting"],
-        ["04", "—", "days to the next show", "Performance calendar not connected yet"],
+        ["04", nextPerformance ? performanceDate : "—", "next performance", nextPerformance?.title || "Performance calendar not connected yet"],
       ]
     : [
         ["01", "4", "lessons today", "One starts in 18 min"],
@@ -309,8 +318,8 @@ function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS
         </section>
 
         <section className="teacher-studio-panel teacher-studio-performance">
-          <div className="teacher-studio-performance-date"><strong>18</strong><span>SEP</span></div>
-          <div><p>Upcoming performance</p><h2>{summary ? "Connect the performance calendar" : "The Rainbow Hearts · Riverside Stage"}</h2><span>{summary ? "Show dates will appear here when that source is ready." : "Friday · 7:00 PM · Load-in at 5:30"}</span></div>
+          <div className="teacher-studio-performance-date"><strong>{nextPerformance ? new Date(nextPerformance.startsAt).getDate() : "18"}</strong><span>{nextPerformance ? new Date(nextPerformance.startsAt).toLocaleDateString([], { month: "short" }).toUpperCase() : "SEP"}</span></div>
+          <div><p>Upcoming performance</p><h2>{summary ? nextPerformance?.title || "Connect the performance calendar" : "The Rainbow Hearts · Riverside Stage"}</h2><span>{summary ? nextPerformance ? `${performanceDate}${nextPerformance.venue ? ` · ${nextPerformance.venue}` : ""}` : "Show dates will appear here when that source is ready." : "Friday · 7:00 PM · Load-in at 5:30"}</span></div>
           <button type="button" aria-expanded={!summary ? showPlanOpen : undefined} onClick={!summary ? () => setShowPlanOpen((current) => !current) : undefined} disabled={Boolean(summary)}>{summary ? "Not connected" : showPlanOpen ? "Close show plan" : "Open show plan"}</button>
           {!summary && showPlanOpen && (
             <div className="teacher-show-plan" role="status">
@@ -457,6 +466,7 @@ function StudentWorkspace({ student, activeTab, onTabChange, onBack, startLesson
 export function TeacherWorkspaceShell({
   students = TEACHER_STUDENTS,
   todaySchedule = TODAY_SCHEDULE,
+  performanceEvents = [],
   summary,
   userEmail = "Sunday · September 6",
   onLogout,
@@ -508,7 +518,7 @@ export function TeacherWorkspaceShell({
       <div className="hud-main">
         <header className="hud-topbar"><div><p className="hud-view-context">{selectedStudent ? "Student workspace" : "Teacher workspace"}</p><h1 className="hud-view-title">{title}</h1></div></header>
         <main className="hud-content">
-          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} startLessonRequested={startLessonRequested} onAutoStartHandled={clearStartLessonRequest} renderLessonMemory={renderLessonMemory} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} summary={summary} renderInbox={renderStudioInbox} />}
+          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} startLessonRequested={startLessonRequested} onAutoStartHandled={clearStartLessonRequest} renderLessonMemory={renderLessonMemory} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} performanceEvents={performanceEvents} summary={summary} renderInbox={renderStudioInbox} />}
         </main>
       </div>
     </div>

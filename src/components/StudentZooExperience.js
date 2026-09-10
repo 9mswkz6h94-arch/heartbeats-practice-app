@@ -48,6 +48,12 @@ function isMissingPreferencesTable(error) {
     || message.includes('relation "public.student_zoo_preferences" does not exist');
 }
 
+function isMissingOwnershipColumn(error) {
+  const message = `${error?.message || ""} ${error?.details || ""}`.toLowerCase();
+  return ["42703", "PGRST204"].includes(error?.code)
+    && message.includes("owned_character_ids");
+}
+
 function getStoredCompanionId(studentId) {
   try {
     return window.localStorage.getItem(companionStorageKey(studentId));
@@ -141,7 +147,7 @@ export default function StudentZooExperience({ studentId }) {
   }, [studentId]);
 
   const loadZoo = useCallback(async () => {
-    const [petResult, creaturesResult, completionsResult, preferencesResult] = await Promise.all([
+    const [petResult, creaturesResult, completionsResult, initialPreferencesResult] = await Promise.all([
       supabase
         .from("pets")
         .select("xp, stage, name, species")
@@ -158,10 +164,19 @@ export default function StudentZooExperience({ studentId }) {
         .eq("student_id", studentId),
       supabase
         .from("student_zoo_preferences")
+        .select("student_id, selected_companion_id, owned_character_ids, habitat_residency, meadow_placements")
+      .eq("student_id", studentId)
+      .maybeSingle(),
+    ]);
+
+    let preferencesResult = initialPreferencesResult;
+    if (isMissingOwnershipColumn(preferencesResult.error)) {
+      preferencesResult = await supabase
+        .from("student_zoo_preferences")
         .select("student_id, selected_companion_id, habitat_residency, meadow_placements")
         .eq("student_id", studentId)
-        .maybeSingle(),
-    ]);
+        .maybeSingle();
+    }
 
     const preferencesTableMissing = isMissingPreferencesTable(preferencesResult.error);
     remotePreferencesAvailableRef.current = !preferencesResult.error;
@@ -172,12 +187,13 @@ export default function StudentZooExperience({ studentId }) {
     setIssue(hadError ? "Some Zoo details are taking a moment to arrive. Your practice work is safe." : null);
 
     const devicePreferences = readDeviceZooPreferences(studentId);
-    const preferences = preferencesResult.data || devicePreferences;
+    const preferences = { ...devicePreferences, ...(preferencesResult.data || {}) };
     preferencesRef.current = preferences;
     const nextZooState = applyStudentZooPreferences(buildUnlockedZooState({
       completionCount: completionsResult.count || 0,
       pet: petResult.data || null,
       creatures: creaturesResult.data || [],
+      ownedCharacterIds: preferences.owned_character_ids || [],
     }), preferences);
     setZooState(nextZooState);
 

@@ -65,4 +65,17 @@ describe("student Zoo state", () => {
     expect(restored.residency.meadow).toEqual(["riffin", null, null, null]);
     expect(restored.residency.riverbank.every((characterId) => characterId === null)).toBe(true);
   });
+
+  test("admits only explicitly owned registry characters into the live Zoo", () => {
+    const state = buildUnlockedZooState({ completionCount: 15, ownedCharacterIds: ["ringlet", "not-a-character"] });
+    expect(state.foundingFriends.map((friend) => friend.id)).toEqual(["ringlet"]);
+    expect(state.foundingFriends[0]).toMatchObject({ name: "Ringlet", roamingImage: "/characters/ringlet/roaming-32.png" });
+    const restored = applyStudentZooPreferences(state, {
+      habitat_residency: {
+        meadow: ["riffin", null, null, null],
+        riverbank: ["ringlet", "boppo", null, null],
+      },
+    });
+    expect(restored.residency.riverbank).toEqual(["ringlet", null, null, null]);
+  });
 });

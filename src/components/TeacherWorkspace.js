@@ -68,8 +68,8 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
     );
   };
 
-  const assignmentCreated = async (assignment) => {
-    if (composerSource === "draft" && draft?.id) {
+  const assignmentCreated = async (assignment, metadata = {}) => {
+    if (composerSource === "draft" && draft?.id && !metadata.draftPublished) {
       try {
         await lessonMemoryApi.markDraftPublished({
           draftId: draft.id,
@@ -240,6 +240,7 @@ export default function TeacherWorkspace({ teacherId, userEmail, onLogout }) {
     <TeacherWorkspaceShell
       students={workspace.students}
       todaySchedule={workspace.todaySchedule}
+      performanceEvents={workspace.performanceEvents}
       summary={workspace.summary}
       userEmail={userEmail}
       onLogout={onLogout}

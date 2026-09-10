@@ -2,6 +2,7 @@ import { supabase } from "./supabaseClient";
 import { dayName } from "./calendarLink";
 import { normalizeAssignmentDraft } from "./lessonMemory";
 import { fetchStudentStats } from "./studentStats";
+import { isMissingPerformanceSource, normalizePerformanceEvents } from "./performanceCalendar";
 
 function shortName(name = "Student") {
   return name.trim().split(/\s+/)[0] || "Student";
@@ -142,7 +143,7 @@ export function createTeacherWorkspaceApi(client = supabase, fetchStats = fetchS
 
     const studentIds = rows.map((student) => student.id);
     const familyIds = rows.map((student) => student.family_id).filter(Boolean);
-    const [lessonResult, familyResult, guardianResult, draftResult, statsRows] = await Promise.all([
+    const [lessonResult, familyResult, guardianResult, draftResult, performanceResult, statsRows] = await Promise.all([
       client.from("lessons").select("id, student_id, day_of_week, start_time, duration_minutes, location").eq("teacher_id", teacherId),
       client.from("parent_students").select("student_id, parent_name, parent_email, parent_phone").in("student_id", studentIds),
       familyIds.length
@@ -154,6 +155,13 @@ export function createTeacherWorkspaceApi(client = supabase, fetchStats = fetchS
         .eq("teacher_id", teacherId)
         .in("status", ["suggested", "approved"])
         .order("updated_at", { ascending: false }),
+      client
+        .from("studio_performances")
+        .select("id, title, starts_at, ends_at, venue, notes, source")
+        .eq("teacher_id", teacherId)
+        .gte("starts_at", new Date().toISOString())
+        .order("starts_at", { ascending: true })
+        .limit(6),
       Promise.all(rows.map((student) => fetchStats(student.id))),
     ]);
 
@@ -165,6 +173,9 @@ export function createTeacherWorkspaceApi(client = supabase, fetchStats = fetchS
     const lessonMemoryAvailable = !draftResult.error;
     if (draftResult.error && !isMissingOptionalRelation(draftResult.error, "assignment_drafts")) {
       throw draftResult.error;
+    }
+    if (performanceResult.error && !isMissingPerformanceSource(performanceResult.error)) {
+      throw performanceResult.error;
     }
 
     const lessons = new Map((lessonResult.data || []).map((lesson) => [lesson.student_id, lesson]));
@@ -208,10 +219,12 @@ export function createTeacherWorkspaceApi(client = supabase, fetchStats = fetchS
     return {
       students,
       todaySchedule,
+      performanceEvents: performanceResult.error ? [] : normalizePerformanceEvents(performanceResult.data || []),
       summary: {
         lessonSlots: (lessonResult.data || []).length,
         openLoops: (draftResult.data || []).length,
         lessonMemoryAvailable,
+        performanceCalendarAvailable: !performanceResult.error,
       },
     };
   };

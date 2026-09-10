@@ -2,6 +2,7 @@ import { CREATURE_STAGES, speciesInfo } from "./petSpecies";
 import { MAIN_PET_SPECIES, stageInfo } from "./petStages";
 import { createHabitatResidency } from "./habitatPlacement";
 import { MEADOW_DECORATION_SPOTS, RAINBOW_NOTE_GARDEN_ID } from "./zooRewards";
+import { getCharacters } from "./characterRegistry";
 
 const SCENERY_UNLOCKS = Object.freeze([
   Object.freeze({
@@ -31,7 +32,13 @@ function creatureStageName(stage) {
   return CREATURE_STAGES[stage]?.name || "Grown";
 }
 
-export function buildOwnedZooFriends(pet, creatures = []) {
+function buildOwnedRegistryFriends(ownedCharacterIds = []) {
+  const requestedIds = Array.isArray(ownedCharacterIds) ? ownedCharacterIds : [];
+  return getCharacters([...new Set(requestedIds)])
+    .filter((character) => character.id !== "riffin");
+}
+
+export function buildOwnedZooFriends(pet, creatures = [], ownedCharacterIds = []) {
   const friends = [];
 
   if (pet && Number(pet.stage) > 0) {
@@ -59,12 +66,14 @@ export function buildOwnedZooFriends(pet, creatures = []) {
       });
     });
 
+  friends.push(...buildOwnedRegistryFriends(ownedCharacterIds));
+
   return friends;
 }
 
-export function buildUnlockedZooState({ completionCount = 0, pet = null, creatures = [] } = {}) {
+export function buildUnlockedZooState({ completionCount = 0, pet = null, creatures = [], ownedCharacterIds = [] } = {}) {
   const safeCount = Math.max(0, Number(completionCount) || 0);
-  const foundingFriends = buildOwnedZooFriends(pet, creatures);
+  const foundingFriends = buildOwnedZooFriends(pet, creatures, ownedCharacterIds);
   const friendIds = foundingFriends.map((friend) => friend.id);
 
   return {
