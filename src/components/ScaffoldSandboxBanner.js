@@ -1,6 +1,11 @@
 import React from "react";
 import "./ScaffoldSandboxBanner.css";
 
+export function shouldShowScaffoldSandboxBanner(environment = process.env) {
+  return environment.REACT_APP_REVIEW_DATA_MODE === "mock-isolated"
+    || environment.REACT_APP_STAGING_DATABASE_CONFIRMATION === "isolated-sanitized";
+}
+
 export function getLocalReviewEnvironment(environment = process.env) {
   const stagingMode = environment.REACT_APP_STAGING_DATABASE_CONFIRMATION === "isolated-sanitized";
   return {

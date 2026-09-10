@@ -5,7 +5,7 @@ import StudentLogin from "./components/StudentLogin";
 import KidLogin from "./components/KidLogin";
 import ParentLogin from "./components/ParentLogin";
 import FamilySignup from "./components/FamilySignup";
-import ScaffoldSandboxBanner from "./components/ScaffoldSandboxBanner";
+import ScaffoldSandboxBanner, { shouldShowScaffoldSandboxBanner } from "./components/ScaffoldSandboxBanner";
 import ScaffoldShellReview from "./components/ScaffoldShellReview";
 import "./App.css";
 import "./theme/rainbow-heart/rainbow-heart.css";
@@ -33,6 +33,8 @@ async function applySSOTokenFromURL() {
 }
 
 function App() {
+  const showScaffoldSandboxBanner = shouldShowScaffoldSandboxBanner();
+  const scaffoldSandboxOffset = showScaffoldSandboxBanner ? " scaffold-sandbox-offset" : "";
   const [reviewScreen, setReviewScreen] = useState(() => (
     process.env.REACT_APP_REVIEW_DATA_MODE === "mock-isolated"
       ? new URLSearchParams(window.location.search).get("review")
@@ -187,12 +189,12 @@ function App() {
       setReviewScreen(nextScreen);
     };
 
-    return <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset"><Suspense fallback={<WorkspaceLoading />}><ScaffoldShellReview screen={reviewScreen} onNavigate={handleReviewNavigate} /></Suspense></div></>;
+    return <>{showScaffoldSandboxBanner && <ScaffoldSandboxBanner />}<div className={`App${scaffoldSandboxOffset}`}><Suspense fallback={<WorkspaceLoading />}><ScaffoldShellReview screen={reviewScreen} onNavigate={handleReviewNavigate} /></Suspense></div></>;
   }
 
   if (loading) {
     return (
-      <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset rainbow-heart-review rainbow-heart-app" data-rh-theme="rainbow-heart" data-rh-expression="standard">
+      <>{showScaffoldSandboxBanner && <ScaffoldSandboxBanner />}<div className={`App${scaffoldSandboxOffset} rainbow-heart-review rainbow-heart-app`} data-rh-theme="rainbow-heart" data-rh-expression="standard">
         <div className="loading" role="status">
           <h1>Heart Beats Practice App</h1>
           <p>Loading your practice space...</p>
@@ -254,7 +256,7 @@ function App() {
   );
 
   return (
-    <><ScaffoldSandboxBanner /><div className="App scaffold-sandbox-offset rainbow-heart-review rainbow-heart-app" data-rh-theme="rainbow-heart" data-rh-expression="standard">
+    <>{showScaffoldSandboxBanner && <ScaffoldSandboxBanner />}<div className={`App${scaffoldSandboxOffset} rainbow-heart-review rainbow-heart-app`} data-rh-theme="rainbow-heart" data-rh-expression="standard">
       {screen === "selection" && (
         <>
           <header className="App-header">
