@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { lessonMemoryApi } from "../lib/lessonMemory";
 import LessonMemoryFixture from "./LessonMemoryFixture";
 
@@ -29,10 +29,20 @@ function draftStateOf(draft) {
     : "ready";
 }
 
-export default function LessonMemory({ teacherId, student, onOpenAssignments, onChanged }) {
+export default function LessonMemory({ teacherId, student, autoStart = false, onAutoStartHandled, onOpenAssignments, onChanged }) {
   const [memory, setMemory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const autoStartTriggered = useRef(false);
+
+  const startLesson = useCallback(async () => {
+    const started = await lessonMemoryApi.start({
+      teacherId,
+      studentId: student.id,
+    });
+    setMemory(started);
+    return started;
+  }, [student.id, teacherId]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -52,6 +62,26 @@ export default function LessonMemory({ teacherId, student, onOpenAssignments, on
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    autoStartTriggered.current = false;
+  }, [student.id, teacherId]);
+
+  useEffect(() => {
+    if (!autoStart || loading || error || autoStartTriggered.current) return;
+    if (memory?.status === "open") {
+      autoStartTriggered.current = true;
+      onAutoStartHandled?.();
+      return;
+    }
+    autoStartTriggered.current = true;
+    startLesson()
+      .then(() => onAutoStartHandled?.())
+      .catch((startError) => {
+        autoStartTriggered.current = false;
+        setError(startError.message || "The lesson could not be started.");
+      });
+  }, [autoStart, error, loading, memory?.status, onAutoStartHandled, startLesson]);
 
   if (loading) {
     return (
@@ -78,15 +108,6 @@ export default function LessonMemory({ teacherId, student, onOpenAssignments, on
 
   const session = sessionPresentation(memory, student);
   const draftConfig = memory?.draft || student.memory.draft || {};
-
-  const startLesson = async () => {
-    const started = await lessonMemoryApi.start({
-      teacherId,
-      studentId: student.id,
-    });
-    setMemory(started);
-    return started;
-  };
 
   const addNote = async ({ categoryId, text }) =>
     lessonMemoryApi.addNote({

@@ -30,7 +30,6 @@ export default function AssignmentForm({
   const [description, setDescription] = useState(initialDraft?.description || "");
   const [selectedStudent, setSelectedStudent] = useState(initialStudentId);
   const [deadline, setDeadline] = useState("");
-  const [badgeReward, setBadgeReward] = useState("none");
   const [students, setStudents] = useState([]);
   const [practiceSteps, setPracticeSteps] = useState(() =>
     normalizeAssignmentSteps(initialDraft?.steps).map((step, index) => ({
@@ -171,7 +170,6 @@ export default function AssignmentForm({
       setDescription("");
       setDeadline("");
       setCategory("pieces");
-      setBadgeReward("none");
       setPracticeSteps([]);
       setAttachmentFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -282,32 +280,15 @@ export default function AssignmentForm({
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="deadline">Deadline (optional)</label>
-              <input
-                id="deadline"
-                type="date"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="badge">Badge Reward (optional)</label>
-              <select
-                id="badge"
-                value={badgeReward}
-                onChange={(e) => setBadgeReward(e.target.value)}
-                disabled={loading}
-              >
-                <option value="none">None</option>
-                <option value="song">Songs Memorized +1</option>
-                <option value="warmup">Warmup Practice</option>
-                <option value="custom">Custom Badge</option>
-              </select>
-            </div>
+          <div className="form-group">
+            <label htmlFor="deadline">Deadline (optional)</label>
+            <input
+              id="deadline"
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-group">

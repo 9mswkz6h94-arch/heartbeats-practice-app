@@ -251,7 +251,7 @@ function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS
                 <span className="teacher-studio-time-line" aria-hidden="true" />
                 <div><strong>{item.label}</strong><span>{item.detail}</span></div>
                 {item.studentId && (
-                  <button type="button" onClick={() => onOpenStudent(item.studentId, "lesson")}>
+                  <button type="button" onClick={() => onOpenStudent(item.studentId, "lesson", { startLesson: item.kind === "next" })}>
                     {item.kind === "next" ? "Start lesson" : "Open student"}
                   </button>
                 )}
@@ -436,7 +436,7 @@ function StudentFamily({ student }) {
   );
 }
 
-function StudentWorkspace({ student, activeTab, onTabChange, onBack, renderLessonMemory, renderAssignments, renderProgress, renderFamily }) {
+function StudentWorkspace({ student, activeTab, onTabChange, onBack, startLessonRequested, onAutoStartHandled, renderLessonMemory, renderAssignments, renderProgress, renderFamily }) {
   return (
     <div className="teacher-student-workspace">
       <header className="teacher-student-context">
@@ -446,7 +446,7 @@ function StudentWorkspace({ student, activeTab, onTabChange, onBack, renderLesso
           {STUDENT_WORKSPACE_TABS.map((tab) => <button type="button" key={tab.id} className={activeTab === tab.id ? "active" : ""} aria-current={activeTab === tab.id ? "page" : undefined} onClick={() => onTabChange(tab.id)}>{tab.label}</button>)}
         </nav>
       </header>
-      {activeTab === "lesson" && (renderLessonMemory ? renderLessonMemory(student, () => onTabChange("assignments")) : <LessonMemoryFixture key={student.id} studentName={student.shortName} sessionLabel={student.memory.sessionLabel} sessionDateTime={student.memory.sessionDateTime} starterNotes={student.memory.notes} activeWorkTitle={student.memory.activeWorkTitle} activeWorkAge={student.memory.activeWorkAge} activeWorkStatus={student.memory.activeWorkStatus} draftConfig={student.memory.draft} onOpenAssignments={() => onTabChange("assignments")} />)}
+      {activeTab === "lesson" && (renderLessonMemory ? renderLessonMemory(student, () => onTabChange("assignments"), { autoStart: startLessonRequested, onAutoStartHandled }) : <LessonMemoryFixture key={student.id} studentName={student.shortName} sessionLabel={student.memory.sessionLabel} sessionDateTime={student.memory.sessionDateTime} starterNotes={student.memory.notes} activeWorkTitle={student.memory.activeWorkTitle} activeWorkAge={student.memory.activeWorkAge} activeWorkStatus={student.memory.activeWorkStatus} draftConfig={student.memory.draft} onOpenAssignments={() => onTabChange("assignments")} />)}
       {activeTab === "assignments" && (renderAssignments ? renderAssignments(student, () => onTabChange("lesson")) : <StudentAssignments student={student} />)}
       {activeTab === "progress" && (renderProgress ? renderProgress(student) : <StudentProgress student={student} />)}
       {activeTab === "family" && (renderFamily ? renderFamily(student) : <StudentFamily student={student} />)}
@@ -474,17 +474,22 @@ export function TeacherWorkspaceShell({
   const [primaryView, setPrimaryView] = useState("studio");
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [studentTab, setStudentTab] = useState("lesson");
+  const [startLessonRequested, setStartLessonRequested] = useState(false);
   const selectedStudent = students.find((student) => student.id === selectedStudentId);
 
-  const openStudent = (studentId, tab = "lesson") => {
+  const openStudent = (studentId, tab = "lesson", options = {}) => {
     setSelectedStudentId(studentId);
     setStudentTab(tab);
+    setStartLessonRequested(Boolean(options.startLesson));
   };
 
   const goToPrimaryView = (view) => {
     setSelectedStudentId(null);
+    setStartLessonRequested(false);
     setPrimaryView(view);
   };
+
+  const clearStartLessonRequest = () => setStartLessonRequested(false);
 
   const title = selectedStudent ? selectedStudent.name : primaryView === "students" ? "Students" : primaryView === "manage" ? "Manage students" : primaryView === "badges" ? "Badge Studio" : "Studio · today";
 
@@ -503,7 +508,7 @@ export function TeacherWorkspaceShell({
       <div className="hud-main">
         <header className="hud-topbar"><div><p className="hud-view-context">{selectedStudent ? "Student workspace" : "Teacher workspace"}</p><h1 className="hud-view-title">{title}</h1></div></header>
         <main className="hud-content">
-          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} renderLessonMemory={renderLessonMemory} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} summary={summary} renderInbox={renderStudioInbox} />}
+          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} startLessonRequested={startLessonRequested} onAutoStartHandled={clearStartLessonRequest} renderLessonMemory={renderLessonMemory} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} summary={summary} renderInbox={renderStudioInbox} />}
         </main>
       </div>
     </div>

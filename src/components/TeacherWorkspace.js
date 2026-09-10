@@ -246,13 +246,15 @@ export default function TeacherWorkspace({ teacherId, userEmail, onLogout }) {
       loading={workspace.loading}
       error={workspace.error}
       onRetry={workspace.refresh}
-      renderLessonMemory={(student, onOpenAssignments) => (
+      renderLessonMemory={(student, onOpenAssignments, options = {}) => (
         workspace.summary.lessonMemoryAvailable === false ? (
           <LessonMemoryUnavailable student={student} onOpenAssignments={onOpenAssignments} />
         ) : (
           <LessonMemory
             teacherId={teacherId}
             student={student}
+            autoStart={options.autoStart}
+            onAutoStartHandled={options.onAutoStartHandled}
             onOpenAssignments={onOpenAssignments}
             onChanged={workspace.refresh}
           />

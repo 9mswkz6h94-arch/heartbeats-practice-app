@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 
 const source = fs.readFileSync(path.join(__dirname, "TeacherWorkspace.js"), "utf8");
+const shellSource = fs.readFileSync(path.join(__dirname, "TeacherWorkspaceFixture.js"), "utf8");
+const assignmentFormSource = fs.readFileSync(path.join(__dirname, "AssignmentForm.js"), "utf8");
 
 describe("live teacher workspace release wiring", () => {
   test("exposes the accepted global and family workflows", () => {
@@ -18,5 +20,17 @@ describe("live teacher workspace release wiring", () => {
     expect(source).toMatch(/"repertoire"/);
     expect(source).toMatch(/"remove"/);
     expect(source).toMatch(/Earlier completion history was kept/);
+  });
+
+  test("starts the next lesson from the studio timeline and passes the request into live Lesson Memory", () => {
+    expect(shellSource).toMatch(/startLesson: item\.kind === "next"/);
+    expect(shellSource).toMatch(/startLessonRequested={startLessonRequested}/);
+    expect(shellSource).toMatch(/autoStart: startLessonRequested/);
+    expect(shellSource).toMatch(/onAutoStartHandled/);
+    expect(source).toMatch(/autoStart={options\.autoStart}/);
+  });
+
+  test("keeps badge awards in Badge Studio instead of pretending assignment rewards are saved", () => {
+    expect(assignmentFormSource).not.toMatch(/badgeReward|Badge Reward/);
   });
 });
