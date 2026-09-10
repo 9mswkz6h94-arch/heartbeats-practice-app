@@ -3,7 +3,7 @@
 **App:** Heart Beats Practice App
 **Project:** `proj-004`
 **Branch:** `codex/practice-scaffold-sandbox`
-**Current phase:** Production ready (awaiting release authorization)
+**Current phase:** Rainbow Heart production release complete; authenticated role spot-check pending
 **Design-system version:** `0.8.0`
 **Identity version:** Rainbow Heart Style Guide `2.0.0`
 **Accessibility profiles:** None selected; existing app-specific accessibility evidence remains recorded below
@@ -24,7 +24,7 @@
 - Scaffold semantic palette, font roles, spacing, geometry, effects, and compatibility aliases.
 - Six locally hosted IBM Plex font files at regular and semibold weights.
 - Global focus-visible and reduced-motion baselines.
-- Persistent Sandbox/data-mode banner.
+- Sandbox/data-mode banner restricted to explicit isolated review and staging builds; it is absent from normal production.
 - Google Fonts removed from `public/index.html`.
 - Entry role selection rebuilt with numbered structural rows and plain-language descriptions.
 - Teacher, student, kid, and parent authentication surfaces migrated to Scaffold.
@@ -73,11 +73,22 @@
 - The selected student’s Assignments tab now shows real current work. New assignments remain student-scoped, and an approved Lesson Memory suggestion can prefill the existing assignment form before a deliberate publish.
 - Roster management remains available inside Students, and guardian messaging remains separate from private Lesson Memory notes.
 - The mock `?review=teacher` workspace remains deterministic and disconnected from Supabase for safe interaction review.
-- App governance metadata is aligned to Rainbow Heart OS `0.7.0`; the four local review surfaces now target Rainbow Heart 2.0 while production remains Scaffold.
-- Jonathan visually accepted the local Rainbow Heart redesign and confirmed the completed keyboard, true 200% zoom, reduced-motion, and screen-reader checks on 2026-09-09. Production remains Scaffold until a separately authorized release is complete.
+- App governance metadata is aligned to Rainbow Heart OS `0.8.0`; the four local review surfaces and production target Rainbow Heart 2.0.
+- Jonathan visually accepted the Rainbow Heart redesign and confirmed the completed keyboard, true 200% zoom, reduced-motion, and screen-reader checks on 2026-09-09. The guarded production release completed on 2026-09-10.
 - Added `PRODUCTION_RELEASE_RUNBOOK.md` with named backup/rollback ownership, privacy-preserving fingerprints, ordered migrations, fast-forward-only Git/Netlify release, live smoke tests, rollback triggers, and an explicit production authorization boundary.
-- Verified that `origin/main` auto-deploys to the Netlify site `heartbeats-practice-app`; its current ready deploy is commit `c9de0ae`. A repository-local ignored Netlify link now prevents the user-level Rainbow Heart website link from becoming the accidental CLI target.
-- The next production build requires a gated Netlify configuration correction: the site currently holds legacy `VITE_SUPABASE_*` names, while this Create React App repository reads `REACT_APP_SUPABASE_*`. No value was printed or changed during release preparation.
+- Verified that `origin/main` auto-deploys to the Netlify site `heartbeats-practice-app`. A repository-local ignored Netlify link prevents the user-level Rainbow Heart website link from becoming the accidental CLI target.
+- Confirmed the production-scoped `REACT_APP_SUPABASE_*` entries target the linked Supabase project without printing their values; review and staging flags are absent.
+
+## Guarded production release (2026-09-10)
+
+- Jonathan authorized and owns rollback decisions for the release, accepted hosted physical backup `1634894437` completed at `2026-09-10T11:16:45.719Z`, and accepted the temporary Create React App exception.
+- Applied migrations `016`–`021` individually and in order. The rollback-only schema verifier passed. All 13 protected ledger counts were preserved; every non-profile digest matched and the `students` digest changed only for migration `019`'s reviewed profile columns.
+- The initial `194f13f` frontend deploy exposed an unconditional local scaffold banner. It was immediately rolled back to ready deploy `6a9c735ad22106000843b295`; no data-integrity or authorization regression was observed.
+- Corrective commit `2a23765` limits the warning banner to explicit isolated review or staging builds. The full release gate passed with 28 suites / 111 tests, 45 Zoo assets, an optimized build, and Rainbow Heart OS 0.8 connected-app validation.
+- Corrected production deploy `6aa2b1dde1fc150008906c32` became ready at `2026-09-10T13:34:56.762Z`. The live Rainbow Heart entry surface and Student, Parent, and Teacher sign-in routes render without the sandbox warning.
+- The post-deploy privacy-preserving snapshot exactly matches the post-migration baseline across all 13 protected ledgers. Existing student history, streak inputs, assignments, badges, pets, and Zoo ledgers were not changed by the frontend release.
+- No authenticated production session was available in the review browser. The Student, Teacher, and Parent inside-workspace spot-check remains a manual follow-up requiring Jonathan to sign in; no test account or production record was created to bypass that boundary.
+- The production change window is closed in `DESIGN_PROFILE.json`.
 
 ## Rainbow Heart 2.0 review expansion (2026-09-06)
 
@@ -226,7 +237,7 @@
 - The teacher HUD has fixed-window assumptions needing responsive review.
 - No blocking Scaffold implementation work remains. A human visual/read-aloud spot check is recommended during Jonathan's acceptance review.
 - Jonathan confirmed the full manual keyboard traversal, true 200% browser zoom, reduced-motion operating-system review, and assistive-technology spot check on 2026-09-09. The rendered accessibility acceptance gate is complete.
-- Migrations `016_invite_only_teachers.sql` through `021_teacher_badge_awards.sql` passed the isolated local Supabase rehearsal, privacy-preserving fingerprints, both SQL verifiers, and teacher/parent/student RLS checks on 2026-09-09. They have not been applied to production.
+- Migrations `016_invite_only_teachers.sql` through `021_teacher_badge_awards.sql` passed the isolated rehearsal and were applied to production on 2026-09-10 after the accepted physical backup; protected counts and expected digests remained intact.
 - The live Studio home now exposes the existing recurring lesson schedule locally. A trusted external performance source is still not connected.
 - Publishing an approved suggestion uses the existing assignment creation path and then marks the private draft as published. A later database transaction could make that cross-table handoff fully atomic.
 - All nine accepted Musical Zoo characters are wired into the app-local registry and mock-isolated review. Character-specific habitat walk cycles, companion reaction animation frames, optional eggs, and full voice packs remain future integration gates.
@@ -318,4 +329,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Jonathan reviews `PRODUCTION_RELEASE_RUNBOOK.md` and explicitly authorizes—or revises—the guarded production backup, migrations `016`–`021`, push to `origin/main`, Netlify deployment, live smoke test, rollback ownership, and temporary Create React App build-tooling exception. Physical sampling remains a separate purchase requiring approval; do not contact a vendor, purchase, migrate production, push, or deploy from this handoff without separate explicit authorization.
+Jonathan signs in to the live Student, Teacher, and Parent workspaces for the remaining read-only production spot-check. After that, treat the Create React App to Vite migration as a separate reviewed maintenance project. Physical sampling remains a separate purchase requiring approval; do not contact a vendor or place an order without explicit authorization.

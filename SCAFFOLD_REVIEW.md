@@ -41,7 +41,7 @@ Static inspection is not a pass. Record concrete evidence for every pass.
 
 ## Rainbow Heart 2.0 multi-workspace identity evidence
 
-This evidence covers the mock-isolated Student, Teacher workspace, Parent, and Family setup review surfaces under D-026. Production remains Scaffold.
+This evidence covers the mock-isolated Student, Teacher workspace, Parent, and Family setup review surfaces under D-026. Production adopted the accepted Rainbow Heart identity in the guarded 2026-09-10 release recorded below.
 
 | Gate | Status | Evidence | Environment | Follow-up |
 |---|---|---|---|---|
@@ -137,7 +137,7 @@ This evidence began with the mock-isolated prototype and now includes local live
 
 ## Identity pilot decision
 
-**Status:** Rainbow Heart 2.0 is accepted locally and production-ready across four mock surfaces; production release is not yet authorized
+**Status:** Rainbow Heart 2.0 is live in production; public entry and data-integrity smoke checks pass, with authenticated inside-workspace spot-checks pending Jonathan sign-in
 **Decision records:** D-026 supersedes D-020's local visual recipe and expands the review boundary; D-021 and D-022 remain accepted Zoo behavior; D-023 and D-024 remain proposed
 
 ## Isolated authenticated release rehearsal
@@ -154,3 +154,16 @@ This evidence covers the 2026-09-09 local Supabase rehearsal. Exact fingerprints
 | Automated/system validation | Passed | 28 suites / 108 tests, optimized build, migration/art checks, diff check, Rainbow Heart OS 0.7.0 and connected-app metadata | Local terminals | Re-run after any material change |
 | Manual accessibility | Passed | Jonathan confirmed physical keyboard traversal, true 200% browser zoom, reduced-motion behavior, and screen-reader listening on 2026-09-09; all four mock surfaces also pass the semantic-name/target/reflow companion scan | Human review plus local browser/source | Repeat after material interaction or layout changes |
 | Production boundary | Passed | No production rows exported, no hosted write or migration, no push, no merge, and no deployment | Local governance | Separate explicit authorization required |
+
+## Guarded production release evidence
+
+| Gate | Status | Evidence | Environment | Follow-up |
+|---|---|---|---|---|
+| Backup and rollback ownership | Passed | Jonathan accepted hosted physical backup `1634894437` completed at `2026-09-10T11:16:45.719Z` and owns restore decisions; restricted local schema/role/data dumps were hashed | Hosted Supabase and restricted local backup directory | Retain artifacts until Jonathan closes the rollback window |
+| Ordered migrations `016`–`021` | Passed | Each source-controlled migration completed individually; rollback-only schema verification passed | Production Supabase | Use reviewed forward migrations for later schema work |
+| Protected data preservation | Passed | All 13 protected counts were preserved; non-profile digests match exactly and the expected `students` profile-shape digest is stable before and after the frontend deploy | Production Supabase privacy-preserving snapshots | Recheck after future data migrations |
+| Frontend rollback control | Passed | First deploy `6aa2af8c9c103f00084c9294` failed the banner smoke gate and was immediately restored to `6a9c735ad22106000843b295`; corrective source commit then passed the full gate | Netlify production | Preserve the incident note in the private release log |
+| Corrected frontend | Passed | Deploy `6aa2b1dde1fc150008906c32` at commit `2a23765` renders the Rainbow Heart entry plus Student, Parent, and Teacher sign-in paths without the local sandbox warning | Netlify production and in-app browser | Keep review/staging flags absent in production |
+| Automated/system gate | Passed | 28 suites / 111 tests, ordered migrations, 45 Zoo assets, optimized build, diff check, and Rainbow Heart OS 0.8 connected-app validation pass | Local release candidate | Repeat after material changes |
+| Authenticated workspace smoke | Pending Jonathan sign-in | No existing authorized production session was available; no test account or production record was created | Production browser | Read-only Student, Teacher, and Parent spot-check |
+| Production change window | Closed | `surfaces.production` records `rainbow-heart`; deployment and production-change flags are false | App governance | Reopen only for a separately authorized release |

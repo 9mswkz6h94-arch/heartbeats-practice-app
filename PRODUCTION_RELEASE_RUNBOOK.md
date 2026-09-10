@@ -1,5 +1,11 @@
 # Guarded production release runbook
 
+## Execution result — 2026-09-10
+
+The authorized release was executed against the named Netlify and Supabase targets. Hosted backup `1634894437` is the accepted restore point. Migrations `016`–`021`, schema verification, protected-data comparisons, the full local release gate, and Rainbow Heart OS 0.8 validation passed.
+
+The first frontend deploy failed the live banner gate and was immediately rolled back to deploy `6a9c735ad22106000843b295`. Corrective commit `2a23765` was revalidated and deployed as `6aa2b1dde1fc150008906c32`; the public Rainbow Heart entry and all three sign-in routes pass, and the post-deploy protected snapshot is unchanged. Authenticated Student, Teacher, and Parent inside-workspace checks remain pending until Jonathan signs in. The production change window is closed; this runbook is an execution record, not standing authorization for another release.
+
 **App:** Heart Beats Practice App  
 **Project:** `proj-004`  
 **Prepared:** 2026-09-09  

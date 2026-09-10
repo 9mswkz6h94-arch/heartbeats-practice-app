@@ -21,12 +21,12 @@
     "parentReview": "rainbow-heart",
     "familySetupReview": "rainbow-heart",
     "localApplication": "rainbow-heart",
-    "production": "scaffold"
+    "production": "rainbow-heart"
   },
   "reviewSafety": {
     "dataMode": "mock-isolated",
     "interactiveMutationAllowed": true,
-    "productionBannerRequired": true,
+    "productionBannerRequired": false,
     "resetStrategy": "Reload the deterministic fixture at ?review=student, ?review=teacher, ?review=parent, or ?review=parent-signup",
     "notes": "The four local review surfaces use Rainbow Heart 2.0 with deterministic fixtures. No Supabase reads or writes occur in these routes."
   },
@@ -49,7 +49,7 @@
   ],
   "handoff": "DESIGN_HANDOFF.md",
   "referenceViewports": ["390x844", "768x1024", "1024x768", "1440x900"],
-  "deploymentApproved": true,
-  "productionChangesAllowed": true,
-  "nextAction": "Complete the authorized fast-forward production release, verify the exact Netlify deploy, run the live smoke test, and close the production change window"
+  "deploymentApproved": false,
+  "productionChangesAllowed": false,
+  "nextAction": "Complete the authenticated Student, Teacher, and Parent production spot-check when Jonathan is available to sign in, then plan the Create React App to Vite tooling migration as a separate reviewed change"
 }
