@@ -50,6 +50,7 @@ export default function AssignmentList({ teacherId, refresh }) {
 
   const handleDuplicate = async (assignment) => {
     setDuplicating(assignment.id);
+    let newAssignmentId = null;
 
     try {
       // Fetch all practice steps for this assignment
@@ -78,7 +79,7 @@ export default function AssignmentList({ teacherId, refresh }) {
 
       if (createError) throw createError;
 
-      const newAssignmentId = newAssignment[0].id;
+      newAssignmentId = newAssignment[0].id;
 
       // Copy all practice steps
       if (stepsData && stepsData.length > 0) {
@@ -100,7 +101,34 @@ export default function AssignmentList({ teacherId, refresh }) {
       // Refresh the list
       await fetchAssignments();
     } catch (err) {
-      setError(err.message);
+      const cleanupErrors = [];
+      if (newAssignmentId) {
+        try {
+          const { error: stepsCleanupError } = await supabase
+            .from("practice_steps")
+            .delete()
+            .eq("assignment_id", newAssignmentId);
+          if (stepsCleanupError) cleanupErrors.push("practice steps could not be cleaned up");
+        } catch {
+          cleanupErrors.push("practice steps could not be cleaned up");
+        }
+
+        try {
+          const { error: assignmentCleanupError } = await supabase
+            .from("assignments")
+            .delete()
+            .eq("id", newAssignmentId)
+            .eq("teacher_id", teacherId);
+          if (assignmentCleanupError) cleanupErrors.push("the duplicate assignment could not be cleaned up");
+        } catch {
+          cleanupErrors.push("the duplicate assignment could not be cleaned up");
+        }
+      }
+
+      const cleanupNotice = cleanupErrors.length
+        ? ` ${cleanupErrors.join("; ")}.`
+        : "";
+      setError(`${err.message}${cleanupNotice}`);
     } finally {
       setDuplicating(null);
     }

@@ -4,6 +4,8 @@ import path from "path";
 const source = fs.readFileSync(path.join(__dirname, "TeacherWorkspace.js"), "utf8");
 const shellSource = fs.readFileSync(path.join(__dirname, "TeacherWorkspaceFixture.js"), "utf8");
 const assignmentFormSource = fs.readFileSync(path.join(__dirname, "AssignmentForm.js"), "utf8");
+const assignmentListSource = fs.readFileSync(path.join(__dirname, "AssignmentList.js"), "utf8");
+const studentManagerSource = fs.readFileSync(path.join(__dirname, "StudentManager.js"), "utf8");
 
 describe("live teacher workspace release wiring", () => {
   test("exposes the accepted global and family workflows", () => {
@@ -32,5 +34,13 @@ describe("live teacher workspace release wiring", () => {
 
   test("keeps badge awards in Badge Studio instead of pretending assignment rewards are saved", () => {
     expect(assignmentFormSource).not.toMatch(/badgeReward|Badge Reward/);
+  });
+
+  test("cleans up partial assignment writes and surfaces roster deletion errors", () => {
+    expect(assignmentFormSource).toMatch(/practice steps could not be cleaned up/);
+    expect(assignmentFormSource).toMatch(/uploadedAttachmentPath/);
+    expect(assignmentListSource).toMatch(/duplicate assignment could not be cleaned up/);
+    expect(studentManagerSource).toMatch(/Could not remove student/);
+    expect(studentManagerSource).toMatch(/if \(removeError\) throw removeError/);
   });
 });

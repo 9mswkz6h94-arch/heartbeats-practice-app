@@ -15,9 +15,14 @@ export default function StudentManager({ teacherId, onChanged }) {
   const [editingLessonFor, setEditingLessonFor] = useState(null);
   const [lessonDraft, setLessonDraft] = useState({ day_of_week: 1, start_time: "16:00", duration_minutes: 30, location: "" });
   const [lessonSaving, setLessonSaving] = useState(false);
+  const [removingStudentId, setRemovingStudentId] = useState(null);
 
   const fetchLessons = useCallback(async () => {
-    const { data } = await supabase.from("lessons").select("*").eq("teacher_id", teacherId);
+    const { data, error: lessonsError } = await supabase.from("lessons").select("*").eq("teacher_id", teacherId);
+    if (lessonsError) {
+      setError("Could not load lesson times");
+      return;
+    }
     const byStudent = {};
     (data || []).forEach((l) => { byStudent[l.student_id] = l; });
     setLessons(byStudent);
@@ -123,9 +128,21 @@ export default function StudentManager({ teacherId, onChanged }) {
     if (!window.confirm("Remove this student? Their assignments and history will also be deleted.")) {
       return;
     }
-    await supabase.from("students").delete().eq("id", studentId);
-    fetchStudents();
-    onChanged?.();
+    setError(null);
+    setRemovingStudentId(studentId);
+    try {
+      const { error: removeError } = await supabase
+        .from("students")
+        .delete()
+        .eq("id", studentId);
+      if (removeError) throw removeError;
+      await fetchStudents();
+      onChanged?.();
+    } catch (removeError) {
+      setError(`Could not remove student: ${removeError.message}`);
+    } finally {
+      setRemovingStudentId(null);
+    }
   };
 
   const pendingStudents = students.filter((s) => s.status === "pending");
@@ -151,16 +168,18 @@ export default function StudentManager({ teacherId, onChanged }) {
                 </div>
                 <button
                   className="btn-approve-student"
+                  disabled={removingStudentId === student.id}
                   onClick={() => handleApproveStudent(student.id)}
                 >
                   ✓ Approve
                 </button>
                 <button
                   className="btn-remove-student"
+                  disabled={removingStudentId === student.id}
                   onClick={() => handleRemoveStudent(student.id)}
                   title="Remove student"
                 >
-                  Remove
+                  {removingStudentId === student.id ? "Removing…" : "Remove"}
                 </button>
               </div>
             ))}
@@ -252,10 +271,11 @@ export default function StudentManager({ teacherId, onChanged }) {
                 )}
                 <button
                   className="btn-remove-student"
+                  disabled={removingStudentId === student.id}
                   onClick={() => handleRemoveStudent(student.id)}
                   title="Remove student"
                 >
-                  Remove
+                  {removingStudentId === student.id ? "Removing…" : "Remove"}
                 </button>
                 {editingLessonFor === student.id && (
                   <div className="lesson-editor">

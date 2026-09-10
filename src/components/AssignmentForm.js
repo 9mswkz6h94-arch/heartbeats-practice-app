@@ -96,6 +96,9 @@ export default function AssignmentForm({
     setSuccess(false);
     setLoading(true);
 
+    let createdAssignmentId = null;
+    let uploadedAttachmentPath = null;
+
     try {
       if (!title || !selectedStudent) {
         throw new Error("Please fill in title and select a student");
@@ -113,6 +116,7 @@ export default function AssignmentForm({
           .from(BUCKET)
           .upload(path, attachmentFile, { upsert: false });
         if (uploadError) throw new Error("File upload failed: " + uploadError.message);
+        uploadedAttachmentPath = path;
         const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
         attachmentUrl = urlData.publicUrl;
       }
@@ -137,6 +141,7 @@ export default function AssignmentForm({
       if (assignmentError) throw assignmentError;
 
       const assignmentId = assignmentData[0].id;
+      createdAssignmentId = assignmentId;
 
       // The student-facing practice cards are built entirely off
       // practice_steps — an assignment with none would be invisible to the
@@ -177,7 +182,46 @@ export default function AssignmentForm({
       onAssignmentCreated?.(assignmentData[0]);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      setError(err.message);
+      const cleanupErrors = [];
+
+      if (createdAssignmentId) {
+        try {
+          const { error: stepsCleanupError } = await supabase
+            .from("practice_steps")
+            .delete()
+            .eq("assignment_id", createdAssignmentId);
+          if (stepsCleanupError) cleanupErrors.push("practice steps could not be cleaned up");
+        } catch {
+          cleanupErrors.push("practice steps could not be cleaned up");
+        }
+
+        try {
+          const { error: assignmentCleanupError } = await supabase
+            .from("assignments")
+            .delete()
+            .eq("id", createdAssignmentId)
+            .eq("teacher_id", teacherId);
+          if (assignmentCleanupError) cleanupErrors.push("the draft assignment could not be cleaned up");
+        } catch {
+          cleanupErrors.push("the draft assignment could not be cleaned up");
+        }
+      }
+
+      if (uploadedAttachmentPath) {
+        try {
+          const { error: attachmentCleanupError } = await supabase.storage
+            .from(BUCKET)
+            .remove([uploadedAttachmentPath]);
+          if (attachmentCleanupError) cleanupErrors.push("the uploaded attachment could not be cleaned up");
+        } catch {
+          cleanupErrors.push("the uploaded attachment could not be cleaned up");
+        }
+      }
+
+      const cleanupNotice = cleanupErrors.length
+        ? ` ${cleanupErrors.join("; ")}.`
+        : "";
+      setError(`${err.message}${cleanupNotice}`);
     } finally {
       setLoading(false);
     }
