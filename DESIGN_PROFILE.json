@@ -50,5 +50,5 @@
   "referenceViewports": ["390x844", "768x1024", "1024x768", "1440x900"],
   "deploymentApproved": false,
   "productionChangesAllowed": false,
-  "nextAction": "Review RELEASE_REHEARSAL_2026-09-09.md, complete manual keyboard, true 200% browser zoom, operating-system reduced-motion, and assistive-technology checks, name the production backup and rollback owner, then request separate authorization for production migrations, push, and deployment"
+  "nextAction": "Jonathan completes the keyboard, true 200% browser-zoom, and screen-reader steps in MANUAL_ACCESSIBILITY_ACCEPTANCE.md; then finalize the production backup/rollback runbook and request separate authorization for migrations, push, and deployment"
 }

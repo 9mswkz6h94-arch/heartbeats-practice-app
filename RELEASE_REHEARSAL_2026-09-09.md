@@ -85,3 +85,9 @@ Synthetic primary identities:
 5. Separate explicit authorization for production migrations, push, and deployment.
 
 The local rehearsal stack may be discarded and recreated. This file contains no passwords, production row data, student names, birthdays, notes, contact details, transcript content, or service keys.
+
+## Post-rehearsal acceptance update
+
+Jonathan visually accepted the local redesign on 2026-09-09. A subsequent mock-isolated companion scan found no horizontal overflow, unnamed visible controls, duplicate IDs, or sub-48px effective targets across Student, Teacher, Parent, and Family setup at the 640px reflow width. The operating environment reported reduced-motion preference and the rendered Student/Zoo surface retained no active animations; transition and animation durations collapsed to 0.01 ms.
+
+The remaining human evidence is physical keyboard traversal, true 200% browser zoom, and a screen-reader listen-through using `MANUAL_ACCESSIBILITY_ACCEPTANCE.md`. Production authorization remains separate.
