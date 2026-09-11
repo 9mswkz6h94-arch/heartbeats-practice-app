@@ -1,4 +1,17 @@
-import { isMissingPerformanceSource, normalizePerformanceEvents } from "./performanceCalendar";
+import {
+  isMissingPerformanceSource,
+  normalizePerformanceEvents,
+  SELECTED_PERFORMANCE_SOURCE,
+} from "./performanceCalendar";
+
+test("records the selected Google Calendar source without claiming app sync", () => {
+  expect(SELECTED_PERFORMANCE_SOURCE).toMatchObject({
+    provider: "google-calendar",
+    calendarId: expect.stringContaining("@group.calendar.google.com"),
+    calendarLabel: "Bro Jon & Rainbow Hearts",
+    status: "selected-awaiting-sync",
+  });
+});
 
 test("keeps only valid upcoming performance events in date order", () => {
   const events = normalizePerformanceEvents([

@@ -3,6 +3,7 @@ import path from "path";
 
 const source = fs.readFileSync(path.join(__dirname, "TeacherWorkspace.js"), "utf8");
 const shellSource = fs.readFileSync(path.join(__dirname, "TeacherWorkspaceFixture.js"), "utf8");
+const workspaceSource = fs.readFileSync(path.join(__dirname, "../lib/teacherWorkspace.js"), "utf8");
 const assignmentFormSource = fs.readFileSync(path.join(__dirname, "AssignmentForm.js"), "utf8");
 const assignmentListSource = fs.readFileSync(path.join(__dirname, "AssignmentList.js"), "utf8");
 const studentManagerSource = fs.readFileSync(path.join(__dirname, "StudentManager.js"), "utf8");
@@ -54,5 +55,7 @@ describe("live teacher workspace release wiring", () => {
     expect(source).toMatch(/performanceEvents=\{workspace\.performanceEvents\}/);
     expect(shellSource).toMatch(/performanceEvents=\{performanceEvents\}/);
     expect(shellSource).toMatch(/performance calendar not connected yet/i);
+    expect(workspaceSource).toMatch(/performanceCalendarSource/);
+    expect(shellSource).toMatch(/Sync pending/);
   });
 });

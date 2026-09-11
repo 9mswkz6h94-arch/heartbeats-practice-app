@@ -211,12 +211,23 @@ function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS
   const todayLabel = new Date().toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
   const nextPerformance = performanceEvents[0];
   const performanceDate = formatPerformanceDate(nextPerformance?.startsAt);
+  const performanceSource = summary?.performanceCalendarSource;
+  const performanceSourceDetail = performanceSource
+    ? `Selected source: ${performanceSource.calendarLabel}`
+    : "Performance calendar not connected yet";
+  const performanceHeading = nextPerformance?.title
+    || (performanceSource ? "Calendar sync pending" : "Connect the performance calendar");
+  const performanceSubline = nextPerformance
+    ? `${performanceDate}${nextPerformance.venue ? ` · ${nextPerformance.venue}` : ""}`
+    : performanceSource
+      ? `${performanceSource.calendarLabel} · server sync still needed.`
+      : "Show dates will appear here when that source is ready.";
   const pulseCards = summary
     ? [
         ["01", String(todaySchedule.length), "lessons today", todaySchedule.length ? "Your teaching rhythm is ready" : "No lessons scheduled today"],
         ["02", String(summary.lessonSlots || 0), "lesson slots this week", "From the recurring studio schedule"],
         ["03", String(summary.openLoops || 0), "open loops", summary.openLoops ? "Private drafts to revisit" : "Nothing waiting"],
-        ["04", nextPerformance ? performanceDate : "—", "next performance", nextPerformance?.title || "Performance calendar not connected yet"],
+        ["04", nextPerformance ? performanceDate : "—", "next performance", nextPerformance?.title || performanceSourceDetail],
       ]
     : [
         ["01", "4", "lessons today", "One starts in 18 min"],
@@ -319,8 +330,8 @@ function StudioHome({ onOpenStudent, onShowStudents, students = TEACHER_STUDENTS
 
         <section className="teacher-studio-panel teacher-studio-performance">
           <div className="teacher-studio-performance-date"><strong>{nextPerformance ? new Date(nextPerformance.startsAt).getDate() : "18"}</strong><span>{nextPerformance ? new Date(nextPerformance.startsAt).toLocaleDateString([], { month: "short" }).toUpperCase() : "SEP"}</span></div>
-          <div><p>Upcoming performance</p><h2>{summary ? nextPerformance?.title || "Connect the performance calendar" : "The Rainbow Hearts · Riverside Stage"}</h2><span>{summary ? nextPerformance ? `${performanceDate}${nextPerformance.venue ? ` · ${nextPerformance.venue}` : ""}` : "Show dates will appear here when that source is ready." : "Friday · 7:00 PM · Load-in at 5:30"}</span></div>
-          <button type="button" aria-expanded={!summary ? showPlanOpen : undefined} onClick={!summary ? () => setShowPlanOpen((current) => !current) : undefined} disabled={Boolean(summary)}>{summary ? "Not connected" : showPlanOpen ? "Close show plan" : "Open show plan"}</button>
+          <div><p>Upcoming performance</p><h2>{summary ? performanceHeading : "The Rainbow Hearts · Riverside Stage"}</h2><span>{summary ? performanceSubline : "Friday · 7:00 PM · Load-in at 5:30"}</span></div>
+          <button type="button" aria-expanded={!summary ? showPlanOpen : undefined} onClick={!summary ? () => setShowPlanOpen((current) => !current) : undefined} disabled={Boolean(summary)}>{summary ? (nextPerformance ? "Connected" : performanceSource ? "Sync pending" : "Not connected") : showPlanOpen ? "Close show plan" : "Open show plan"}</button>
           {!summary && showPlanOpen && (
             <div className="teacher-show-plan" role="status">
               <strong>Riverside Stage</strong>

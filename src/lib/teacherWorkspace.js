@@ -2,7 +2,11 @@ import { supabase } from "./supabaseClient";
 import { dayName } from "./calendarLink";
 import { normalizeAssignmentDraft } from "./lessonMemory";
 import { fetchStudentStats } from "./studentStats";
-import { isMissingPerformanceSource, normalizePerformanceEvents } from "./performanceCalendar";
+import {
+  isMissingPerformanceSource,
+  normalizePerformanceEvents,
+  SELECTED_PERFORMANCE_SOURCE,
+} from "./performanceCalendar";
 
 function shortName(name = "Student") {
   return name.trim().split(/\s+/)[0] || "Student";
@@ -225,6 +229,7 @@ export function createTeacherWorkspaceApi(client = supabase, fetchStats = fetchS
         openLoops: (draftResult.data || []).length,
         lessonMemoryAvailable,
         performanceCalendarAvailable: !performanceResult.error,
+        performanceCalendarSource: SELECTED_PERFORMANCE_SOURCE,
       },
     };
   };

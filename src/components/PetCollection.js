@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { speciesInfo, CREATURE_STAGES } from "../lib/petSpecies";
+import { EGG_XP_INTERVAL } from "../lib/petStages";
 import "./PetCollection.css";
 
-// The collection side-layer: every 5 XP the main pet earns, a mystery egg
+// The collection side-layer: every EGG_XP_INTERVAL XP the main pet earns, a mystery egg
 // drops in here too (see the award_pet_xp() trigger). Hatch it to reveal a
 // random species, then merge two matching same-species-same-stage creatures
 // to push that one up a stage. All mutation happens through SECURITY
@@ -111,7 +112,7 @@ export default function PetCollection({ studentId, readOnly = false }) {
 
       {groupList.length === 0 && eggs.length === 0 ? (
         <p className="pet-collection-empty">
-          Keep practicing — every 5 XP earns a mystery egg to hatch!
+          Keep practicing — a mystery egg arrives around every {EGG_XP_INTERVAL} XP, usually about every two weeks.
         </p>
       ) : (
         <div className="pet-collection-grid">

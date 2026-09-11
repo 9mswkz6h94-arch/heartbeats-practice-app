@@ -1,3 +1,14 @@
+// Selected by the studio owner for the first calendar-source pass. This is
+// metadata only: the browser app never receives OAuth credentials or copies
+// private event contents. A server-side sync must populate studio_performances.
+export const SELECTED_PERFORMANCE_SOURCE = Object.freeze({
+  provider: "google-calendar",
+  calendarId: "c_953e902726d550530474bcda3624f4c6ade00aff1f5600ba9b6e37f82797bfa9@group.calendar.google.com",
+  calendarLabel: "Bro Jon & Rainbow Hearts",
+  timezone: "America/Chicago",
+  status: "selected-awaiting-sync",
+});
+
 export function normalizePerformanceEvent(row = {}) {
   const startsAt = row.starts_at || row.startsAt || row.start_at || null;
   if (!row.id || !startsAt || Number.isNaN(new Date(startsAt).getTime())) return null;

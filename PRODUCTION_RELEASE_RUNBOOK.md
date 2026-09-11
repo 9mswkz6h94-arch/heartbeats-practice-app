@@ -6,6 +6,10 @@ The authorized release was executed against the named Netlify and Supabase targe
 
 The first frontend deploy failed the live banner gate and was immediately rolled back to deploy `6a9c735ad22106000843b295`. Corrective commit `2a23765` was revalidated and deployed as `6aa2b1dde1fc150008906c32`; the public Rainbow Heart entry and all three sign-in routes pass, and the post-deploy protected snapshot is unchanged. Authenticated Student, Teacher, and Parent inside-workspace checks remain pending until Jonathan signs in. The production change window is closed; this runbook is an execution record, not standing authorization for another release.
 
+## Post-release candidate changes — 2026-09-11
+
+Migrations `022_atomic_assignment_publish.sql`, `023_student_zoo_character_ownership.sql`, and `024_egg_xp_cadence.sql` are prepared and verified locally only. They have not been applied to Supabase, pushed to `main`, or deployed to Netlify. A future release requires a new backup/rollback decision and a fresh rehearsal that includes these three migrations; this section grants no authority to run one.
+
 **App:** Heart Beats Practice App  
 **Project:** `proj-004`  
 **Prepared:** 2026-09-09  

@@ -98,6 +98,19 @@ const releaseMigrations = [
       /TRUNCATE\s+(?:TABLE\s+)?public\.(?:completions|pets|pet_creatures)/i,
     ],
   },
+  {
+    filename: '024_egg_xp_cadence.sql',
+    required: [
+      /CREATE OR REPLACE FUNCTION public\.award_pet_xp/i,
+      /new_xp % 10 = 0/i,
+      /INSERT INTO public\.pet_creatures/i,
+      /missed days never remove progress/i,
+    ],
+    forbidden: [
+      /DELETE FROM public\.(?:pets|completions)/i,
+      /UPDATE public\.(?:pets|completions)/i,
+    ],
+  },
 ];
 
 const errors = [];
@@ -154,5 +167,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-023).`,
+  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-024).`,
 );

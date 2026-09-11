@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { stageInfo, progressToNext, SPECIES_CHOICES } from "../lib/petStages";
+import { stageInfo, progressToNext, SPECIES_CHOICES, EGG_XP_INTERVAL } from "../lib/petStages";
 import "./PetWidget.css";
 
 const CHEER_MESSAGES = ["Yay!! 🎉", "You did it!", "Great practice!", "Woo hoo!", "Nice work!"];
@@ -81,7 +81,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
       if (nextPet.xp > (previousPet?.xp || 0)) {
         if (nextPet.stage > (previousPet?.stage || 0)) {
           setRewardMessage(`${nextPet.name || "Your pet"} grew to ${stageInfo(nextPet.stage, nextPet.species).name}!`);
-        } else if (nextPet.xp % 5 === 0) {
+        } else if (nextPet.xp % EGG_XP_INTERVAL === 0) {
           setRewardMessage("+1 practice XP · You found a mystery egg!");
         } else {
           setRewardMessage("+1 practice XP");

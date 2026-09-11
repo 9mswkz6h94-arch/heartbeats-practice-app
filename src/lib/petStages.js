@@ -1,5 +1,10 @@
 import { SPECIES as COLLECTION_SPECIES } from "./petSpecies";
 
+// Collection eggs stay XP-earned, but arrive slowly enough to feel like a
+// welcome discovery rather than a checklist. Ten XP is roughly two weeks at
+// a steady five-practice-steps-per-week pace; there is no countdown or loss.
+export const EGG_XP_INTERVAL = 10;
+
 // Growth, never survival — the pet only ever moves forward. No health,
 // no decay, no missed-day penalty. A quiet week just means it naps.
 //
