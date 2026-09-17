@@ -15,6 +15,8 @@ The workflow is app-local. Rainbow Heart OS still leaves the shared illustration
 7. `concept-art/library-expansion/three-format-v1/PROMPTS.md` and `CORRECTION_PROMPTS_V2.md` for the proven image-generation contracts.
 8. The complete packet and source folder for the closest accepted character.
 
+For the proposed core-versus-home-bound expansion model, see `LIBRARY_EXPANSION_PLAN.md`. It is app-local design work only; it does not accept new characters or authorize registry, progression, database, or release changes.
+
 Do not make design decisions after reading only one file. Identity, anatomy, three visual interpretations, response behavior, provenance, and validation are one system.
 
 ## Three visual interpretations

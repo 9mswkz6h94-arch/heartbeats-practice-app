@@ -131,6 +131,14 @@
 - Work stops at the companion review gate. No roaming sprites, eggs, motion, stickers, voice packs, progression, registry entries, student records, or app integration were added.
 - Rainbow Heart illustration language remains canonically open. This library is a visual proposal for Jonathan's accept/revise/hold review, not a shared identity decision.
 
+## Proposed space-bound character expansion (2026-09-16)
+
+- Added `character-design/LIBRARY_EXPANSION_PLAN.md` as an app-local proposal for keeping the nine accepted characters as Core Friends while adding home-bound residents that initially live only in one habitat.
+- The first resident wave proposes Piplet (articulation, Melody Meadow), Melloo (timbre, Melody Meadow), Clakka (subdivision, Rhythm Riverbank), and Reedle (rests/space, Rhythm Riverbank). Their identity briefs remain `identity-review` proposals with no generated or accepted art.
+- The model keeps the Commons, Caretaker Cabin, Museum, and Sticker Book in their current jobs. Resident-only characters would use the existing habitat NPC surface first; companion and sticker art would remain packet-complete but unexposed until a later promotion decision.
+- The plan preserves D-022's calm discovery rules: no locked silhouettes, missing denominators, fill-the-homes meters, countdowns, or permanent missed-content gaps. The existing ten-XP egg cadence is the proposed arrival rhythm; grant workflow and resident ownership are still separate implementation decisions.
+- No registry, progression, student data, migration, production record, push, or deployment changed in this exploration.
+
 ## Chordillo-aligned companion proposal (2026-09-06)
 
 - Reworked Riffin, Boppo, Ringlet, Brumbo, Plinka, Puffino, Cymbi, and Spirlo as detailed companion concept masters using Chordillo as the app-local quality anchor.
@@ -334,4 +342,4 @@ These are recorded but intentionally not mixed into the Scaffold migration unles
 
 ## Next action
 
-Jonathan signs in to the live Student, Teacher, and Parent workspaces for the remaining read-only production spot-check. Before the next release window, add a server-side sync for the selected Google Calendar source and a teacher/admin grant workflow for explicit Zoo character IDs, then rehearse migrations `022`–`024`. After that, treat the Create React App to Vite migration as a separate reviewed maintenance project. Physical sampling remains a separate purchase requiring approval; do not contact a vendor or place an order without explicit authorization.
+Jonathan signs in to the live Student, Teacher, and Parent workspaces for the remaining read-only production spot-check. For Musical Zoo expansion, review the four proposed resident briefs in `character-design/LIBRARY_EXPANSION_PLAN.md` and choose whether Piplet and Clakka should advance to identity review before any art is generated. Before the next release window, add a server-side sync for the selected Google Calendar source and a teacher/admin grant workflow for explicit Zoo character IDs, then rehearse migrations `022`–`024`. After that, treat the Create React App to Vite migration as a separate reviewed maintenance project. Physical sampling remains a separate purchase requiring approval; do not contact a vendor or place an order without explicit authorization.
