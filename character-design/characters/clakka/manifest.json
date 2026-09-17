@@ -1,0 +1,47 @@
+{
+  "$schema": "../../schema/character-manifest.schema.json",
+  "schemaVersion": 1,
+  "characterVersion": 1,
+  "id": "clakka",
+  "name": "Clakka",
+  "starterRole": null,
+  "animal": "fiddler-crab",
+  "instrument": "castanet claws",
+  "musicalRole": "subdivision",
+  "practiceVirtue": "patient-counting",
+  "palette": {
+    "outline": "#201923",
+    "dark": "#5B2E3B",
+    "primary": "#F08A6A",
+    "light": "#FFD89A"
+  },
+  "assets": {
+    "companion64": null,
+    "roaming32": null,
+    "egg16": null,
+    "idleFrames": [],
+    "danceFrames": [],
+    "celebrateFrames": [],
+    "stickers": {
+      "celebrate": null,
+      "encourage": null,
+      "connect": null
+    }
+  },
+  "accessibility": {
+    "character": "Clakka, a friendly fiddler crab whose front claws form castanets.",
+    "egg": "",
+    "stickers": {
+      "celebrate": "",
+      "encourage": "",
+      "connect": ""
+    }
+  },
+  "interactions": {
+    "voicePack": "voice-pack-v1.json",
+    "implementedIntentCount": 0,
+    "reviewedCombinationCount": 0
+  },
+  "legacy": false,
+  "status": "design-in-review"
+}

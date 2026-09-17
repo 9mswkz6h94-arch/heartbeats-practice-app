@@ -1,0 +1,47 @@
+{
+  "$schema": "../../schema/character-manifest.schema.json",
+  "schemaVersion": 1,
+  "characterVersion": 1,
+  "id": "piplet",
+  "name": "Piplet",
+  "starterRole": null,
+  "animal": "sparrow",
+  "instrument": "piccolo beak",
+  "musicalRole": "articulation",
+  "practiceVirtue": "clear-beginnings",
+  "palette": {
+    "outline": "#201923",
+    "dark": "#3A3F54",
+    "primary": "#6FA8DC",
+    "light": "#FFF0B8"
+  },
+  "assets": {
+    "companion64": null,
+    "roaming32": null,
+    "egg16": null,
+    "idleFrames": [],
+    "danceFrames": [],
+    "celebrateFrames": [],
+    "stickers": {
+      "celebrate": null,
+      "encourage": null,
+      "connect": null
+    }
+  },
+  "accessibility": {
+    "character": "Piplet, a friendly sparrow whose beak forms a tiny piccolo.",
+    "egg": "",
+    "stickers": {
+      "celebrate": "",
+      "encourage": "",
+      "connect": ""
+    }
+  },
+  "interactions": {
+    "voicePack": "voice-pack-v1.json",
+    "implementedIntentCount": 0,
+    "reviewedCombinationCount": 0
+  },
+  "legacy": false,
+  "status": "design-in-review"
+}

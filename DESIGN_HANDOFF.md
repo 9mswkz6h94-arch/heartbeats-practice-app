@@ -135,6 +135,7 @@
 
 - Added `character-design/LIBRARY_EXPANSION_PLAN.md` as an app-local proposal for keeping the nine accepted characters as Core Friends while adding home-bound residents that initially live only in one habitat.
 - The first resident wave proposes Piplet (articulation, Melody Meadow), Melloo (timbre, Melody Meadow), Clakka (subdivision, Rhythm Riverbank), and Reedle (rests/space, Rhythm Riverbank). Their identity briefs remain `identity-review` proposals with no generated or accepted art.
+- Jonathan approved moving the first two forward as identity packets: `character-design/characters/piplet/` and `character-design/characters/clakka/` now contain versioned Gate 1 sheets, manifests, voice-pack scaffolds, gate reviews, and source notes. Both remain on hold for human silhouette/anatomy review; no artwork has been generated.
 - The model keeps the Commons, Caretaker Cabin, Museum, and Sticker Book in their current jobs. Resident-only characters would use the existing habitat NPC surface first; companion and sticker art would remain packet-complete but unexposed until a later promotion decision.
 - The plan preserves D-022's calm discovery rules: no locked silhouettes, missing denominators, fill-the-homes meters, countdowns, or permanent missed-content gaps. The existing ten-XP egg cadence is the proposed arrival rhythm; grant workflow and resident ownership are still separate implementation decisions.
 - No registry, progression, student data, migration, production record, push, or deployment changed in this exploration.
