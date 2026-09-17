@@ -156,6 +156,23 @@ Every resident still follows the accepted Musical Zoo contract:
 
 The first resident wave should stop after identity review until the four briefs are accepted. Do not generate a bulk art batch for all future residents before the silhouettes and instrument fusions are human-reviewed.
 
+## Proposed Music Town venue layer (2026-09-16)
+
+The Zoo map can read as a small music town or festival grounds: every building is a venue, and the residents feel like its house acts. This adds world identity without turning the map into another collection checklist.
+
+| Place | Venue identity | World job |
+| --- | --- | --- |
+| `commons` | The Open Floor | Shared social stage for the companion and approved visitors |
+| `meadow` | Meadow Amphitheater | Open-air melody venue for meadow residents |
+| `riverbank` | Rhythm Boathouse | Riverside rhythm venue for riverbank residents |
+| `cabin` | Backstage Workshop | Care, naming, eggs, and collection; not a living habitat |
+| `museum` | Hall of First Songs | Quiet, static Founding Friends archive |
+| `stickers` | Poster Press | Keepsakes and shared encouragement; not a living habitat |
+
+The local venue pass keeps every existing destination ID, route, and interaction intact. It adds venue metadata for the map card copy and gives each landmark a purpose-authored facade and sign. Meadow and Riverbank remain the only living habitats in the first wave; Cabin, Museum, and Sticker Book keep their specialized roles.
+
+The student-facing language stays calm: no venue-completion meter, missing roster, locked silhouette, or “fill the town” prompt. The map can say that residents play nearby, while the existing one-place-at-a-time navigation and response-only companion behavior remain unchanged.
+
 ## Open decisions before implementation
 
 - Confirm whether “resident-only” means discoverable inventory with a home restriction, or ambient residents that can be met without ownership.
@@ -168,4 +185,4 @@ The first resident wave should stop after identity review until the four briefs 
 
 **Proceed with the resident model, but start with two characters, not a flood:** Piplet for Melody Meadow and Clakka for Rhythm Riverbank. They add two unused musical lenses—articulation and subdivision—and their silhouettes are immediately distinct from the accepted cast. Melloo and Reedle should remain the next pair after the first two pass identity review.
 
-No app code, registry entry, migration, progression rule, production record, push, or deployment was changed while preparing this proposal.
+The venue layer remains a proposed app-local design direction. The local map pass changes only venue metadata, copy, and facade styling; no registry entry, migration, progression rule, production record, push, or deployment was changed.

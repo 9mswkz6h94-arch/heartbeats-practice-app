@@ -7,7 +7,7 @@
 **Design-system version:** `0.8.0`
 **Identity version:** Rainbow Heart Style Guide `2.0.0`
 **Accessibility profiles:** None selected; existing app-specific accessibility evidence remains recorded below
-**Last updated:** 2026-09-10
+**Last updated:** 2026-09-16
 
 ## Product invariants
 
@@ -139,6 +139,14 @@
 - The model keeps the Commons, Caretaker Cabin, Museum, and Sticker Book in their current jobs. Resident-only characters would use the existing habitat NPC surface first; companion and sticker art would remain packet-complete but unexposed until a later promotion decision.
 - The plan preserves D-022's calm discovery rules: no locked silhouettes, missing denominators, fill-the-homes meters, countdowns, or permanent missed-content gaps. The existing ten-XP egg cadence is the proposed arrival rhythm; grant workflow and resident ownership are still separate implementation decisions.
 - No registry, progression, student data, migration, production record, push, or deployment changed in this exploration.
+
+## Proposed Music Town venue layer (2026-09-16)
+
+- Reframed the local Zoo map as a small music town / festival grounds while keeping the existing destination IDs and routes stable.
+- Added venue metadata and purpose-authored landmark facades/signs: Meadow Amphitheater, Rhythm Boathouse, Backstage Workshop, Hall of First Songs, and Poster Press. The Commons remains the shared social stage.
+- Preserved the resident boundary: Meadow and Riverbank are the living habitats; Cabin, Museum, and Sticker Book remain care, archive, and keepsake spaces.
+- Replaced habitat “homes filled” copy on the map with calm “residents play here” language so the venue layer does not create a completion checklist or unlock pressure.
+- This is a proposed app-local world layer. No registry, progression, student data, migration, production record, push, or deployment changed.
 
 ## Chordillo-aligned companion proposal (2026-09-06)
 

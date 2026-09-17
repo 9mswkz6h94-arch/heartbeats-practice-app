@@ -177,8 +177,8 @@ export default function MusicalZooStrip({
           <h2 id="musical-zoo-title">The Musical Zoo</h2>
           <p className="musical-zoo-summary">
             {visitors.length
-              ? "Friends visit the commons. New places appear naturally as your Zoo grows."
-              : "Your unlocked friends roam here. New places appear naturally as your Zoo grows."}
+              ? "Friends visit the Commons stage. New venues appear naturally as your Zoo grows."
+              : "Your unlocked friends roam here. New venues appear naturally as your Zoo grows."}
           </p>
         </div>
         <button
@@ -210,7 +210,7 @@ export default function MusicalZooStrip({
               <span>{inboxOpen ? "Hide practice postbox" : "Waiting when you want them"}</span>
             </button>
           ) : null}
-          worldEyebrow="Shared Zoo paths"
+          worldEyebrow="Music Town commons"
           worldTitle={visitors.length
             ? `Your companion + ${visitors.length} approved visitor${visitors.length === 1 ? "" : "s"}`
             : "Your companion in the Commons"}

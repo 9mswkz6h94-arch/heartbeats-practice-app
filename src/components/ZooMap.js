@@ -1,56 +1,81 @@
 import React from "react";
-import { getFilledSlotCount } from "../lib/habitatPlacement";
 import { getMeadowDecorationStatus } from "../lib/zooRewards";
 import "./ZooMap.css";
 
 export const zooDestinations = [
   {
     id: "riverbank",
-    eyebrow: "River habitat",
+    eyebrow: "Riverside rhythm venue",
     name: "Rhythm Riverbank",
-    description: "Watch friends roam, cross the bridge, and meet along the river.",
+    description: "A waterside stage where friends roam, cross the bridge, and meet along the river.",
     icon: "≈",
-    detail: "Owned habitat homes",
+    detail: "Riverside resident stage",
+    venue: {
+      name: "Rhythm Boathouse",
+      sign: "RHYTHM",
+      facade: "boathouse",
+    },
   },
   {
     id: "meadow",
-    eyebrow: "Your habitat",
+    eyebrow: "Open-air melody venue",
     name: "Melody Meadow",
-    description: "Arrange your friends, then watch them roam and meet on their own.",
+    description: "An open-air stage to arrange your friends, then watch them roam and meet.",
     icon: "♫",
-    detail: "Owned habitat homes",
+    detail: "Open-air resident stage",
+    venue: {
+      name: "Meadow Amphitheater",
+      sign: "MELODY",
+      facade: "amphitheater",
+    },
   },
   {
     id: "cabin",
-    eyebrow: "Care & collection",
+    eyebrow: "Backstage workshop",
     name: "Caretaker Cabin",
-    description: "Visit your friends, name them, hatch eggs, and see their growth.",
+    description: "A cozy backstage room to visit friends, name them, hatch eggs, and see their growth.",
     icon: "⌂",
-    detail: "Founding Friends",
+    detail: "Care, eggs, and names",
+    venue: {
+      name: "Backstage Workshop",
+      sign: "CARE",
+      facade: "workshop",
+    },
   },
   {
     id: "museum",
-    eyebrow: "Legacy Grove",
+    eyebrow: "Founding Friends hall",
     name: "Founding Friends Museum",
-    description: "See the original characters in their permanent, motionless displays.",
+    description: "A quiet hall for original characters in permanent, motionless displays.",
     icon: "◆",
     detail: "3 static exhibits",
+    venue: {
+      name: "Hall of First Songs",
+      sign: "HALL",
+      facade: "hall",
+    },
   },
   {
     id: "stickers",
-    eyebrow: "Private keepsakes",
+    eyebrow: "Keepsake print shop",
     name: "Sticker Book",
-    description: "Browse the encouragement stickers your family and studio friends shared.",
+    description: "A little print shop for encouragement stickers your family and studio friends shared.",
     icon: "♥",
     detail: "Private sticker pages",
+    venue: {
+      name: "Poster Press",
+      sign: "PRINT",
+      facade: "print-shop",
+    },
   },
 ];
 
 function ZooLandmark({ destination }) {
   return (
-    <span className="zoo-landmark-scene" aria-hidden="true">
+    <span className={`zoo-landmark-scene venue-facade-${destination.venue.facade}`} aria-hidden="true">
       <span className="zoo-landmark-shadow" />
       <span className="zoo-landmark-building">
+        <span className="zoo-landmark-sign">{destination.venue.sign}</span>
         <span className="zoo-landmark-symbol">{destination.icon}</span>
         <span className="zoo-landmark-door" />
       </span>
@@ -78,14 +103,14 @@ export default function ZooMap({
     <nav className="zoo-map" aria-labelledby="zoo-map-title">
       <div className="zoo-map-heading">
         <div>
-          <p className="zoo-district-eyebrow">Choose where to visit</p>
+          <p className="zoo-district-eyebrow">Music Town · choose a place</p>
           <h3 id="zoo-map-title" ref={headingRef} tabIndex="-1">Zoo Map</h3>
-          <p>Each part of your character world has its own place.</p>
+          <p>Every building has a different way to make music.</p>
         </div>
-        <span>Your places</span>
+        <span>Music Town</span>
       </div>
 
-      <div className="zoo-overworld" aria-label="A top-down map of the Zoo places you can visit">
+      <div className="zoo-overworld" aria-label="A top-down map of the Music Town venues you can visit">
         <div className="zoo-overworld-terrain" aria-hidden="true">
           <span className="zoo-overworld-river" />
           <span className="zoo-overworld-bridge" />
@@ -109,7 +134,9 @@ export default function ZooMap({
         {visibleDestinations.map((destination) => {
           const habitatSlots = residency[destination.id];
           const destinationDetail = Array.isArray(habitatSlots)
-            ? `${getFilledSlotCount(habitatSlots)} of ${habitatSlots.length} homes filled`
+            ? destination.id === "meadow"
+              ? "Melody residents play here"
+              : "Rhythm residents play here"
             : destination.detail;
           return (
           <button
@@ -122,6 +149,7 @@ export default function ZooMap({
             <span className="zoo-map-copy">
               <small>{destination.eyebrow}</small>
               <strong>{destination.name}</strong>
+              <span className="zoo-map-venue">{destination.venue.name}</span>
               <span className="zoo-map-description">{destination.description}</span>
               {destination.id === "meadow" && meadowReward && meadowReward.state !== "locked" && (
                 <span className={`zoo-map-reward state-${meadowReward.state}`}>
