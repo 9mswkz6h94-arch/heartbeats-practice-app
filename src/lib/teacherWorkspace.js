@@ -75,6 +75,7 @@ function mapStudent(student, lesson, familyLink, stats, draft, guardians = []) {
   const assignments = (stats.assignments || []).map((assignment) => ({
     id: assignment.id,
     title: assignment.title,
+    description: assignment.description || "",
     category: titleCase(assignment.category || "pieces"),
     categoryKey: assignment.category,
     age: assignmentAge(assignment.created_at),

@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import useTeacherWorkspace from "../hooks/useTeacherWorkspace";
 import { lessonMemoryApi } from "../lib/lessonMemory";
 import { addLocalDays, localDateString } from "../lib/assignmentLifecycle";
+import { assignmentCategories } from "../lib/practiceTemplates";
 import AssignmentForm from "./AssignmentForm";
 import BadgeStudio from "./BadgeStudio";
 import CommLog from "./CommLog";
@@ -18,6 +19,7 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
   const [status, setStatus] = useState(null);
   const [action, setAction] = useState(null);
   const [reassignDraft, setReassignDraft] = useState(null);
+  const [editingAssignment, setEditingAssignment] = useState(null);
 
   const resolveAssignment = async (assignment, nextAction, deadline, successText) => {
     setStatus(null);
@@ -53,6 +55,59 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
       deadline,
       `${assignment.title} was reassigned. Earlier completion history was kept.`,
     );
+  };
+
+  const openAssignmentEdit = (assignment) => {
+    setStatus(null);
+    setReassignDraft(null);
+    setEditingAssignment({
+      assignmentId: assignment.id,
+      title: assignment.title || "",
+      description: assignment.description || "",
+      instrumentType: assignment.instrumentType || student.instrument || "Music",
+      category: assignment.categoryKey || "pieces",
+      deadline: assignment.deadline ? String(assignment.deadline).slice(0, 10) : "",
+    });
+  };
+
+  const submitAssignmentEdit = async (event) => {
+    event.preventDefault();
+    const title = editingAssignment?.title?.trim();
+    if (!editingAssignment?.assignmentId || !title) {
+      setStatus("Add an assignment title before saving.");
+      return;
+    }
+    if (editingAssignment.deadline && editingAssignment.deadline < localDateString()) {
+      setStatus("Choose today or a future date, or clear the due date.");
+      return;
+    }
+
+    const assignmentId = editingAssignment.assignmentId;
+    setStatus(null);
+    setAction({ assignmentId, name: "edit" });
+    try {
+      const { error: updateError } = await supabase
+        .from("assignments")
+        .update({
+          title,
+          description: editingAssignment.description.trim() || null,
+          instrument_type: editingAssignment.instrumentType.trim() || null,
+          category: editingAssignment.category || "pieces",
+          deadline: editingAssignment.deadline || null,
+        })
+        .eq("id", assignmentId)
+        .eq("teacher_id", teacherId);
+      if (updateError) throw updateError;
+
+      setEditingAssignment(null);
+      setStatus(`${title} updated. Practice steps and completion history were kept.`);
+      await onRefresh();
+    } catch (error) {
+      console.error("Assignment edit failed:", error);
+      setStatus(`Could not update ${title}: ${error.message}`);
+    } finally {
+      setAction(null);
+    }
   };
 
   const removeAssignment = async (assignment) => {
@@ -118,6 +173,7 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
             {student.assignments.map((assignment) => {
               const busy = action?.assignmentId === assignment.id;
               const editingReassign = reassignDraft?.assignmentId === assignment.id;
+              const editingDetails = editingAssignment?.assignmentId === assignment.id;
               return (
                 <article key={assignment.id || assignment.title}>
                   <div><span>{assignment.category}</span><span>{assignment.stage}</span></div>
@@ -129,17 +185,26 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
                       type="button"
                       disabled={Boolean(action)}
                       aria-expanded={editingReassign}
-                      onClick={() => setReassignDraft({
-                        assignmentId: assignment.id,
-                        deadline: localDateString(addLocalDays(new Date(), 7)),
-                      })}
+                      onClick={() => {
+                        setEditingAssignment(null);
+                        setReassignDraft({
+                          assignmentId: assignment.id,
+                          deadline: localDateString(addLocalDays(new Date(), 7)),
+                        });
+                      }}
                     >Reassign</button>
                     <button
                       type="button"
                       disabled={Boolean(action)}
+                      aria-expanded={editingDetails}
+                      onClick={() => (editingDetails ? setEditingAssignment(null) : openAssignmentEdit(assignment))}
+                    >{editingDetails ? "Close edit" : "Edit details"}</button>
+                    <button
+                      type="button"
+                      disabled={Boolean(action) || editingDetails}
                       onClick={() => resolveAssignment(assignment, "repertoire", null, `${assignment.title} moved to the repertoire.`)}
                     >{busy && action.name === "repertoire" ? "Saving…" : "To repertoire"}</button>
-                    <button type="button" disabled={Boolean(action)} onClick={() => removeAssignment(assignment)}>
+                    <button type="button" disabled={Boolean(action) || editingDetails} onClick={() => removeAssignment(assignment)}>
                       {busy && action.name === "remove" ? "Saving…" : "Remove"}
                     </button>
                   </div>
@@ -159,6 +224,73 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
                         <button type="button" disabled={Boolean(action)} onClick={() => setReassignDraft(null)}>Cancel</button>
                         <button type="submit" disabled={Boolean(action)}>{busy && action.name === "reassign" ? "Saving…" : "Confirm reassign"}</button>
                       </div>
+                    </form>
+                  )}
+                  {editingDetails && (
+                    <form className="teacher-assignment-edit" onSubmit={submitAssignmentEdit}>
+                      <div className="teacher-assignment-edit-heading">
+                        <div><strong>Edit assignment details</strong><span>Practice steps and completion history stay unchanged.</span></div>
+                        <button type="button" disabled={Boolean(action)} onClick={() => setEditingAssignment(null)}>Cancel</button>
+                      </div>
+                      <label htmlFor={`workspace-edit-title-${assignment.id}`}>
+                        Assignment title
+                        <input
+                          id={`workspace-edit-title-${assignment.id}`}
+                          type="text"
+                          required
+                          value={editingAssignment.title}
+                          disabled={Boolean(action)}
+                          autoFocus
+                          onChange={(event) => setEditingAssignment((current) => ({ ...current, title: event.target.value }))}
+                        />
+                      </label>
+                      <div className="teacher-assignment-edit-grid">
+                        <label htmlFor={`workspace-edit-instrument-${assignment.id}`}>
+                          Instrument
+                          <input
+                            id={`workspace-edit-instrument-${assignment.id}`}
+                            type="text"
+                            value={editingAssignment.instrumentType}
+                            disabled={Boolean(action)}
+                            onChange={(event) => setEditingAssignment((current) => ({ ...current, instrumentType: event.target.value }))}
+                          />
+                        </label>
+                        <label htmlFor={`workspace-edit-category-${assignment.id}`}>
+                          Category
+                          <select
+                            id={`workspace-edit-category-${assignment.id}`}
+                            value={editingAssignment.category}
+                            disabled={Boolean(action)}
+                            onChange={(event) => setEditingAssignment((current) => ({ ...current, category: event.target.value }))}
+                          >
+                            {assignmentCategories.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+                          </select>
+                        </label>
+                        <label htmlFor={`workspace-edit-deadline-${assignment.id}`}>
+                          Due date
+                          <input
+                            id={`workspace-edit-deadline-${assignment.id}`}
+                            type="date"
+                            min={localDateString()}
+                            value={editingAssignment.deadline}
+                            disabled={Boolean(action)}
+                            onChange={(event) => setEditingAssignment((current) => ({ ...current, deadline: event.target.value }))}
+                          />
+                        </label>
+                      </div>
+                      <label htmlFor={`workspace-edit-description-${assignment.id}`}>
+                        Student-facing note (optional)
+                        <textarea
+                          id={`workspace-edit-description-${assignment.id}`}
+                          rows="3"
+                          value={editingAssignment.description}
+                          disabled={Boolean(action)}
+                          onChange={(event) => setEditingAssignment((current) => ({ ...current, description: event.target.value }))}
+                        />
+                      </label>
+                      <button type="submit" disabled={Boolean(action) || !editingAssignment.title.trim()}>
+                        {busy && action.name === "edit" ? "Saving…" : "Save assignment details"}
+                      </button>
                     </form>
                   )}
                 </article>

@@ -25,6 +25,14 @@ describe("live teacher workspace release wiring", () => {
     expect(source).toMatch(/Earlier completion history was kept/);
   });
 
+  test("lets teachers edit assignment details without rewriting practice history", () => {
+    expect(source).toMatch(/Edit details/);
+    expect(source).toMatch(/\.from\("assignments"\)/);
+    expect(source).toMatch(/Practice steps and completion history were kept/);
+    expect(source).toMatch(/description: editingAssignment\.description/);
+    expect(source).toMatch(/instrument_type: editingAssignment\.instrumentType/);
+  });
+
   test("starts the next lesson from the studio timeline and passes the request into live Lesson Memory", () => {
     expect(shellSource).toMatch(/startLesson: item\.kind === "next"/);
     expect(shellSource).toMatch(/startLessonRequested={startLessonRequested}/);

@@ -246,6 +246,13 @@
 - Student and parent badge showcases can read the teacher-created celebration after migration `021`; a missing table degrades to the established automatic badge experience until the release set is approved.
 - These changes are local implementation evidence only. The migration has not been applied, no real badge has been awarded, and no push or deployment occurred.
 
+## Teacher assignment detail editing (2026-09-17)
+
+- The selected student's live Assignments tab now adds an `Edit details` panel beside Reassign. Teachers can update the title, instrument, category, student-facing note, and due date directly; practice steps and completion history remain unchanged.
+- Reassign keeps its existing transactional cadence-reset behavior and still preserves earlier completion history. Edit validation accepts today or a future due date, or no due date.
+- The live assignment adapter now carries assignment descriptions into the teacher workspace so student-facing notes can be edited without a second fetch.
+- Local verification passed: `git diff --check`, migration-order checks, Musical Zoo asset validation, 33 test suites / 128 tests, and the optimized build. No production data, migration, push, or deployment changed.
+
 ## Known incomplete areas
 
 - Component CSS still contains legacy hard-coded colors, shadows, pills, and font declarations.
