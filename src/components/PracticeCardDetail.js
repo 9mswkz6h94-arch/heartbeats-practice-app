@@ -120,14 +120,18 @@ export default function PracticeCardDetail({
           </div>
         )}
 
-        <div className="detail-actions">
-          <button type="button" className="btn-complete" onClick={handleComplete} disabled={showCelebration}>
-            {showCelebration ? "Practice recorded" : "I practiced this"}
-          </button>
-          <button type="button" className="btn-skip" onClick={onSkip} disabled={showCelebration}>
-            Skip for today
-          </button>
-        </div>
+        {readOnly ? (
+          <p className="preview-action-note" role="status">Practice actions are disabled in this teacher preview.</p>
+        ) : (
+          <div className="detail-actions">
+            <button type="button" className="btn-complete" onClick={handleComplete} disabled={showCelebration}>
+              {showCelebration ? "Practice recorded" : "I practiced this"}
+            </button>
+            <button type="button" className="btn-skip" onClick={onSkip} disabled={showCelebration}>
+              Skip for today
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

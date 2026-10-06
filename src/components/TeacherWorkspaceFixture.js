@@ -436,12 +436,52 @@ function StudentFamily({ student }) {
   );
 }
 
-function StudentWorkspace({ student, activeTab, onTabChange, onBack, renderLessonMemory, renderAssignments, renderProgress, renderFamily }) {
+function StudentPreviewFixture({ student, onExit }) {
+  return (
+    <div className="dev-preview-container teacher-student-preview">
+      <div className="dev-preview-header">
+        <div className="dev-preview-header-row">
+          <div><p className="dev-preview-kicker">Teacher-only, read-only</p><h2>View as student</h2></div>
+          <button type="button" className="dev-preview-exit" onClick={onExit}>Return to teacher workspace</button>
+        </div>
+        <p>This local review shows the student-facing assignment presentation. Practice actions, rewards, messages, and account changes are disabled.</p>
+      </div>
+      <div className="dev-preview-frame">
+        <div className="dev-preview-banner" role="status"><strong>Previewing {student.name}</strong><span>Read only · nothing here is saved</span></div>
+        <div className="dev-preview-content">
+          <section className="teacher-preview-assignment-surface" aria-labelledby="teacher-preview-assignment-title">
+            <p className="dev-preview-kicker">Student workspace</p>
+            <h3 id="teacher-preview-assignment-title">Today’s practice</h3>
+            <p>These active assignments are the same student-scoped work the live preview loads. Completed and skipped steps stay out of the daily view.</p>
+            <div className="teacher-preview-assignment-list">
+              {student.assignments.map((assignment) => (
+                <article key={assignment.title}>
+                  <span>{assignment.category} · {assignment.stage}</span>
+                  <strong>{assignment.title}</strong>
+                  <small>{assignment.progress}</small>
+                </article>
+              ))}
+            </div>
+          </section>
+          <p className="teacher-preview-read-only-note" role="status">Practice actions are disabled in this teacher preview.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StudentWorkspace({ student, activeTab, onTabChange, onBack, renderLessonMemory, renderAssignments, renderProgress, renderFamily, renderStudentPreview }) {
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  if (previewOpen && renderStudentPreview) {
+    return renderStudentPreview(student, () => setPreviewOpen(false));
+  }
+
   return (
     <div className="teacher-student-workspace">
       <header className="teacher-student-context">
         <button type="button" className="teacher-student-back" onClick={onBack}>← Back to studio</button>
-        <div className="teacher-student-identity"><span aria-hidden="true">{student.initials}</span><div><p>{student.instrument}</p><h2>{student.name}</h2><small>{student.nextLesson} · {student.practiceLabel}</small></div></div>
+        <div className="teacher-student-identity"><span aria-hidden="true">{student.initials}</span><div><p>{student.instrument}</p><h2>{student.name}</h2><small>{student.nextLesson} · {student.practiceLabel}</small></div>{renderStudentPreview && <button type="button" className="teacher-student-preview-trigger" onClick={() => setPreviewOpen(true)}>View student preview</button>}</div>
         <nav aria-label={`${student.shortName} workspace`} className="teacher-student-tabs">
           {STUDENT_WORKSPACE_TABS.map((tab) => <button type="button" key={tab.id} className={activeTab === tab.id ? "active" : ""} aria-current={activeTab === tab.id ? "page" : undefined} onClick={() => onTabChange(tab.id)}>{tab.label}</button>)}
         </nav>
@@ -464,6 +504,7 @@ export function TeacherWorkspaceShell({
   error = null,
   onRetry,
   renderLessonMemory,
+  renderStudentPreview,
   renderAssignments,
   renderProgress,
   renderFamily,
@@ -503,7 +544,7 @@ export function TeacherWorkspaceShell({
       <div className="hud-main">
         <header className="hud-topbar"><div><p className="hud-view-context">{selectedStudent ? "Student workspace" : "Teacher workspace"}</p><h1 className="hud-view-title">{title}</h1></div></header>
         <main className="hud-content">
-          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} renderLessonMemory={renderLessonMemory} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} summary={summary} renderInbox={renderStudioInbox} />}
+          {loading ? <div className="prep-state" role="status"><h2>Loading teacher workspace</h2><p>Gathering students, schedules, and current work…</p></div> : error ? <div className="prep-state prep-state-error" role="alert"><h2>Teacher workspace could not load</h2><p>{error}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div> : selectedStudent ? <StudentWorkspace student={selectedStudent} activeTab={studentTab} onTabChange={setStudentTab} onBack={() => goToPrimaryView("studio")} renderLessonMemory={renderLessonMemory} renderStudentPreview={renderStudentPreview} renderAssignments={renderAssignments} renderProgress={renderProgress} renderFamily={renderFamily} /> : primaryView === "manage" && renderStudentManager ? <section className="teacher-student-section"><header className="teacher-student-section-heading"><div><p>Studio roster</p><h2>Manage students</h2></div><button type="button" onClick={() => goToPrimaryView("students")}>Back to roster</button></header>{renderStudentManager()}</section> : primaryView === "students" ? <StudentRoster onOpenStudent={openStudent} students={students} onManageStudents={renderStudentManager ? () => goToPrimaryView("manage") : undefined} /> : primaryView === "badges" && renderBadgeStudio ? renderBadgeStudio(students) : <StudioHome onOpenStudent={openStudent} onShowStudents={() => goToPrimaryView("students")} students={students} todaySchedule={todaySchedule} summary={summary} renderInbox={renderStudioInbox} />}
         </main>
       </div>
     </div>
@@ -511,5 +552,10 @@ export function TeacherWorkspaceShell({
 }
 
 export default function TeacherWorkspaceFixture() {
-  return <TeacherWorkspaceShell renderBadgeStudio={(students) => <BadgeStudio students={students} />} />;
+  return (
+    <TeacherWorkspaceShell
+      renderBadgeStudio={(students) => <BadgeStudio students={students} />}
+      renderStudentPreview={(student, onExit) => <StudentPreviewFixture student={student} onExit={onExit} />}
+    />
+  );
 }

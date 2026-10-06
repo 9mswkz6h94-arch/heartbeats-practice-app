@@ -10,6 +10,7 @@ import LessonMemory from "./LessonMemory";
 import ParentPreviewModal from "./ParentPreviewModal";
 import RescheduleRequests from "./RescheduleRequests";
 import StudentManager from "./StudentManager";
+import DevStudentPreview from "./DevStudentPreview";
 import { TeacherWorkspaceShell } from "./TeacherWorkspaceFixture";
 
 function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
@@ -257,6 +258,9 @@ export default function TeacherWorkspace({ teacherId, userEmail, onLogout }) {
             onChanged={workspace.refresh}
           />
         )
+      )}
+      renderStudentPreview={(student, onExit) => (
+        <DevStudentPreview teacherId={teacherId} studentId={student.id} onExit={onExit} />
       )}
       renderAssignments={(student, onGoLesson) => (
         <LiveAssignments

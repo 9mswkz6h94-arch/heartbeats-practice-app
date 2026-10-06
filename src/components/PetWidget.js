@@ -298,7 +298,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
       )}
 
       <div className="pet-listen-row">
-        {!listening ? (
+        {readOnly ? <p className="pet-mic-note">Listening is disabled in teacher preview.</p> : !listening ? (
           <button type="button" className="btn-pet-listen" onClick={startListening} disabled={micStatus === "requesting"}>
             {micStatus === "requesting" ? "Requesting microphone…" : "Play for my pet"}
           </button>
@@ -307,8 +307,8 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
             Stop listening
           </button>
         )}
-        {micStatus === "denied" && <p className="pet-mic-note">Couldn't access the microphone.</p>}
-        {micStatus === "unsupported" && <p className="pet-mic-note">Mic not supported on this device.</p>}
+        {!readOnly && micStatus === "denied" && <p className="pet-mic-note">Couldn't access the microphone.</p>}
+        {!readOnly && micStatus === "unsupported" && <p className="pet-mic-note">Mic not supported on this device.</p>}
       </div>
     </div>
   );

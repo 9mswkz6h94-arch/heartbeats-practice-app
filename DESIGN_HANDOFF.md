@@ -7,7 +7,7 @@
 **Design-system version:** `0.8.0`
 **Identity version:** Rainbow Heart Style Guide `2.0.0`
 **Accessibility profiles:** None selected; existing app-specific accessibility evidence remains recorded below
-**Last updated:** 2026-09-10
+**Last updated:** 2026-10-06
 
 ## Product invariants
 
@@ -122,6 +122,13 @@
 - The legacy assignment-list Edit control now opens a working teacher edit form while preserving practice steps and completed work. The active parent review fixture now supports student switching, reschedule/cancel, notification preference, and local message interactions.
 - The external performance calendar remains deliberately disabled in the live workspace and labeled `Not connected` until a trusted source is selected.
 - No migration was applied, no production record was read or changed during interactive review, and no push, merge, or deployment occurred.
+
+## Teacher read-only student preview (2026-10-06)
+
+- Added a teacher-scoped `View as student` entry point in the selected-student workspace. The live path passes the signed-in teacher ID and selected student ID into `DevStudentPreview`; the mock fixture exposes the same return flow without Supabase.
+- Preview loading is fail-closed: the data access layer requires both `teacher_id` and `student.id`, clears cached content when the scope changes, and renders no student surface while loading or when authorization returns no row. Student email and other guardian details are not included in the picker query.
+- Practice completion, skip, microphone/listening, pet rewards, and other student mutations are visibly disabled in preview. Existing active-assignment filtering remains the shared student workflow, including archived, memorized, and past-due exclusions.
+- Synthetic checks cover dual-scope authorization, cross-teacher denial, stale-content suppression, read-only action boundaries, and active-assignment filtering. No schema, RLS policy, production data, deployment, or calendar behavior changed in this slice.
 
 ## Musical Zoo character library proposal (2026-09-06)
 

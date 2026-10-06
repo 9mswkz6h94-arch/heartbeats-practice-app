@@ -19,4 +19,15 @@ describe("live teacher workspace release wiring", () => {
     expect(source).toMatch(/"remove"/);
     expect(source).toMatch(/Earlier completion history was kept/);
   });
+
+  test("wires a teacher-scoped, read-only student-facing preview", () => {
+    expect(source).toMatch(/DevStudentPreview/);
+    expect(source).toMatch(/studentId=\{student\.id\}/);
+    const fixtureSource = fs.readFileSync(path.join(__dirname, "TeacherWorkspaceFixture.js"), "utf8");
+    expect(fixtureSource).toMatch(/View student preview/);
+    expect(fixtureSource).toMatch(/renderStudentPreview/);
+    expect(fs.readFileSync(path.join(__dirname, "../lib/studentPreview.js"), "utf8")).toMatch(/\.eq\("teacher_id", teacherId\)/);
+    expect(fs.readFileSync(path.join(__dirname, "PracticeCardDetail.js"), "utf8")).toMatch(/Practice actions are disabled in this teacher preview/);
+    expect(fs.readFileSync(path.join(__dirname, "DevStudentPreview.js"), "utf8")).toMatch(/!loading && !error && Boolean\(student\)/);
+  });
 });
