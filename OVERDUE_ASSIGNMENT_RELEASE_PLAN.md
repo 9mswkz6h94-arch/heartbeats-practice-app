@@ -37,3 +37,4 @@ Status: prepared candidate only — no live database, production data, push, or 
 - `src/lib/assignmentLifecycle.test.js` covers overdue/today/future/undated boundaries and archived/memorized exclusions.
 - `src/lib/overdueAssignmentMigration.test.js` covers the forward migration contract, synthetic rehearsal coverage, and rollback packet.
 - `scripts/verify_overdue_assignment_lifecycle.sql` is the required sanitized staging proof for allowed overdue pending/completion/skip writes, protected rejection paths, and history preservation.
+- Local disposable PostgreSQL rehearsal completed on 2026-10-06 using two synthetic students: migration `027` passed owner overdue completion/pending/completed/skipped writes and rejected cross-user, mismatched-step, archived, and memorized writes; the rollback packet rejected an overdue completion as expected. The container was removed afterward.

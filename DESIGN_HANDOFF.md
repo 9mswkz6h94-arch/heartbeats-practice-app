@@ -136,7 +136,7 @@
 - Overdue cards carry the non-punitive label `Still open · due earlier`; today, later, and undated work use consistent reminder labels. Daily completion/skip hiding and reset behavior remain unchanged.
 - Added candidate migration `027_overdue_practice_visibility.sql`. It removes only the deadline predicates from the three practice-write policies and the shared active-write trigger, while retaining auth ownership, assignment/step matching, archive/memorized exclusion, row locking, RLS, and completion history. Historical migration `017` remains untouched.
 - Added a transactional staging rehearsal for overdue pending/completion/skip writes and rejection of cross-student, archived, memorized, and mismatched-step writes. It also checks that valid completion history survives rejected attempts. The script uses synthetic assignment/step fixtures and rolls back all rows.
-- Static migration checks and frontend tests are part of the candidate gate. No live database change, backup restore, push, deployment, or production smoke test is included until the bundled production decision is reviewed.
+- Static migration checks and frontend tests are part of the candidate gate. A disposable PostgreSQL rehearsal with two synthetic students applied `027` and passed the overdue owner-write/protected-denial/history checks; the rollback packet also rejected an overdue write as expected. No live database change, backup restore, push, deployment, or production smoke test is included until the bundled production decision is reviewed.
 
 ## Musical Zoo character library proposal (2026-09-06)
 
