@@ -46,6 +46,7 @@
 .tile-body { display: flex; flex: 1; flex-direction: column; gap: var(--space-1); min-width: 0; }
 .step-title { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
 .step-number { color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 12px; }
+.step-due-note { color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; letter-spacing: .03em; }
 .tile-action { margin-top: auto; padding-top: var(--space-3); border-top: 1px solid var(--color-border); }
 .tap-hint { color: var(--color-text); font-size: 13px; font-weight: 600; }
 .tap-hint::after { content: "  →"; }

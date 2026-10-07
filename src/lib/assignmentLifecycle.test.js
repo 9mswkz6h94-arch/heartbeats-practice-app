@@ -1,5 +1,6 @@
 import {
   addLocalDays,
+  filterCurrentAssignments,
   getAssignmentDueState,
   isAssignmentActive,
   localDateString,
@@ -23,17 +24,23 @@ describe("assignment lifecycle", () => {
     );
   });
 
-  test("a reassignment expires the day after its new due date", () => {
+  test("keeps an overdue assignment in current practice until resolved", () => {
     const assignment = { deadline: "2026-09-10" };
     expect(isAssignmentActive(assignment, "2026-09-10")).toBe(true);
-    expect(isAssignmentActive(assignment, "2026-09-11")).toBe(false);
-  });
-
-  test("drops a past-due assignment from active practice", () => {
-    expect(isAssignmentActive({ deadline: "2026-09-02" }, "2026-09-03")).toBe(false);
+    expect(isAssignmentActive(assignment, "2026-09-11")).toBe(true);
     expect(getAssignmentDueState({ deadline: "2026-09-02" }, "2026-09-03")).toBe(
       "past-due"
     );
+  });
+
+  test.each([
+    ["overdue", { deadline: "2026-09-02" }, "2026-09-03", "past-due"],
+    ["today", { deadline: "2026-09-03" }, "2026-09-03", "due-today"],
+    ["future", { deadline: "2026-09-10" }, "2026-09-03", "upcoming"],
+    ["undated", { deadline: null }, "2026-09-03", "none"],
+  ])("keeps %s work visible while preserving its due state", (_label, assignment, today, dueState) => {
+    expect(isAssignmentActive(assignment, today)).toBe(true);
+    expect(getAssignmentDueState(assignment, today)).toBe(dueState);
   });
 
   test("keeps a no-date assignment active until the teacher resolves it", () => {
@@ -46,5 +53,23 @@ describe("assignment lifecycle", () => {
       isAssignmentActive({ deadline: null, archived_at: "2026-09-03T12:00:00Z" })
     ).toBe(false);
     expect(isAssignmentActive({ deadline: null, memorized: true })).toBe(false);
+  });
+
+  test("filters only explicitly resolved assignments from current work", () => {
+    const current = filterCurrentAssignments([
+      { id: "overdue", deadline: "2026-09-02" },
+      { id: "today", deadline: "2026-09-03" },
+      { id: "future", deadline: "2026-09-10" },
+      { id: "undated", deadline: null },
+      { id: "archived", deadline: null, archived_at: "2026-09-03T12:00:00Z" },
+      { id: "memorized", deadline: null, memorized: true },
+    ]);
+
+    expect(current.map((assignment) => assignment.id)).toEqual([
+      "overdue",
+      "today",
+      "future",
+      "undated",
+    ]);
   });
 });

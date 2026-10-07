@@ -127,8 +127,16 @@
 
 - Added a teacher-scoped `View as student` entry point in the selected-student workspace. The live path passes the signed-in teacher ID and selected student ID into `DevStudentPreview`; the mock fixture exposes the same return flow without Supabase.
 - Preview loading is fail-closed: the data access layer requires both `teacher_id` and `student.id`, clears cached content when the scope changes, and renders no student surface while loading or when authorization returns no row. Student email and other guardian details are not included in the picker query.
-- Practice completion, skip, microphone/listening, pet rewards, and other student mutations are visibly disabled in preview. Existing active-assignment filtering remains the shared student workflow, including archived, memorized, and past-due exclusions.
+- Practice completion, skip, microphone/listening, pet rewards, and other student mutations are visibly disabled in preview. Existing active-assignment filtering remains the shared student workflow, including archived and memorized exclusions; due dates are reminders rather than automatic removal.
 - Synthetic checks cover dual-scope authorization, cross-teacher denial, stale-content suppression, read-only action boundaries, and active-assignment filtering. No schema, RLS policy, production data, deployment, or calendar behavior changed in this slice.
+
+## Overdue assignment visibility correction (2026-10-06)
+
+- Due dates now act as calm reminders rather than automatic assignment expiry. Student practice, parent detail, teacher workspace counts, and the legacy lesson-prep surface keep overdue work visible until a teacher explicitly removes it or moves it to the repertoire.
+- Overdue cards carry the non-punitive label `Still open · due earlier`; today, later, and undated work use consistent reminder labels. Daily completion/skip hiding and reset behavior remain unchanged.
+- Added candidate migration `027_overdue_practice_visibility.sql`. It removes only the deadline predicates from the three practice-write policies and the shared active-write trigger, while retaining auth ownership, assignment/step matching, archive/memorized exclusion, row locking, RLS, and completion history. Historical migration `017` remains untouched.
+- Added a transactional staging rehearsal for overdue pending/completion/skip writes and rejection of cross-student, archived, memorized, and mismatched-step writes. It also checks that valid completion history survives rejected attempts. The script uses synthetic assignment/step fixtures and rolls back all rows.
+- Static migration checks and frontend tests are part of the candidate gate. No live database change, backup restore, push, deployment, or production smoke test is included until the bundled production decision is reviewed.
 
 ## Musical Zoo character library proposal (2026-09-06)
 

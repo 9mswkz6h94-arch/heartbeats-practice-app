@@ -8,7 +8,10 @@ import {
   setStepStatus,
   todayStr,
 } from "../lib/practiceStatus";
-import { isAssignmentActive } from "../lib/assignmentLifecycle";
+import {
+  filterCurrentAssignments,
+  getAssignmentDueState,
+} from "../lib/assignmentLifecycle";
 import { cheerForPractice } from "./PetWidget";
 import { computeStreak } from "../lib/studentStats";
 import PracticeCardDetail from "./PracticeCardDetail";
@@ -99,12 +102,9 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
 
       if (assignError) throw assignError;
 
-      // Due dates are inclusive: the card remains available on its due date
-      // and falls off the following day. No-date assignments stay active
-      // until the teacher resolves them from lesson prep.
-      const activeAssignments = (assignments || []).filter((assignment) =>
-        isAssignmentActive(assignment)
-      );
+      // Due dates are informational reminders. Current work stays visible
+      // until the teacher archives it or moves it to the repertoire.
+      const activeAssignments = filterCurrentAssignments(assignments);
 
       setAssignments(activeAssignments);
 
@@ -120,6 +120,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
             instrument_type: assignment.instrument_type,
             category: assignment.category,
             attachment_url: assignment.attachment_url,
+            assignment_due_state: getAssignmentDueState(assignment),
           });
         });
       });
@@ -298,6 +299,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
         assignment_id: assignment.id,
         assignment_title: assignment.title,
         instrument_type: assignment.instrument_type,
+        assignment_due_state: getAssignmentDueState(assignment),
         attachment_url: assignment.attachment_url,
       });
     });
@@ -371,6 +373,9 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
               <span className="tile-body">
                 <span className="step-title">{step.title}</span>
                 <span className="step-number">Step {step.step_number}</span>
+                {step.assignment_due_state === "past-due" && (
+                  <span className="step-due-note">Still open · due earlier</span>
+                )}
               </span>
               <span className="tile-action"><span className="tap-hint">Open practice card</span></span>
             </button>

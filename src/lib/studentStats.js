@@ -1,5 +1,6 @@
 import { supabase } from "./supabaseClient";
 import { computeStreak, dayStr, daysBetween, parseDay } from "./rewardMath";
+import { filterCurrentAssignments } from "./assignmentLifecycle";
 
 export { computeStreak, dayStr, daysBetween, parseDay } from "./rewardMath";
 
@@ -89,9 +90,7 @@ export async function fetchStudentStats(studentId) {
       streak,
       everPracticed,
       lastDaysAgo,
-      assignments: (assignments || []).filter(
-        (assignment) => assignment.memorized !== true
-      ),
+      assignments: filterCurrentAssignments(assignments),
       repertoire: (repertoire || [])
         .map((entry) => entry.assignments?.title)
         .filter(Boolean),

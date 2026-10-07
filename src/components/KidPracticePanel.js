@@ -3,7 +3,10 @@ import { supabase } from "../lib/supabaseClient";
 import { randomPin } from "../lib/familyAuth";
 import { fetchStudentStats } from "../lib/studentStats";
 import { fetchStepStatusMap } from "../lib/practiceStatus";
-import { isAssignmentActive } from "../lib/assignmentLifecycle";
+import {
+  filterCurrentAssignments,
+  getAssignmentDueState,
+} from "../lib/assignmentLifecycle";
 import { buildGoogleCalendarUrl, dayName } from "../lib/calendarLink";
 import BadgeShowcase from "./BadgeShowcase";
 import CommLog from "./CommLog";
@@ -53,9 +56,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
         .order("created_at", { ascending: false });
       if (assignmentsError) throw assignmentsError;
 
-      const activeAssignments = (assignments || []).filter((assignment) =>
-        isAssignmentActive(assignment)
-      );
+      const activeAssignments = filterCurrentAssignments(assignments);
 
       // Theory steps carry their most-recent status forward (stay checked
       // until the teacher resets at the next lesson); everything else only
@@ -335,6 +336,9 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
                   <span className="parent-category-chip">
                     {a.category}
                   </span>
+                )}
+                {getAssignmentDueState(a) === "past-due" && (
+                  <span className="parent-assignment-due-note">Still open · due earlier</span>
                 )}
               </div>
               {(a.practice_steps || [])

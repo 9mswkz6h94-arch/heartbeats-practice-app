@@ -139,6 +139,8 @@
 .teacher-current-assignments article > div { display: flex; justify-content: space-between; gap: var(--space-3); color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 8px; text-transform: uppercase; }
 .teacher-current-assignments h4 { margin: var(--space-2) 0; font-size: 15px; }
 .teacher-current-assignments p { margin: 0; color: var(--color-text-muted); font-size: 11px; }
+.teacher-assignment-timing { display: block; margin-top: 6px; color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; letter-spacing: .03em; }
+.teacher-assignment-timing.timing-due-today { color: var(--color-text); font-weight: 700; }
 .teacher-current-assignments footer { margin-top: var(--space-3); padding-top: var(--space-3); display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 5px; border-top: 1px solid var(--color-border); }
 .teacher-current-assignments footer strong { font-family: var(--font-measurement); font-size: 12px; }
 .teacher-current-assignments footer span { color: var(--color-text-muted); font-size: 10px; }

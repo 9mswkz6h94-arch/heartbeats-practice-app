@@ -72,6 +72,7 @@
 .parent-assignment-head { margin-bottom: var(--space-3); display: flex; align-items: flex-start; flex-wrap: wrap; gap: var(--space-2); }
 .parent-assignment-title { min-width: 0; flex: 1; font-family: var(--font-display); font-size: 18px; font-weight: 600; overflow-wrap: anywhere; }
 .parent-category-chip { flex: 0 0 auto; padding: 3px var(--space-2); border: 1px solid var(--color-border); color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; text-transform: uppercase; }
+.parent-assignment-due-note { flex: 0 0 100%; color: var(--color-text-muted); font-family: var(--font-measurement); font-size: 10px; letter-spacing: .03em; }
 .parent-step { min-width: 0; padding: var(--space-2) 0; display: grid; grid-template-columns: 48px minmax(0,1fr); align-items: center; gap: var(--space-2); border-top: 1px solid var(--color-border); }
 .parent-step-mark { font-family: var(--font-measurement); font-size: 10px; text-transform: uppercase; }
 .parent-step-title { overflow-wrap: anywhere; }

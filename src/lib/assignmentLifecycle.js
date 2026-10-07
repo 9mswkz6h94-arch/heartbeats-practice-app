@@ -27,5 +27,13 @@ export function isAssignmentActive(assignment, today = localDateString()) {
     return false;
   }
 
-  return getAssignmentDueState(assignment, today) !== "past-due";
+  // Due dates are reminders, not an automatic removal rule. Teachers keep
+  // control of the assignment lifecycle through archive/repertoire actions.
+  // Keep the `today` parameter for API compatibility with existing callers.
+  void today;
+  return true;
+}
+
+export function filterCurrentAssignments(assignments = []) {
+  return (assignments || []).filter((assignment) => isAssignmentActive(assignment));
 }

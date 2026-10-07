@@ -1,4 +1,4 @@
-import { assignmentAge, initialsFor, isMissingOptionalRelation, lessonScheduleLabel, nextLessonLabel } from "./teacherWorkspace";
+import { assignmentAge, assignmentDueLabel, initialsFor, isMissingOptionalRelation, lessonScheduleLabel, nextLessonLabel } from "./teacherWorkspace";
 
 test("builds compact initials from long and single-word student names", () => {
   expect(initialsFor("Alexandria Montgomery-Rivera")).toBe("AM");
@@ -9,6 +9,13 @@ test("describes assignment age without deadline pressure", () => {
   const now = new Date("2026-09-06T12:00:00");
   expect(assignmentAge("2026-09-06T08:00:00", now)).toBe("Today");
   expect(assignmentAge("2026-08-22T08:00:00", now)).toBe("2 weeks");
+});
+
+test("uses calm, consistent due-date labels for current work", () => {
+  expect(assignmentDueLabel({ deadline: "2026-09-02" }, "2026-09-03")).toBe("Still open · due earlier");
+  expect(assignmentDueLabel({ deadline: "2026-09-03" }, "2026-09-03")).toBe("Due today");
+  expect(assignmentDueLabel({ deadline: "2026-09-10" }, "2026-09-03")).toBe("Due later");
+  expect(assignmentDueLabel({ deadline: null }, "2026-09-03")).toBe("No due date");
 });
 
 test("formats recurring lesson context for the student workspace", () => {

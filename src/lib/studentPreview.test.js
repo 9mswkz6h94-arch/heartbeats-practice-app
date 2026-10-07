@@ -43,5 +43,5 @@ test("student preview keeps the same active-assignment filters as student practi
   expect(isAssignmentActive({ id: "current", deadline: "2026-10-06" }, "2026-10-06")).toBe(true);
   expect(isAssignmentActive({ id: "archived", archived_at: "2026-10-05T12:00:00Z" }, "2026-10-06")).toBe(false);
   expect(isAssignmentActive({ id: "memorized", memorized: true }, "2026-10-06")).toBe(false);
-  expect(isAssignmentActive({ id: "expired", deadline: "2026-10-05" }, "2026-10-06")).toBe(false);
+  expect(isAssignmentActive({ id: "expired", deadline: "2026-10-05" }, "2026-10-06")).toBe(true);
 });

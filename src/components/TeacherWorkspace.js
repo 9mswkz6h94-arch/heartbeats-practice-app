@@ -124,6 +124,9 @@ function LiveAssignments({ teacherId, student, onRefresh, onGoLesson }) {
                   <div><span>{assignment.category}</span><span>{assignment.stage}</span></div>
                   <h4>{assignment.title}</h4>
                   <p>{assignment.progress}</p>
+                  <small className={`teacher-assignment-timing timing-${assignment.dueState}`}>
+                    {assignment.dueLabel}
+                  </small>
                   <footer><strong>{assignment.age}</strong><span>working on this</span></footer>
                   <div className="teacher-assignment-card-actions">
                     <button

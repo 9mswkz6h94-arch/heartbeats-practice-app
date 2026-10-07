@@ -226,7 +226,7 @@ export default function TeacherLessonPrepDashboard({ teacherId }) {
     const state = getAssignmentDueState(assignment);
     if (state === "none") return { state, label: "No due date" };
     const formatted = new Date(`${assignment.deadline}T00:00:00`).toLocaleDateString();
-    if (state === "past-due") return { state, label: `Past due ${formatted}` };
+    if (state === "past-due") return { state, label: `Still open · due ${formatted}` };
     if (state === "due-today") return { state, label: "Due today" };
     return { state, label: `Due ${formatted}` };
   };

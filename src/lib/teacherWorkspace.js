@@ -2,6 +2,7 @@ import { supabase } from "./supabaseClient";
 import { dayName } from "./calendarLink";
 import { normalizeAssignmentDraft } from "./lessonMemory";
 import { fetchStudentStats } from "./studentStats";
+import { getAssignmentDueState } from "./assignmentLifecycle";
 
 function shortName(name = "Student") {
   return name.trim().split(/\s+/)[0] || "Student";
@@ -40,6 +41,14 @@ export function nextLessonLabel(lesson, now = new Date()) {
   return `${day} · ${formatTime(lesson.start_time)}`;
 }
 
+export function assignmentDueLabel(assignment, today) {
+  const state = getAssignmentDueState(assignment, today);
+  if (state === "past-due") return "Still open · due earlier";
+  if (state === "due-today") return "Due today";
+  if (state === "upcoming") return "Due later";
+  return "No due date";
+}
+
 function studentStatus(stats) {
   if (!stats.everPracticed || stats.lastDaysAgo >= 4) {
     return { status: "Needs a gentle check-in", tone: "open" };
@@ -74,6 +83,8 @@ function mapStudent(student, lesson, familyLink, stats, draft, guardians = []) {
     categoryKey: assignment.category,
     age: assignmentAge(assignment.created_at),
     deadline: assignment.deadline,
+    dueState: getAssignmentDueState(assignment),
+    dueLabel: assignmentDueLabel(assignment),
     stage: "Active",
     progress: `${assignment.practice_steps?.length || 1} practice ${assignment.practice_steps?.length === 1 ? "step" : "steps"}`,
     instrumentType: assignment.instrument_type || student.instrument || "Music",

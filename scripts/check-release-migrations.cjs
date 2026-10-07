@@ -71,6 +71,25 @@ const releaseMigrations = [
       /INSERT INTO public\.student_badges/i,
     ],
   },
+  {
+    filename: '027_overdue_practice_visibility.sql',
+    required: [
+      /CREATE POLICY completions_insert/i,
+      /CREATE POLICY daily_practice_status_insert/i,
+      /CREATE POLICY daily_practice_status_update/i,
+      /CREATE OR REPLACE FUNCTION public\.guard_active_practice_write/i,
+      /student\.auth_user_id = auth\.uid\(\)/i,
+      /assignment\.archived_at IS NULL/i,
+      /assignment\.memorized IS NOT TRUE/i,
+      /FOR SHARE OF assignment/i,
+      /NOTIFY pgrst, 'reload schema'/i,
+    ],
+    forbidden: [
+      /assignment\.deadline/i,
+      /DELETE FROM public\.(?:completions|daily_practice_status)/i,
+      /TRUNCATE\s+(?:TABLE\s+)?public\.(?:completions|daily_practice_status|assignments|practice_steps)/i,
+    ],
+  },
 ];
 
 const errors = [];
@@ -127,5 +146,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021).`,
+  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021, 027).`,
 );

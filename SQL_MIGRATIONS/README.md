@@ -8,9 +8,10 @@ The current unreleased database changes are an ordered, atomic set:
 4. `019_family_profiles.sql` — adds private family profile details and guardian contacts.
 5. `020_student_zoo_preferences.sql` — stores display preferences only; it does not move practice, streak, XP, badge, or pet ledger data.
 6. `021_teacher_badge_awards.sql` — adds teacher-created digital celebrations beside the existing automatic badge ledger; keepsake choices cannot initiate an order.
+7. `027_overdue_practice_visibility.sql` — keeps overdue practice writable until explicit archive/repertoire resolution; due dates remain informational and ownership, step matching, RLS, and history protections stay in place.
 
 Do not run these files directly against production. This repository starts at migration `002` and does not contain the production database's original schema baseline, so `supabase db reset` here cannot reproduce the live database honestly.
 
-Before release, obtain a sanitized schema/data clone in a separate Supabase project and follow [STAGING_REHEARSAL.md](../STAGING_REHEARSAL.md). The rehearsal must apply `016` through `021` exactly once, in order, and preserve every protected-table fingerprint.
+Before release, obtain a sanitized schema/data clone in a separate Supabase project and follow [STAGING_REHEARSAL.md](../STAGING_REHEARSAL.md). The rehearsal must apply `016` through `021` exactly once, in order, then apply `027` exactly once, and preserve every protected-table fingerprint. Migration `027` is intentionally a separate forward migration; do not edit the historical `017` file.
 
 Run `npm run release:check-migrations` whenever this set changes. The check rejects duplicate migration numbers, missing transactions, missing release invariants, and destructive completion-history statements.
