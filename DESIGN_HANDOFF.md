@@ -136,7 +136,15 @@
 - Overdue cards carry the non-punitive label `Still open · due earlier`; today, later, and undated work use consistent reminder labels. Daily completion/skip hiding and reset behavior remain unchanged.
 - Added candidate migration `027_overdue_practice_visibility.sql`. It removes only the deadline predicates from the three practice-write policies and the shared active-write trigger, while retaining auth ownership, assignment/step matching, archive/memorized exclusion, row locking, RLS, and completion history. Historical migration `017` remains untouched.
 - Added a transactional staging rehearsal for overdue pending/completion/skip writes and rejection of cross-student, archived, memorized, and mismatched-step writes. It also checks that valid completion history survives rejected attempts. The script uses synthetic assignment/step fixtures and rolls back all rows.
-- Static migration checks and frontend tests are part of the candidate gate. A disposable PostgreSQL rehearsal with two synthetic students applied `027` and passed the overdue owner-write/protected-denial/history checks; the rollback packet also rejected an overdue write as expected. No live database change, backup restore, push, deployment, or production smoke test is included until the bundled production decision is reviewed.
+- Static migration checks and frontend tests were part of the candidate gate. A disposable PostgreSQL rehearsal with two synthetic students applied `027` and passed the overdue owner-write/protected-denial/history checks; the rollback packet also rejected an overdue write as expected.
+
+## Overdue assignment production release (2026-10-06)
+
+- Jonathan approved the release after a fresh hosted physical backup completed as restore point `1886186400` at `2026-10-06T11:28:34.964Z` UTC. The older September restore point remains historical evidence only.
+- Applied `SQL_MIGRATIONS/027_overdue_practice_visibility.sql` to the Rainbow Heart production project through the authenticated Supabase management query path. Live checks confirmed all four deadline gates are removed while the assignment lock, auth-owner, archive, memorized, and step-match protections remain.
+- Protected-ledger fingerprints matched before and after across all 13 tables: users 31, students 12, families 1, parent_students 2, assignments 121, practice_steps 160, completions 597, daily_practice_status 132, repertoire 11, student_badges 9, pets 10, pet_creatures 75, reschedule_requests 0.
+- Fast-forwarded `main` to `fa5cd72`. Netlify production deploy `6ac599b46f9e1e0008de3e85` became ready for that commit.
+- Live read-only smoke passed on the Teacher Workspace: real schedule/open-loop data loaded, Ava opened, `View student preview` rendered practice cards, the practice detail explicitly showed preview actions disabled, and the browser console reported no errors. No real student completion or skip was submitted.
 
 ## Musical Zoo character library proposal (2026-09-06)
 

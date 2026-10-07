@@ -1,6 +1,6 @@
 # Overdue assignment visibility release packet
 
-Status: prepared candidate only — no live database, production data, push, or deployment action is authorized by this packet.
+Status: released 2026-10-06 after fresh backup, production migration, fast-forward push, Netlify deploy, and read-only live smoke verification.
 
 ## Exact scope
 
