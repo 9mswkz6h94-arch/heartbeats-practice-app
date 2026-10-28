@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import BadgeStudio from "./BadgeStudio";
+import LessonAttendance from "./LessonAttendance";
 import LessonMemoryFixture from "./LessonMemoryFixture";
 import PlanningPartnerPanel from "./PlanningPartnerPanel";
 import "./TeacherWorkspaceFixture.css";
@@ -53,6 +54,7 @@ export const TEACHER_STUDENTS = [
     shortName: "Sam",
     initials: "SL",
     instrument: "Piano",
+    lesson: { day_of_week: 0, start_time: "17:15", duration_minutes: 30 },
     nextLesson: "Today · 5:15 PM",
     practiceLabel: "4 sessions this week",
     status: "On a roll",
@@ -555,6 +557,7 @@ export default function TeacherWorkspaceFixture() {
   return (
     <TeacherWorkspaceShell
       renderBadgeStudio={(students) => <BadgeStudio students={students} />}
+      renderStudioInbox={() => <LessonAttendance students={TEACHER_STUDENTS} demo />}
       renderStudentPreview={(student, onExit) => <StudentPreviewFixture student={student} onExit={onExit} />}
     />
   );

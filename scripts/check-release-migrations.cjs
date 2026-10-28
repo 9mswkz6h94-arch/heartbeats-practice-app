@@ -90,6 +90,17 @@ const releaseMigrations = [
       /TRUNCATE\s+(?:TABLE\s+)?public\.(?:completions|daily_practice_status|assignments|practice_steps)/i,
     ],
   },
+  {
+    filename: '028_lesson_attendance.sql',
+    required: [
+      /CREATE TABLE IF NOT EXISTS public\.lesson_attendance/i,
+      /ALTER TABLE public\.lesson_attendance ENABLE ROW LEVEL SECURITY/i,
+      /REVOKE ALL ON public\.lesson_attendance FROM anon/i,
+      /teacher_id = auth\.uid\(\)/i,
+      /s\.teacher_id = auth\.uid\(\)/i,
+      /UNIQUE \(teacher_id, student_id, lesson_date, lesson_time\)/i,
+    ],
+  },
 ];
 
 const errors = [];
@@ -146,5 +157,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021, 027).`,
+  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021, 027-028).`,
 );

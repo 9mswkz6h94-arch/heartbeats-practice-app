@@ -9,6 +9,7 @@ import CommLog from "./CommLog";
 import LessonMemory from "./LessonMemory";
 import ParentPreviewModal from "./ParentPreviewModal";
 import RescheduleRequests from "./RescheduleRequests";
+import LessonAttendance from "./LessonAttendance";
 import StudentManager from "./StudentManager";
 import DevStudentPreview from "./DevStudentPreview";
 import { TeacherWorkspaceShell } from "./TeacherWorkspaceFixture";
@@ -275,7 +276,7 @@ export default function TeacherWorkspace({ teacherId, userEmail, onLogout }) {
       )}
       renderFamily={(student) => <LiveFamily student={student} />}
       renderStudentManager={() => <StudentManager teacherId={teacherId} onChanged={workspace.refresh} />}
-      renderStudioInbox={() => <RescheduleRequests teacherId={teacherId} />}
+      renderStudioInbox={() => <><LessonAttendance teacherId={teacherId} students={workspace.students} /><RescheduleRequests teacherId={teacherId} /></>}
       renderBadgeStudio={(students) => (
         <BadgeStudio students={students} teacherId={teacherId} onAward={() => workspace.refresh({ silent: true })} />
       )}
