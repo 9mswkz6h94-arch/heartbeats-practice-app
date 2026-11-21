@@ -12,7 +12,8 @@ describe("assignment lifecycle", () => {
   });
 
   test("defaults a reassignment one local week ahead across month boundaries", () => {
-    expect(localDateString(addLocalDays(new Date(2026, 8, 28), 7))).toBe(
+    const studioMonday = new Date("2026-09-28T00:00:00-05:00");
+    expect(localDateString(addLocalDays(studioMonday, 7))).toBe(
       "2026-10-05"
     );
   });
