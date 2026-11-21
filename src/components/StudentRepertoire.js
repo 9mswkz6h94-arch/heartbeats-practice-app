@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import "./StudentRepertoire.css";
 
 export default function StudentRepertoire({ studentId }) {
+  const client = useWorkspaceClient();
   const [memorizedSongs, setMemorizedSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +14,7 @@ export default function StudentRepertoire({ studentId }) {
 
     try {
       // Get all assignments marked as memorized for this student
-      const { data, error: fetchError } = await supabase
+      const { data, error: fetchError } = await client
         .from("assignments")
         .select(
           `
@@ -36,7 +37,7 @@ export default function StudentRepertoire({ studentId }) {
     } finally {
       setLoading(false);
     }
-  }, [studentId]);
+  }, [studentId, client]);
 
   useEffect(() => {
     fetchMemorizedSongs();

@@ -27,13 +27,13 @@ export function isPersistentCategory(category) {
 //   - Theory: status comes from its MOST RECENT row ever, any date, so it
 //     stays completed across days until a teacher resets it at the next
 //     lesson via resetStepsForNextLesson.
-export async function fetchStepStatusMap(studentId, steps) {
+export async function fetchStepStatusMap(studentId, steps, client = supabase) {
   const dailyIds = steps.filter((s) => !isPersistentCategory(s.category)).map((s) => s.id);
   const theoryIds = steps.filter((s) => isPersistentCategory(s.category)).map((s) => s.id);
   const map = {};
 
   if (dailyIds.length) {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from("daily_practice_status")
       .select("practice_step_id, status")
       .eq("student_id", studentId)
@@ -47,7 +47,7 @@ export async function fetchStepStatusMap(studentId, steps) {
     // Rows for theory steps are only written on complete/skip/reset (never
     // a daily default), so history per step stays small — no pagination
     // risk here the way the old unbounded "every step, every day" query had.
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from("daily_practice_status")
       .select("practice_step_id, status, date")
       .eq("student_id", studentId)
@@ -66,7 +66,7 @@ export async function fetchStepStatusMap(studentId, steps) {
 // doesn't already have one — a single upsert instead of one insert per
 // step, so returning after a long gap doesn't mean dozens of sequential
 // round-trips. Theory steps are skipped entirely (no daily row needed).
-export async function ensureTodayRows(studentId, steps, statusMap) {
+export async function ensureTodayRows(studentId, steps, statusMap, client = supabase) {
   const missing = steps
     .filter((s) => !isPersistentCategory(s.category) && !(s.id in statusMap))
     .map((s) => ({
@@ -76,7 +76,7 @@ export async function ensureTodayRows(studentId, steps, statusMap) {
       status: "pending",
     }));
   if (!missing.length) return;
-  const { error } = await supabase
+  const { error } = await client
     .from("daily_practice_status")
     .upsert(missing, { onConflict: "student_id,practice_step_id,date" });
   if (!error) {
@@ -91,7 +91,7 @@ export async function ensureTodayRows(studentId, steps, statusMap) {
 
   const rejectedStepIds = new Set();
   for (const row of missing) {
-    const { error: rowError } = await supabase
+    const { error: rowError } = await client
       .from("daily_practice_status")
       .upsert([row], { onConflict: "student_id,practice_step_id,date" });
 
@@ -113,10 +113,10 @@ export async function ensureTodayRows(studentId, steps, statusMap) {
 // that could re-issue the same delete dozens of times and never bounded
 // its own lookback query. Theory rows are left alone; that's the
 // intentional persisted history. Best-effort: never blocks the UI.
-export async function cleanupOldDailyRows(studentId, steps) {
+export async function cleanupOldDailyRows(studentId, steps, client = supabase) {
   const dailyIds = steps.filter((s) => !isPersistentCategory(s.category)).map((s) => s.id);
   if (!dailyIds.length) return;
-  const { error } = await supabase
+  const { error } = await client
     .from("daily_practice_status")
     .delete()
     .eq("student_id", studentId)
@@ -129,8 +129,8 @@ export async function cleanupOldDailyRows(studentId, steps) {
 // it works whether or not a row already existed — true for daily steps
 // (row was pre-created) and for theory steps (row is only ever created
 // on an action like this one).
-export async function setStepStatus(studentId, stepId, status) {
-  const { error } = await supabase
+export async function setStepStatus(studentId, stepId, status, client = supabase) {
+  const { error } = await client
     .from("daily_practice_status")
     .upsert(
       [{ student_id: studentId, practice_step_id: stepId, date: todayStr(), status }],
@@ -143,9 +143,9 @@ export async function setStepStatus(studentId, stepId, status) {
 // status back to pending by deleting its history. Safe to call on
 // daily-category steps too (they reset on their own, but this just gives
 // an immediate reset instead of waiting for tomorrow).
-export async function resetStepsForNextLesson(studentId, stepIds) {
+export async function resetStepsForNextLesson(studentId, stepIds, client = supabase) {
   if (!stepIds.length) return;
-  const { error } = await supabase
+  const { error } = await client
     .from("daily_practice_status")
     .delete()
     .eq("student_id", studentId)

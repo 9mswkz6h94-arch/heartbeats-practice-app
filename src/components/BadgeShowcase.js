@@ -1,8 +1,10 @@
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import React, { useState, useEffect, useCallback } from "react";
 import { BADGE_EVENT, getBadgeShowcase } from "../lib/badgeLogic";
 import "./BadgeShowcase.css";
 
 export default function BadgeShowcase({ studentId }) {
+  const client = useWorkspaceClient();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unlockedBadge, setUnlockedBadge] = useState(null);
@@ -12,7 +14,7 @@ export default function BadgeShowcase({ studentId }) {
     setLoading(true);
     setError(null);
     try {
-      const studentBadges = await getBadgeShowcase(studentId);
+      const studentBadges = await getBadgeShowcase(studentId, client);
       setBadges(studentBadges);
     } catch (badgeError) {
       console.error("Badge showcase could not load:", badgeError);
@@ -20,7 +22,7 @@ export default function BadgeShowcase({ studentId }) {
     } finally {
       setLoading(false);
     }
-  }, [studentId]);
+  }, [studentId, client]);
 
   useEffect(() => { fetchBadges(); }, [fetchBadges]);
 

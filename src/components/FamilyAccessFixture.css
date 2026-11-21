@@ -1,0 +1,10 @@
+.family-access-review { max-width: 760px; margin: 32px auto; padding: 24px; color: var(--color-text); }
+.family-access-review-label { padding: 12px; border: 1px dashed var(--color-border); font-weight: 600; }
+.family-access-review section { padding: 24px; border: 1px solid var(--color-border); background: var(--color-surface-raised); }
+.family-access-review h1 { font-size: 28px; }
+.family-access-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; }
+.family-access-review button { min-height: 48px; padding: 12px; border: 1px solid var(--color-ink); background: var(--color-surface); color: var(--color-text); font: inherit; cursor: pointer; }
+.family-access-choices button { min-height: 112px; display: grid; align-content: center; gap: 8px; text-align: left; }
+.family-access-choices span { color: var(--color-text-muted); }
+.family-access-review article { padding: 16px; border: 1px solid var(--color-border); }
+.family-back { margin-bottom: 16px; }

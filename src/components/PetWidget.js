@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import { stageInfo, progressToNext, SPECIES_CHOICES } from "../lib/petStages";
 import "./PetWidget.css";
 
@@ -27,6 +27,7 @@ export function cheerForPractice(intent = "step_complete_generic") {
 // roster as the collection creatures — permanent choices, made through
 // SECURITY DEFINER functions the same way hatch/merge are.
 export default function PetWidget({ studentId, compact = false, readOnly = false }) {
+  const client = useWorkspaceClient();
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [listening, setListening] = useState(false);
@@ -46,7 +47,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
   const rafRef = useRef(null);
 
   const fetchPet = useCallback(async () => {
-    const { data } = await supabase
+    const { data } = await client
       .from("pets")
       .select("xp, stage, name, species, species_chosen")
       .eq("student_id", studentId)
@@ -55,7 +56,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
     setPet(nextPet);
     setLoading(false);
     return nextPet;
-  }, [studentId]);
+  }, [studentId, client]);
 
   useEffect(() => {
     fetchPet();
@@ -160,7 +161,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
     const clean = nameDraft.trim();
     if (!clean) return;
     setSavingName(true);
-    const { data, error } = await supabase.rpc("set_pet_name", { p_name: clean });
+    const { data, error } = await client.rpc("set_pet_name", { p_name: clean });
     setSavingName(false);
     if (!error) {
       setPet((p) => ({ ...p, name: data.name }));
@@ -170,7 +171,7 @@ export default function PetWidget({ studentId, compact = false, readOnly = false
 
   async function handleChooseSpecies(key) {
     setChoosingSpecies(true);
-    const { data, error } = await supabase.rpc("choose_pet_species", { p_species: key });
+    const { data, error } = await client.rpc("choose_pet_species", { p_species: key });
     setChoosingSpecies(false);
     if (!error) {
       setPet((p) => ({ ...p, species: data.species, species_chosen: true }));

@@ -11,12 +11,12 @@ export const BADGE_EVENT = "heartbeats:badges-awarded";
 /**
  * Check and award badges for a student based on their progress
  */
-export const checkAndAwardBadges = async (studentId) => {
+export const checkAndAwardBadges = async (studentId, client = supabase) => {
   try {
-    const stats = await fetchStudentStats(studentId);
+    const stats = await fetchStudentStats(studentId, client);
 
     // Get already awarded badges
-    const { data: awardedBadges } = await supabase
+    const { data: awardedBadges } = await client
       .from("student_badges")
       .select("badge_id")
       .eq("student_id", studentId);
@@ -36,7 +36,7 @@ export const checkAndAwardBadges = async (studentId) => {
         badge_id: badge.id,
       }));
 
-      const { error } = await supabase
+      const { error } = await client
         .from("student_badges")
         .insert(badgeInserts);
 
@@ -59,9 +59,9 @@ export const checkAndAwardBadges = async (studentId) => {
 /**
  * Get all badges for a student
  */
-export const getStudentBadges = async (studentId) => {
+export const getStudentBadges = async (studentId, client = supabase) => {
   try {
-    const { data } = await supabase
+    const { data } = await client
       .from("student_badges")
       .select("badge_id, earned_at")
       .eq("student_id", studentId)
@@ -113,11 +113,11 @@ export const getTeacherBadgeAwards = async (studentId, client = supabase) => {
   }
 };
 
-export const getBadgeShowcase = async (studentId) => {
+export const getBadgeShowcase = async (studentId, client = supabase) => {
   const [earnedBadges, teacherAwards, stats] = await Promise.all([
-    getStudentBadges(studentId),
-    getTeacherBadgeAwards(studentId),
-    fetchStudentStats(studentId),
+    getStudentBadges(studentId, client),
+    getTeacherBadgeAwards(studentId, client),
+    fetchStudentStats(studentId, client),
   ]);
   const earnedById = new Map(earnedBadges.map((badge) => [badge.id, badge]));
 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import KidPracticePanel from "./KidPracticePanel";
 import "./ParentDashboard.css";
 
 // Family shell: kid switcher + family code. Per-kid content (stats,
 // lesson, reschedule, badges, chat) lives in KidPracticePanel, shared
 // with the teacher's "Preview as Parent" view so the two can't drift.
-export default function ParentDashboard({ userId, userEmail, onLogout }) {
+export default function ParentDashboard({ userId, onLogout, onChoosePerson }) {
+  const client = useWorkspaceClient();
   const [kids, setKids] = useState([]);
   const [family, setFamily] = useState(null);
   const [selectedKidId, setSelectedKidId] = useState(null);
@@ -17,35 +18,28 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
     setLoading(true);
     setError(null);
     try {
-      // Back-fill the auth link on older rows matched by email only.
-      await supabase
-        .from("parent_students")
-        .update({ parent_auth_user_id: userId })
-        .eq("parent_email", (userEmail || "").toLowerCase())
-        .is("parent_auth_user_id", null);
-
-      const { data: links, error: linkError } = await supabase
+      const { data: links, error: linkError } = await client
         .from("parent_students")
         .select("student_id")
-        .or(`parent_auth_user_id.eq.${userId},parent_email.eq.${(userEmail || "").toLowerCase()}`);
+        .eq("parent_auth_user_id", userId);
       if (linkError) throw linkError;
 
       const ids = (links || []).map((l) => l.student_id);
       if (ids.length === 0) {
         setKids([]);
       } else {
-        const { data: students, error: studentError } = await supabase
+        const { data: students, error: studentError } = await client
           .from("students")
-          .select("id, name, avatar, instrument, status, family_id")
+          .select("id, name, avatar, instrument, status, family_id, email")
           .in("id", ids)
           .order("created_at");
         if (studentError) throw studentError;
         setKids(students || []);
-        if (students?.length) setSelectedKidId((cur) => cur || students[0].id);
+        setSelectedKidId((cur) => students?.some((student) => student.id === cur) ? cur : students?.[0]?.id || null);
 
         const familyId = students?.find((s) => s.family_id)?.family_id;
         if (familyId) {
-          const { data: fam } = await supabase
+          const { data: fam } = await client
             .from("families")
             .select("id, code")
             .eq("id", familyId)
@@ -58,7 +52,7 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
     } finally {
       setLoading(false);
     }
-  }, [userId, userEmail]);
+  }, [userId, client]);
 
   useEffect(() => {
     fetchFamily();
@@ -70,8 +64,8 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
     <div className="parent-dashboard">
       <header className="parent-dashboard-header">
         <div><p className="dashboard-context">Parent workspace</p><h1>Your family</h1></div>
-        <button type="button" className="btn-logout" onClick={onLogout}>
-          Switch account
+        <button type="button" className="btn-logout" onClick={onChoosePerson || onLogout}>
+          {onChoosePerson ? "Choose another person" : "Switch account"}
         </button>
       </header>
 
@@ -89,7 +83,7 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
 
         {!loading && kids.length > 0 && (
           <>
-            {family && (
+            {family && kids.some((kid) => kid.email === `kid-${kid.id}@kids.heartbeats.app`) && (
               <section className="parent-family-code">
                 <div>
                   <p className="parent-code-label">Family code for kid login</p>
@@ -102,7 +96,7 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
             )}
 
             {kids.length > 1 && (
-              <nav className="kid-switcher">
+              <nav className="kid-switcher" aria-label="Choose a student">
                 {kids.map((kid) => (
                   <button
                     key={kid.id}
@@ -112,13 +106,13 @@ export default function ParentDashboard({ userId, userEmail, onLogout }) {
                     onClick={() => setSelectedKidId(kid.id)}
                   >
                     <span className="kid-tab-avatar">{kid.avatar || "🎵"}</span>
-                    {kid.name.split(" ")[0]}
+                    {kid.name}
                   </button>
                 ))}
               </nav>
             )}
 
-            {selectedKid && <KidPracticePanel kid={selectedKid} mode="parent" />}
+            {selectedKid && <KidPracticePanel key={selectedKid.id} kid={selectedKid} mode="parent" />}
 
             {kids.some((k) => k.status === "pending") && (
               <p className="parent-pending-note">

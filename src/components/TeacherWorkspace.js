@@ -7,6 +7,7 @@ import AssignmentForm from "./AssignmentForm";
 import BadgeStudio from "./BadgeStudio";
 import CommLog from "./CommLog";
 import LessonMemory from "./LessonMemory";
+import TeacherAccessCode from "./TeacherAccessCode";
 import ParentPreviewModal from "./ParentPreviewModal";
 import RescheduleRequests from "./RescheduleRequests";
 import LessonAttendance from "./LessonAttendance";
@@ -203,6 +204,7 @@ function LiveFamily({ student }) {
       <div className="teacher-family-grid">
         <article><span>Regular lesson</span><h3>{student.schedule}</h3><p>{student.lesson?.location || "Rainbow Heart Studio"} · {student.lesson?.duration_minutes || 30} minutes</p></article>
         <article><span>Primary family connection</span><h3>{student.family}</h3><p>{[student.familyContact?.email, student.familyContact?.phone].filter(Boolean).join(" · ") || "Contact details not added yet"}</p></article>
+        <TeacherAccessCode key={student.id} student={student} />
         {(student.guardians || []).map((guardian) => (
           <article key={`${guardian.family_id}-${guardian.name}-${guardian.email || guardian.phone}`}>
             <span>{guardian.relationship || "Additional caregiver"}</span>

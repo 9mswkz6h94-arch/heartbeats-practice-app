@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import "./NotificationSettings.css";
 
 // Parent's opt-in for texted notifications when a teacher flags a message.
@@ -7,6 +7,7 @@ import "./NotificationSettings.css";
 // mirrors the existing notify_email column, adds the phone number that
 // notify_sms actually needs to be actionable.
 export default function NotificationSettings({ studentId }) {
+  const client = useWorkspaceClient();
   const [linkId, setLinkId] = useState(null);
   const [phone, setPhone] = useState("");
   const [notifySms, setNotifySms] = useState(false);
@@ -16,13 +17,13 @@ export default function NotificationSettings({ studentId }) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data: userData } = await supabase.auth.getUser();
+    const { data: userData } = await client.auth.getUser();
     if (!userData?.user) { setLoading(false); return; }
-    const { data } = await supabase
+    const { data } = await client
       .from("parent_students")
       .select("id, parent_phone, notify_sms")
       .eq("student_id", studentId)
-      .or(`parent_auth_user_id.eq.${userData.user.id},parent_email.eq.${(userData.user.email || "").toLowerCase()}`)
+      .eq("parent_auth_user_id", userData.user.id)
       .maybeSingle();
     if (data) {
       setLinkId(data.id);
@@ -30,7 +31,7 @@ export default function NotificationSettings({ studentId }) {
       setNotifySms(!!data.notify_sms);
     }
     setLoading(false);
-  }, [studentId]);
+  }, [studentId, client]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -40,10 +41,9 @@ export default function NotificationSettings({ studentId }) {
     setSaving(true);
     setMessage(null);
     try {
-      const { error } = await supabase
-        .from("parent_students")
-        .update({ parent_phone: phone.trim() || null, notify_sms: notifySms })
-        .eq("id", linkId);
+      const { error } = await client.rpc("hb_save_contact_preferences", {
+        p_link: linkId, p_phone: phone.trim() || null, p_sms: notifySms,
+      });
       if (error) throw error;
       setMessage({ ok: true, text: "Saved" });
     } catch (err) {

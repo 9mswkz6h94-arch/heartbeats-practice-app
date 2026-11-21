@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
 import {
   AVATARS,
   INSTRUMENTS,
@@ -7,6 +6,7 @@ import {
   makeKidPassword,
   randomPin,
   getSecondaryClient,
+  createSignupClient,
 } from "../lib/familyAuth";
 import {
   GUARDIAN_RELATIONSHIPS,
@@ -14,6 +14,7 @@ import {
   calculateAge,
   normalizeOptionalText,
 } from "../lib/familyProfile";
+import { createSignupSpaceClient, familySignIn, familyRpc } from "../lib/familySpaceClient";
 import "./AuthForms.css";
 import "./FamilySignup.css";
 
@@ -51,10 +52,12 @@ function blankGuardian() {
 // each kid's row remembers whether it succeeded, so a mid-flight failure can
 // be retried without duplicating the kids that already worked.
 export default function FamilySignup({ onDone, onBackToLogin }) {
+  const [signup] = useState(createSignupClient);
   const [step, setStep] = useState(1); // 1 parent, 2 kids, 3 done
   const [parentName, setParentName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [parentPin, setParentPin] = useState("");
   const [primaryRelationship, setPrimaryRelationship] = useState("Parent");
   const [parentPhone, setParentPhone] = useState("");
   const [kids, setKids] = useState([blankKid()]);
@@ -78,7 +81,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
     setError(null);
     setBusy(true);
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await signup.auth.signUp({
         email,
         password,
         options: { data: { role: "parent", display_name: parentName.trim() } },
@@ -86,14 +89,14 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
       if (signUpError) {
         // Returning parent who already has an account — sign them in instead.
         if (/already registered/i.test(signUpError.message || "")) {
-          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+          const { error: signInError } = await signup.auth.signInWithPassword({ email, password });
           if (signInError) throw new Error("This email already has an account, but that password didn't match. Use Sign In instead.");
         } else {
           throw signUpError;
         }
       }
       if (!data?.session) {
-        const { data: sessionData } = await supabase.auth.getSession();
+        const { data: sessionData } = await signup.auth.getSession();
         if (!sessionData?.session) {
           throw new Error(
             "Account created, but email confirmation appears to be turned on in Supabase — the family wizard needs it off. (See SQL_MIGRATIONS/002 notes.)"
@@ -108,8 +111,8 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
     }
   };
 
-  const createOneKid = async (kid, familyInfo, parentEmail) => {
-    const studentId = crypto.randomUUID();
+  const createOneKid = async (kid, familyInfo) => {
+    const studentId = kid.localId;
     const kidEmail = makeKidEmail(studentId);
     const kidPassword = makeKidPassword(familyInfo.code, kid.pin);
 
@@ -119,45 +122,25 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
       password: kidPassword,
       options: { data: { role: "student", display_name: kid.name.trim() } },
     });
-    if (authError) throw authError;
-
-    // 2. Student row — teacher_id is auto-filled by the DB trigger; new kids
-    //    start as 'pending' until the teacher approves them in the HUD.
-    const { error: insertError } = await supabase.from("students").insert([
-      {
-        id: studentId,
-        name: kid.name.trim(),
-        email: kidEmail,
-        auth_user_id: kidAuth?.user?.id || null,
-        family_id: familyInfo.id,
-        avatar: kid.avatar,
-        instrument: kid.instrument,
-        preferred_name: normalizeOptionalText(kid.preferredName),
-        birthday: normalizeOptionalText(kid.birthday),
-        pronouns: normalizeOptionalText(kid.pronouns),
-        school_grade: normalizeOptionalText(kid.schoolGrade),
-        status: "pending",
-      },
-    ]);
-    if (insertError) throw insertError;
-
-    // 3. Parent ↔ kid link
-    const { error: linkError } = await supabase.from("parent_students").insert([
-      {
-        student_id: studentId,
-        parent_email: parentEmail,
-        parent_name: parentName.trim() || null,
-        parent_phone: normalizeOptionalText(parentPhone),
-        relationship: primaryRelationship,
-        can_manage_family: true,
-        parent_auth_user_id: (await supabase.auth.getUser()).data?.user?.id || null,
-      },
-    ]);
+    // Reuse this child's account if an earlier attempt ended after signup.
+    let accountId = kidAuth?.session?.user.id;
+    if (!accountId) {
+      const retry = await getSecondaryClient().auth.signInWithPassword({ email: kidEmail, password: kidPassword });
+      if (retry.error) throw authError || retry.error;
+      accountId = retry.data.user.id;
+    }
+    const { error: linkError } = await createSignupSpaceClient(familyInfo.token, signup).rpc("hb_register_family_student", {
+      p_family: familyInfo.id, p_student: studentId, p_account: accountId,
+      p_profile: { name: kid.name.trim(), avatar: kid.avatar, instrument: kid.instrument,
+        preferred_name: normalizeOptionalText(kid.preferredName), birthday: normalizeOptionalText(kid.birthday),
+        pronouns: normalizeOptionalText(kid.pronouns), school_grade: normalizeOptionalText(kid.schoolGrade) },
+      p_contact: { name: parentName.trim() || null, phone: normalizeOptionalText(parentPhone), relationship: primaryRelationship },
+    });
     if (linkError) throw linkError;
   };
 
   const createAdditionalGuardian = async (guardian, familyInfo) => {
-    const { error: guardianError } = await supabase.from("family_guardians").insert([{
+    const { error: guardianError } = await createSignupSpaceClient(familyInfo.token, signup).from("family_guardians").insert([{
       family_id: familyInfo.id,
       name: guardian.name.trim(),
       relationship: normalizeOptionalText(guardian.relationship),
@@ -199,16 +182,22 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
       // Family is created once; retries reuse it.
       let fam = family;
       if (!fam) {
-        const { data, error: famError } = await supabase.rpc("create_family", {
+        const { data, error: famError } = await signup.rpc("hb_create_family", {
+          p_pin: parentPin,
           p_display_name: parentName.trim() ? `${parentName.trim()}'s family` : null,
         });
         if (famError) throw famError;
         const row = Array.isArray(data) ? data[0] : data;
-        fam = { id: row.family_id, code: row.family_code };
+        fam = { id: row.family_id, code: row.family_code, token: row.token, expires: row.expires };
         setFamily(fam);
       }
 
-      const parentEmail = email.trim().toLowerCase();
+      if (Date.parse(fam.expires) - Date.now() < 30000) {
+        const { data, error } = await signup.rpc("hb_unlock_family", { p_pin: parentPin, p_parent: true });
+        if (error || data.error) throw new Error(error?.message || data.error);
+        fam = { ...fam, token: data.token, expires: data.expires };
+        setFamily(fam);
+      }
       let anyFailed = false;
       for (const guardian of guardians.filter((item) => item.state !== "created")) {
         try {
@@ -225,7 +214,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
 
       for (const kid of toCreate) {
         try {
-          await createOneKid(kid, fam, parentEmail);
+          await createOneKid(kid, fam);
           updateKid(kid.localId, { state: "created", errorMsg: null });
         } catch (err) {
           anyFailed = true;
@@ -243,6 +232,19 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
     } finally {
       setBusy(false);
     }
+  };
+
+  const openFamily = async () => {
+    setBusy(true); setError(null);
+    try {
+      const id = await familySignIn(email.trim(), password);
+      const approval = await familyRpc("hb_unlock_family", { p_pin: parentPin, p_parent: false });
+      if (approval.error || approval.data?.error) throw new Error(approval.error?.message || approval.data.error);
+      await signup.auth.signOut({ scope: "local" });
+      setParentPin(""); setPassword("");
+      onDone(id);
+    } catch (err) { setError(err.message || "Use Family sign-in to open your family."); }
+    finally { setBusy(false); }
   };
 
   const copySummary = () => {
@@ -324,6 +326,11 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                   minLength={6}
                   disabled={busy}
                 />
+              </div>
+              <div className="form-group">
+                <label htmlFor="new-parent-pin">Private parent PIN (6–10 digits)</label>
+                <input id="new-parent-pin" type="password" inputMode="numeric" autoComplete="off" pattern="[0-9]{6,10}" maxLength={10} value={parentPin} onChange={e => setParentPin(e.target.value)} required />
+                <small>Keep this PIN with the grown-up who approves devices and opens Parent space.</small>
               </div>
               {error && <div className="error-message" role="alert">{error}</div>}
               <button type="submit" className="btn-submit" disabled={busy}>
@@ -624,7 +631,8 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
             <p className="wizard-sub" style={{ textAlign: "center" }}>
               Your teacher will see your kids and approve them — assignments show up after that.
             </p>
-            <button type="button" className="btn-submit" onClick={onDone}>
+            {error && <p role="alert">{error}</p>}
+            <button type="button" className="btn-submit" disabled={busy} onClick={openFamily}>
               Go to my family dashboard
             </button>
           </>

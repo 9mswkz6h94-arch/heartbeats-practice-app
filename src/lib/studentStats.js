@@ -22,21 +22,21 @@ export function buildRecentActivity(completions = [], today = new Date()) {
   });
 }
 
-export async function fetchStudentStats(studentId) {
+export async function fetchStudentStats(studentId, client = supabase) {
   try {
-    const { data: completions, error: completionsError } = await supabase
+    const { data: completions, error: completionsError } = await client
       .from("completions")
       .select("completed_at")
       .eq("student_id", studentId);
     if (completionsError) throw completionsError;
 
-    const { data: repertoire, error: repertoireError } = await supabase
+    const { data: repertoire, error: repertoireError } = await client
       .from("repertoire")
       .select("id, memorized_at, assignments(title)")
       .eq("student_id", studentId);
     if (repertoireError) throw repertoireError;
 
-    const { data: assignments, error: assignmentsError } = await supabase
+    const { data: assignments, error: assignmentsError } = await client
       .from("assignments")
       .select(
         `
@@ -49,7 +49,7 @@ export async function fetchStudentStats(studentId) {
       .order("created_at", { ascending: false });
     if (assignmentsError) throw assignmentsError;
 
-    const { data: sightreadingSessions, error: sightreadingError } = await supabase
+    const { data: sightreadingSessions, error: sightreadingError } = await client
       .from("sightreading_attempts")
       .select("completed_at")
       .eq("student_id", studentId);

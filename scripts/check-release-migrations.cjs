@@ -101,6 +101,10 @@ const releaseMigrations = [
       /UNIQUE \(teacher_id, student_id, lesson_date, lesson_time\)/i,
     ],
   },
+  { filename: '029_remove_unscoped_student_read.sql', required: [/DROP POLICY IF EXISTS "Allow student to see own data"/i] },
+  { filename: '030_guardian_and_roster_permissions.sql', required: [/DROP POLICY IF EXISTS parent_insert_own_links/i, /DROP POLICY IF EXISTS parent_update_own_links/i] },
+  { filename: '031_family_device_access.sql', required: [/REFERENCES auth\.sessions\(id\) ON DELETE CASCADE/i, /hb_private\.selected_student\(\)/, /REVOKE ALL ON FUNCTION hb_private\.set_space/] },
+  { filename: '032_private_assignment_sheets.sql', required: [/SET public=false WHERE id='assignment-attachments'/i] },
 ];
 
 const errors = [];
@@ -157,5 +161,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021, 027-028).`,
+  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021, 027-032).`,
 );

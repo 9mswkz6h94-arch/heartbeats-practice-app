@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import { getCharacter } from "../lib/characterRegistry";
 import { getPracticeCompanionReaction } from "../lib/companionReactions";
 import {
@@ -112,6 +112,7 @@ function StudentZooCare({ studentId, companions, selectedCompanionId, onSelectCo
 }
 
 export default function StudentZooExperience({ studentId }) {
+  const client = useWorkspaceClient();
   const riffin = useMemo(() => getCharacter("riffin"), []);
   const [zooState, setZooState] = useState(null);
   const [selectedCompanion, setSelectedCompanion] = useState(riffin);
@@ -127,7 +128,7 @@ export default function StudentZooExperience({ studentId }) {
     writeDeviceZooPreferences(studentId, nextPreferences);
 
     if (!remotePreferencesAvailableRef.current) return;
-    supabase
+    client
       .from("student_zoo_preferences")
       .upsert({ student_id: studentId, ...patch }, { onConflict: "student_id" })
       .then(({ error }) => {
@@ -138,25 +139,25 @@ export default function StudentZooExperience({ studentId }) {
         }
         setIssue("Your Zoo choices are saved on this device, but studio sync is taking a moment.");
       });
-  }, [studentId]);
+  }, [studentId, client]);
 
   const loadZoo = useCallback(async () => {
     const [petResult, creaturesResult, completionsResult, preferencesResult] = await Promise.all([
-      supabase
+      client
         .from("pets")
         .select("xp, stage, name, species")
         .eq("student_id", studentId)
         .maybeSingle(),
-      supabase
+      client
         .from("pet_creatures")
         .select("id, species, stage")
         .eq("student_id", studentId)
         .order("created_at", { ascending: true }),
-      supabase
+      client
         .from("completions")
         .select("id", { count: "exact", head: true })
         .eq("student_id", studentId),
-      supabase
+      client
         .from("student_zoo_preferences")
         .select("student_id, selected_companion_id, habitat_residency, meadow_placements")
         .eq("student_id", studentId)
@@ -188,7 +189,7 @@ export default function StudentZooExperience({ studentId }) {
       || companions.find((companion) => companion.id === current?.id)
       || riffin
     ));
-  }, [riffin, studentId]);
+  }, [riffin, studentId, client]);
 
   useEffect(() => {
     loadZoo();

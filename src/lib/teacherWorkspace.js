@@ -98,6 +98,7 @@ function mapStudent(student, lesson, familyLink, stats, draft, guardians = []) {
     name,
     avatar: student.avatar,
     accountStatus: student.status,
+    needsStudentLogin: !student.auth_user_id && !student.family_id,
     shortName: shortName(name),
     initials: initialsFor(name),
     instrument: student.instrument || "Music",
@@ -142,7 +143,7 @@ export function createTeacherWorkspaceApi(client = supabase, fetchStats = fetchS
   const load = async (teacherId) => {
     const { data: studentRows, error: studentError } = await client
       .from("students")
-      .select("id, name, email, created_at, status, avatar, instrument, family_id")
+      .select("id, name, email, created_at, status, avatar, instrument, family_id, auth_user_id")
       .eq("teacher_id", teacherId)
       .neq("status", "pending")
       .order("name");

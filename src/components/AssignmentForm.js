@@ -114,8 +114,7 @@ export default function AssignmentForm({
           .from(BUCKET)
           .upload(path, attachmentFile, { upsert: false });
         if (uploadError) throw new Error("File upload failed: " + uploadError.message);
-        const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
-        attachmentUrl = urlData.publicUrl;
+        attachmentUrl = "assignment-file:" + path;
       }
 
       // Create assignment

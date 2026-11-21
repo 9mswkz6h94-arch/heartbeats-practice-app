@@ -1,6 +1,8 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import { supabase } from "./lib/supabaseClient";
+import { familyIdentity } from "./lib/familySpaceClient";
 import TeacherLogin from "./components/TeacherLogin";
+import StudentClaim from "./components/StudentClaim";
 import StudentLogin from "./components/StudentLogin";
 import KidLogin from "./components/KidLogin";
 import ParentLogin from "./components/ParentLogin";
@@ -11,7 +13,7 @@ import "./App.css";
 import "./theme/rainbow-heart/rainbow-heart.css";
 import "./components/RainbowHeartStudentReview.css";
 
-const ParentDashboard = lazy(() => import("./components/ParentDashboard"));
+const FamilyWorkspace = lazy(() => import("./components/FamilyWorkspace"));
 const TeacherDashboard = lazy(() => import("./components/TeacherDashboard"));
 const StudentDashboard = lazy(() => import("./components/StudentDashboard"));
 function WorkspaceLoading() {
@@ -52,6 +54,10 @@ function App() {
   const inFamilySignupRef = React.useRef(false);
   inFamilySignupRef.current = inFamilySignup;
 
+  const switchToFamily = React.useRef(false);
+  const authVersion = React.useRef(0);
+  const currentUser = React.useRef(null);
+
   useEffect(() => {
     // Mock review screens are deliberately disconnected from auth and data.
     // Do not contact Supabase when reviewing the local fixture shells.
@@ -60,128 +66,84 @@ function App() {
       return undefined;
     }
 
-    let isMounted = true;
-
-    const checkAuth = async () => {
-      try {
-        // Apply SSO token from URL before checking session
-        await applySSOTokenFromURL();
-
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (!isMounted) return;
-
-        if (session) {
-          await resolveSession(session, isMounted);
-        }
-
+    let mounted = true;
+    let timer;
+    const route = async (session) => {
+      if (!mounted || inFamilySignupRef.current) return;
+      // Supabase also sends SIGNED_IN when an existing tab regains focus.
+      if (session && currentUser.current === session.user.id) return;
+      const version = ++authVersion.current;
+      currentUser.current = session?.user?.id || null;
+      if (!session) {
+        setUserId(null); setUserEmail(null); setStudentId(null);
+        let familyId;
+        try { familyId = await familyIdentity(); } catch { /* Individual sign-in stays available. */ }
+        if (!mounted || version !== authVersion.current) return;
+        if (familyId) { setUserId(familyId); setScreen("family-workspace"); }
+        else if (switchToFamily.current) { switchToFamily.current = false; setScreen("parent-login"); }
+        else setScreen("selection");
         setLoading(false);
-      } catch (err) {
-        console.error("Auth check error:", err);
-        setLoading(false);
+        return;
       }
+      setLoading(true);
+      await resolveSession(session, () => mounted && version === authVersion.current);
+      if (mounted && version === authVersion.current) setLoading(false);
     };
-
-    checkAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return;
-
-      if (event === "SIGNED_IN" && session) {
-        if (inFamilySignupRef.current) return; // wizard routes itself when done
-        await resolveSession(session, isMounted);
-      } else if (event === "SIGNED_OUT") {
-        setUserId(null);
-        setStudentId(null);
-        setScreen("selection");
-      }
+    // Complete the auth callback before querying PostgREST. Those requests
+    // may need the same auth lock held by the callback.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!["SIGNED_IN", "SIGNED_OUT"].includes(event) || inFamilySignupRef.current) return;
+      clearTimeout(timer);
+      if (event === "SIGNED_OUT") { ++authVersion.current; currentUser.current = null; }
+      timer = setTimeout(() => route(session), 0);
     });
-
-    return () => {
-      isMounted = false;
-      subscription?.unsubscribe();
-    };
+    (async () => {
+      try {
+        await applySSOTokenFromURL();
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        await route(data.session);
+      } catch {
+        if (mounted) { setAuthError("Could not open your session. Please sign in again."); setLoading(false); }
+      }
+    })();
+    return () => { mounted = false; clearTimeout(timer); subscription.unsubscribe(); };
   }, [reviewScreen]);
 
-  // Resolve a Supabase session into app state
-  async function resolveSession(session, isMounted) {
-    if (!isMounted) return;
-
-    // User metadata is supplied during public signup, so it cannot grant
-    // teacher access. Only an invited teacher profile in `users` may do that.
-    const metadataRole = session.user.user_metadata?.role;
-    const { data: userData } = await supabase
-      .from("users")
-      .select("type")
-      .eq("id", session.user.id)
-      .single();
-
-    let resolvedType = userData?.type || metadataRole;
-    if (resolvedType === "teacher" && userData?.type !== "teacher") {
-      await supabase.auth.signOut();
-      if (!isMounted) return;
-      setAuthError("This account does not have teacher access. Ask the studio administrator for an invitation.");
-      setScreen("selection");
-      return;
-    }
-
-    if (!resolvedType) {
-      await supabase.auth.signOut();
-      if (!isMounted) return;
-      setAuthError("We couldn't determine which studio space belongs to this account. Ask the studio administrator for help.");
-      setScreen("selection");
-      return;
-    }
-
-    if (!isMounted) return;
-
-    setUserId(session.user.id);
-    setUserEmail(session.user.email);
-
-    if (resolvedType === "student") {
-      // Match student record by email (kid accounts use synthetic emails,
-      // legacy students use their real one — both live in students.email)
-      const { data: studentData } = await supabase
-        .from("students")
-        .select("id")
-        .eq("email", session.user.email)
-        .single();
-
-      if (!isMounted) return;
-
-      if (studentData) {
-        // Link auth_user_id if not already set
-        await supabase
-          .from("students")
-          .update({ auth_user_id: session.user.id })
-          .eq("id", studentData.id)
-          .is("auth_user_id", null);
-
-        setStudentId(studentData.id);
-        setAuthError(null);
-        setScreen("student-dashboard");
-      } else {
-        // Account exists but the teacher hasn't added this email as a student yet.
-        // Stay signed in (don't sign out) so it resolves automatically once they're added —
-        // just reload after the teacher adds you.
-        setAuthError(
-          "We couldn't find a student profile for this email yet. Ask your teacher to add you, then reload this page."
-        );
+  async function resolveSession(session, current) {
+    try {
+      const uid = session.user.id;
+      const { data: profile, error } = await supabase.from("users").select("type").eq("id", uid).maybeSingle();
+      if (error) throw error;
+      if (!current()) return;
+      setUserId(uid); setUserEmail(session.user.email); setStudentId(null); setAuthError(null);
+      if (profile?.type === "teacher") { setScreen("teacher-dashboard"); return; }
+      const household = await supabase.rpc("hb_family_state");
+      if (household.error) throw household.error;
+      if (!current()) return;
+      if (household.data?.family) {
+        // Retire any old browser-held login before handing this device to a child.
+        switchToFamily.current = true;
+        const { error: signOutError } = await supabase.auth.signOut({ scope: "local" });
+        if (signOutError) throw signOutError;
+        return;
+      }
+      const linked = await supabase.from("students").select("id").eq("auth_user_id", uid).maybeSingle();
+      if (linked.error) throw linked.error;
+      const id = linked.data?.id;
+      if (!current()) return;
+      if (!id) { setScreen("student-claim"); return; }
+      setStudentId(id); setScreen("student-dashboard");
+    } catch {
+      if (current()) {
+        currentUser.current = null;
+        setAuthError("Your workspace could not open. Please try signing in again.");
         setScreen("selection");
       }
-    } else if (resolvedType === "parent") {
-      setAuthError(null);
-      setScreen("parent-dashboard");
-    } else {
-      setScreen("teacher-dashboard");
     }
   }
 
-  if (["teacher", "teacher-admin", "student", "parent", "parent-signup"].includes(reviewScreen)) {
+  if (["teacher", "teacher-admin", "student", "parent", "parent-signup", "family-access"].includes(reviewScreen)) {
     const handleReviewNavigate = (nextScreen) => {
       const nextUrl = new URL(window.location.href);
       nextUrl.searchParams.set("review", nextScreen);
@@ -210,6 +172,8 @@ function App() {
   };
 
   const handleLogout = async () => {
+    ++authVersion.current;
+    currentUser.current = null;
     try {
       // Account switching only needs to remove this device's session. Using
       // local scope avoids a remote sign-out failure trapping a family or
@@ -227,17 +191,15 @@ function App() {
     }
   };
 
-  // Wizard finished: route the (already signed-in) parent to their dashboard.
-  const handleFamilySignupDone = async () => {
-    setInFamilySignup(false);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (session) {
-      await resolveSession(session, true);
-    } else {
-      setScreen("selection");
-    }
+  const openFamily = (id) => {
+    ++authVersion.current;
+    currentUser.current = null;
+    setInFamilySignup(false); setUserId(id); setUserEmail(null); setStudentId(null);
+    setAuthError(null); setScreen("family-workspace"); setLoading(false);
+  };
+  const leaveFamily = () => {
+    ++authVersion.current;
+    setUserId(null); setStudentId(null); setAuthError(null); setScreen("selection");
   };
 
   const screenHeader = (
@@ -285,7 +247,7 @@ function App() {
                 className="btn btn-parent"
               >
                 <span className="role-index">02</span>
-                <span className="role-copy"><strong>Parent</strong><small>View family practice and schedules</small></span>
+                <span className="role-copy"><strong>Family sign-in</strong><small>Choose a student or open Parent space</small></span>
               </button>
               <button
                 onClick={() => { setAuthError(null); setScreen("teacher-login"); }}
@@ -313,7 +275,7 @@ function App() {
         <>
           {screenHeader}
           <main>
-            <KidLogin onUseEmailInstead={() => setScreen("student-login")} />
+            <KidLogin onFamilyLogin={() => setScreen("parent-login")} onUseEmailInstead={() => setScreen("student-login")} />
           </main>
         </>
       )}
@@ -331,7 +293,7 @@ function App() {
         <>
           {screenHeader}
           <main>
-            <ParentLogin
+            <ParentLogin onSignedIn={openFamily}
               onStartSignup={() => {
                 setInFamilySignup(true);
                 setScreen("family-signup");
@@ -346,7 +308,7 @@ function App() {
           {screenHeader}
           <main>
             <FamilySignup
-              onDone={handleFamilySignupDone}
+              onDone={openFamily}
               onBackToLogin={() => {
                 setInFamilySignup(false);
                 setScreen("parent-login");
@@ -360,12 +322,13 @@ function App() {
         <Suspense fallback={<WorkspaceLoading />}><TeacherDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} /></Suspense>
       )}
 
+      {screen === "student-claim" && <StudentClaim onLogout={handleLogout} onClaim={id => { setStudentId(id); setScreen("student-dashboard"); }} />}
       {screen === "student-dashboard" && (
         <Suspense fallback={<WorkspaceLoading />}><StudentDashboard studentId={studentId} onLogout={handleLogout} /></Suspense>
       )}
 
-      {screen === "parent-dashboard" && (
-        <Suspense fallback={<WorkspaceLoading />}><ParentDashboard userId={userId} userEmail={userEmail} onLogout={handleLogout} /></Suspense>
+      {screen === "family-workspace" && (
+        <Suspense fallback={<WorkspaceLoading />}><FamilyWorkspace key={userId} userId={userId} onLogout={leaveFamily} /></Suspense>
       )}
     </div></>
   );

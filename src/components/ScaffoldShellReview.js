@@ -3,6 +3,7 @@ import PracticeCardDetail from "./PracticeCardDetail";
 import FloatingCompanion from "./FloatingCompanion";
 import MusicalZooStrip from "./MusicalZooStrip";
 import FamilySetupFixture from "./FamilySetupFixture";
+import FamilyAccessFixture from "./FamilyAccessFixture";
 import ParentReviewFixture from "./ParentReviewFixture";
 import TeacherWorkspaceFixture from "./TeacherWorkspaceFixture";
 import { getCharacter, getCharacters } from "../lib/characterRegistry";
@@ -122,6 +123,9 @@ function ParentSignupFixture() {
 }
 
 function ReviewScreen({ screen }) {
+  if (screen === "family-access") {
+    return <div className="rainbow-heart-review" data-rh-theme="rainbow-heart" data-rh-expression="standard"><FamilyAccessFixture /></div>;
+  }
   if (screen === "teacher" || screen === "teacher-admin") {
     return <div className="rainbow-heart-review rainbow-heart-teacher-review" data-rh-theme="rainbow-heart" data-rh-expression="standard"><TeacherWorkspaceFixture /></div>;
   }

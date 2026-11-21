@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import "./PracticeCard.css";
 
 export default function PracticeCard({ step, assignment, onComplete, onNext }) {
+  const client = useWorkspaceClient();
   const [isCompleting, setIsCompleting] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -11,7 +12,7 @@ export default function PracticeCard({ step, assignment, onComplete, onNext }) {
 
     try {
       // Record completion in database
-      const { error } = await supabase.from("completions").insert([
+      const { error } = await client.from("completions").insert([
         {
           student_id: step.student_id,
           practice_step_id: step.id,

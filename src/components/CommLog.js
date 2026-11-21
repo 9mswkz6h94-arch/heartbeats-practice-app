@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import "./CommLog.css";
 
 // Teacher↔parent message thread per student. Students never see this —
@@ -7,6 +7,7 @@ import "./CommLog.css";
 // role: "teacher" | "parent". Teacher gets a per-message "Notify parent"
 // checkbox (delivery is a later phase; the flag persists now).
 export default function CommLog({ studentId, role, authorName }) {
+  const client = useWorkspaceClient();
   const [messages, setMessages] = useState([]);
   const [body, setBody] = useState("");
   const [notify, setNotify] = useState(false);
@@ -16,18 +17,18 @@ export default function CommLog({ studentId, role, authorName }) {
   const listRef = useRef(null);
 
   const markRead = useCallback(async () => {
-    const { data: userData } = await supabase.auth.getUser();
+    const { data: userData } = await client.auth.getUser();
     if (!userData?.user) return;
-    await supabase.from("comm_thread_reads").upsert({
+    await client.from("comm_thread_reads").upsert({
       user_id: userData.user.id,
       student_id: studentId,
       last_read_at: new Date().toISOString(),
     });
-  }, [studentId]);
+  }, [studentId, client]);
 
   const fetchMessages = useCallback(async () => {
     setLoading(true);
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await client
       .from("communication_log")
       .select("id, author_role, author_name, body, notify, notified_at, created_at")
       .eq("student_id", studentId)
@@ -36,7 +37,7 @@ export default function CommLog({ studentId, role, authorName }) {
     else setMessages(data || []);
     setLoading(false);
     markRead();
-  }, [studentId, markRead]);
+  }, [studentId, markRead, client]);
 
   useEffect(() => {
     fetchMessages();
@@ -52,9 +53,9 @@ export default function CommLog({ studentId, role, authorName }) {
     setSending(true);
     setError(null);
     try {
-      const { data: userData } = await supabase.auth.getUser();
+      const { data: userData } = await client.auth.getUser();
       const shouldNotify = role === "teacher" ? notify : false;
-      const { data: inserted, error: insertError } = await supabase
+      const { data: inserted, error: insertError } = await client
         .from("communication_log")
         .insert([
           {
@@ -76,7 +77,7 @@ export default function CommLog({ studentId, role, authorName }) {
       // Fire-and-forget: texting a parent is a bonus, never allowed to block
       // or fail the message itself (reliability rule — message already posted).
       if (shouldNotify && inserted?.id) {
-        supabase.functions
+        client.functions
           .invoke("notify-parent-sms", { body: { message_id: inserted.id } })
           .catch(() => {});
       }

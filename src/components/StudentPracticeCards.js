@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import { checkAndAwardBadges } from "../lib/badgeLogic";
 import {
   fetchStepStatusMap,
@@ -18,6 +18,7 @@ import PracticeCardDetail from "./PracticeCardDetail";
 import "./StudentPracticeCards.css";
 
 export default function StudentPracticeCards({ studentId, readOnly = false }) {
+  const client = useWorkspaceClient();
   const [assignments, setAssignments] = useState([]);
   const [dailyStatus, setDailyStatus] = useState({});
   const [loading, setLoading] = useState(true);
@@ -63,7 +64,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       window.removeEventListener("focus", refreshVisiblePractice);
       document.removeEventListener("visibilitychange", refreshVisiblePractice);
     };
-  }, [studentId]);
+  }, [studentId, client]);
 
   const getTodayDate = () => {
     return todayStr();
@@ -75,7 +76,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
 
     try {
       // Fetch all assignments with practice steps AND category
-      const { data: assignments, error: assignError } = await supabase
+      const { data: assignments, error: assignError } = await client
         .from("assignments")
         .select(
           `
@@ -128,10 +129,10 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       // Daily-category steps reset because there's no row for today yet;
       // Theory steps carry forward their most recent status. See
       // src/lib/practiceStatus.js for why this is gap-length-proof.
-      const statusMap = await fetchStepStatusMap(studentId, allSteps);
+      const statusMap = await fetchStepStatusMap(studentId, allSteps, client);
 
       if (!readOnly) {
-        const rejectedStepIds = await ensureTodayRows(studentId, allSteps, statusMap);
+        const rejectedStepIds = await ensureTodayRows(studentId, allSteps, statusMap, client);
         const validSteps = rejectedStepIds?.size
           ? allSteps.filter((step) => !rejectedStepIds.has(step.id))
           : allSteps;
@@ -147,7 +148,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
         }
 
         // Best-effort housekeeping — never blocks the practice screen.
-        cleanupOldDailyRows(studentId, validSteps).catch((err) =>
+        cleanupOldDailyRows(studentId, validSteps, client).catch((err) =>
           console.error("Daily status cleanup failed (non-fatal):", err)
         );
       } else {
@@ -164,11 +165,11 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
     } finally {
       setLoading(false);
     }
-  }, [readOnly, studentId]);
+  }, [readOnly, studentId, client]);
 
   const fetchStreak = useCallback(async () => {
     try {
-      const { data: completions } = await supabase
+      const { data: completions } = await client
         .from("completions")
         .select("completed_at")
         .eq("student_id", studentId)
@@ -186,7 +187,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
     } catch (err) {
       console.error("Error fetching streak:", err);
     }
-  }, [studentId]);
+  }, [studentId, client]);
 
   useEffect(() => {
     fetchAssignmentsAndStatus();
@@ -207,7 +208,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
       const today = getTodayDate();
 
       // Insert completion record (accumulates across all days, never resets)
-      const { error: completionError } = await supabase.from("completions").insert([
+      const { error: completionError } = await client.from("completions").insert([
         {
           student_id: studentId,
           practice_step_id: step.id,
@@ -219,7 +220,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
 
       // Mark today's status completed (for Theory, this is also the row
       // that will keep showing as done on future days until reset).
-      await setStepStatus(studentId, step.id, "completed");
+      await setStepStatus(studentId, step.id, "completed", client);
 
       // Update local status
       const newStatus = { ...dailyStatus };
@@ -228,7 +229,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
 
       // Check badges and refresh streak (based on total completions, not daily)
       setTimeout(async () => {
-        await checkAndAwardBadges(studentId);
+        await checkAndAwardBadges(studentId, client);
         await fetchStreak();
       }, 1000);
 
@@ -255,7 +256,7 @@ export default function StudentPracticeCards({ studentId, readOnly = false }) {
 
     try {
       // Mark today's status skipped (removes from today's view)
-      await setStepStatus(studentId, step.id, "skipped");
+      await setStepStatus(studentId, step.id, "skipped", client);
 
       // Update local status
       const newStatus = { ...dailyStatus };

@@ -23,7 +23,7 @@ export function randomPin() {
 }
 
 export function normalizeFamilyCode(raw) {
-  return raw.toUpperCase().replace(/\s+/g, "-").replace(/-+/g, "-").trim();
+  return raw.trim().toUpperCase().replace(/\s+/g, "-").replace(/-+/g, "-");
 }
 
 // A second client that never persists its session — used to create kid auth
@@ -31,12 +31,17 @@ export function normalizeFamilyCode(raw) {
 // main client. (supabase.auth.signUp signs in the new user on whichever
 // client makes the call.)
 let secondaryClient = null;
+export function createSignupClient() {
+  return createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY, {
+    auth: { storageKey: "hb-family-signup", persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+}
 export function getSecondaryClient() {
   if (!secondaryClient) {
     secondaryClient = createClient(
       process.env.REACT_APP_SUPABASE_URL,
       process.env.REACT_APP_SUPABASE_ANON_KEY,
-      { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+      { auth: { storageKey: "hb-kid-registration", persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
     );
   }
   return secondaryClient;

@@ -9,7 +9,7 @@ const CODE_STORAGE_KEY = "hb_family_code";
 // Three friendly steps: family code (remembered per device) → tap your
 // name/avatar → 4-digit PIN. Under the hood it's a normal Supabase password
 // sign-in with the kid's synthetic email; App.js routes from there.
-export default function KidLogin({ onUseEmailInstead }) {
+export default function KidLogin({ onUseEmailInstead, onFamilyLogin }) {
   const [step, setStep] = useState("code"); // code | pick | pin
   const [code, setCode] = useState(() => localStorage.getItem(CODE_STORAGE_KEY) || "");
   const [kids, setKids] = useState([]);
@@ -33,7 +33,7 @@ export default function KidLogin({ onUseEmailInstead }) {
       const { data, error: rpcError } = await supabase.rpc("get_family_kids", { p_code: clean });
       if (rpcError) throw rpcError;
       if (!data || data.length === 0) {
-        if (!silent) setError("Hmm, we couldn't find that family code. Double-check it with your grown-up!");
+        if (!silent) setError("No student PIN logins are available for this code. For a shared account, choose Family sign-in.");
         localStorage.removeItem(CODE_STORAGE_KEY);
         setStep("code");
         return;
@@ -86,6 +86,7 @@ export default function KidLogin({ onUseEmailInstead }) {
   return (
     <div className="auth-form-container">
       <div className="auth-form kid-login">
+        {onFamilyLogin && <button type="button" className="toggle-btn" onClick={onFamilyLogin}>Family sign-in with a grown-up</button>}
         {step === "code" && (
           <>
             <p className="auth-context">Student quick access</p>

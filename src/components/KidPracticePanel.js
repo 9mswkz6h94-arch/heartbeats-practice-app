@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import { randomPin } from "../lib/familyAuth";
 import { fetchStudentStats } from "../lib/studentStats";
 import { fetchStepStatusMap } from "../lib/practiceStatus";
@@ -30,6 +30,7 @@ const RESCHED_STATUS_LABEL = {
 //                             teacher's "Preview as Parent" button so
 //                             Jonathan can see exactly what a parent sees.
 export default function KidPracticePanel({ kid, mode = "parent" }) {
+  const client = useWorkspaceClient();
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(true);
   const [detailError, setDetailError] = useState(null);
@@ -47,9 +48,9 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
     setDetailLoading(true);
     setDetailError(null);
     try {
-      const stats = await fetchStudentStats(kid.id);
+      const stats = await fetchStudentStats(kid.id, client);
 
-      const { data: assignments, error: assignmentsError } = await supabase
+      const { data: assignments, error: assignmentsError } = await client
         .from("assignments")
         .select("id, title, category, description, created_at, deadline, memorized, archived_at, practice_steps(id, title, sequence_order)")
         .eq("student_id", kid.id)
@@ -65,23 +66,23 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
       const flatSteps = activeAssignments.flatMap((a) =>
         (a.practice_steps || []).map((s) => ({ id: s.id, category: a.category }))
       );
-      const todayStatus = await fetchStepStatusMap(kid.id, flatSteps);
+      const todayStatus = await fetchStepStatusMap(kid.id, flatSteps, client);
 
-      const { data: repertoire, error: repertoireError } = await supabase
+      const { data: repertoire, error: repertoireError } = await client
         .from("repertoire")
         .select("id, memorized_at, assignments(title)")
         .eq("student_id", kid.id)
         .order("memorized_at", { ascending: false });
       if (repertoireError) throw repertoireError;
 
-      const { data: lesson, error: lessonError } = await supabase
+      const { data: lesson, error: lessonError } = await client
         .from("lessons")
         .select("day_of_week, start_time, duration_minutes, location")
         .eq("student_id", kid.id)
         .maybeSingle();
       if (lessonError) throw lessonError;
 
-      const { data: reschedules, error: reschedulesError } = await supabase
+      const { data: reschedules, error: reschedulesError } = await client
         .from("reschedule_requests")
         .select("id, proposed_date, proposed_time, reason, status, teacher_note, created_at")
         .eq("student_id", kid.id)
@@ -102,7 +103,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
     } finally {
       setDetailLoading(false);
     }
-  }, [kid]);
+  }, [kid, client]);
 
   useEffect(() => {
     setDetail(null);
@@ -122,7 +123,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
     }
     setResetBusy(true);
     try {
-      const { data, error: fnError } = await supabase.functions.invoke("reset-kid-pin", {
+      const { data, error: fnError } = await client.functions.invoke("reset-kid-pin", {
         body: { student_id: kid.id, new_pin: resetPin },
       });
       if (fnError) throw new Error(fnError.message || "Reset failed");
@@ -149,8 +150,8 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
     }
     setReschedBusy(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const { error: insertError } = await supabase.from("reschedule_requests").insert([
+      const { data: userData } = await client.auth.getUser();
+      const { error: insertError } = await client.from("reschedule_requests").insert([
         {
           student_id: kid.id,
           requested_by: userData.user.id,
@@ -171,7 +172,8 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
   };
 
   const cancelReschedule = async (requestId) => {
-    await supabase.from("reschedule_requests").update({ status: "cancelled" }).eq("id", requestId);
+    const { error } = await client.rpc("hb_cancel_reschedule", { p_id: requestId });
+    if (error) { setReschedMsg({ ok: false, text: error.message }); return; }
     fetchDetail();
   };
 
@@ -191,7 +193,7 @@ export default function KidPracticePanel({ kid, mode = "parent" }) {
         </span>
       </div>
 
-      {interactive && kid.family_id && !resetting && (
+      {interactive && kid.email === `kid-${kid.id}@kids.heartbeats.app` && !resetting && (
         <button type="button" className="btn-reset-pin" onClick={startPinReset}>
           Reset PIN
         </button>

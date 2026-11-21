@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import { speciesInfo, CREATURE_STAGES } from "../lib/petSpecies";
 import "./PetCollection.css";
 
@@ -10,6 +10,7 @@ import "./PetCollection.css";
 // DEFINER RPC functions — this component only ever reads pet_creatures
 // directly, never writes to it.
 export default function PetCollection({ studentId, readOnly = false }) {
+  const client = useWorkspaceClient();
   const [creatures, setCreatures] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyKey, setBusyKey] = useState(null); // egg id or group key currently hatching/merging
@@ -17,14 +18,14 @@ export default function PetCollection({ studentId, readOnly = false }) {
   const [error, setError] = useState(null);
 
   const fetchCreatures = useCallback(async () => {
-    const { data } = await supabase
+    const { data } = await client
       .from("pet_creatures")
       .select("id, species, stage")
       .eq("student_id", studentId)
       .order("created_at", { ascending: true });
     setCreatures(data || []);
     setLoading(false);
-  }, [studentId]);
+  }, [studentId, client]);
 
   useEffect(() => {
     fetchCreatures();
@@ -48,7 +49,7 @@ export default function PetCollection({ studentId, readOnly = false }) {
     const egg = eggs[0];
     setBusyKey(egg.id);
     setError(null);
-    const { data, error: rpcError } = await supabase.rpc("hatch_egg", { p_egg_id: egg.id });
+    const { data, error: rpcError } = await client.rpc("hatch_egg", { p_egg_id: egg.id });
     setBusyKey(null);
     if (rpcError) {
       setError("Couldn't hatch that egg — try again?");
@@ -64,7 +65,7 @@ export default function PetCollection({ studentId, readOnly = false }) {
     const key = `${group.species}-${group.stage}`;
     setBusyKey(key);
     setError(null);
-    const { error: rpcError } = await supabase.rpc("merge_creatures", {
+    const { error: rpcError } = await client.rpc("merge_creatures", {
       p_id_a: group.ids[0],
       p_id_b: group.ids[1],
     });

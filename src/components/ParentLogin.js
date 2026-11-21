@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { familySignIn } from "../lib/familySpaceClient";
 import "./AuthForms.css";
 
 // Sign-in only — new families go through the FamilySignup wizard instead.
-export default function ParentLogin({ onStartSignup }) {
+export default function ParentLogin({ onStartSignup, onSignedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,9 +14,9 @@ export default function ParentLogin({ onStartSignup }) {
     setError(null);
     setLoading(true);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) throw signInError;
-      // App.js's auth listener resolves the parent role and routes onward.
+      const id = await familySignIn(email.trim(), password);
+      setPassword("");
+      onSignedIn(id);
     } catch (err) {
       setError(err.message || "Could not sign in");
     } finally {
@@ -28,7 +28,8 @@ export default function ParentLogin({ onStartSignup }) {
     <div className="auth-form-container">
       <div className="auth-form">
         <p className="auth-context">Family access</p>
-        <h2>Parent sign in</h2>
+        <h2>Family sign-in</h2>
+        <p>Use the email and password your family shares.</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="parent-login-email">Email</label>

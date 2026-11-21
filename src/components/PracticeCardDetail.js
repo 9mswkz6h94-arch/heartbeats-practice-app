@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./PracticeCardDetail.css";
+import PracticeAttachment from "./PracticeAttachment";
 
 export default function PracticeCardDetail({
   step,
@@ -77,33 +78,11 @@ export default function PracticeCardDetail({
           <p className="detail-step-description">{step.description}</p>
         </div>
 
-        {assignment.attachment_url && (() => {
-          const url = assignment.attachment_url;
-          const isPdf = url.toLowerCase().includes(".pdf");
-          return (
-            <div className="detail-attachment">
-              <div className="detail-attachment-label">
-                {isPdf ? "Assignment sheet (PDF)" : "Assignment sheet"}
-              </div>
-              {isPdf ? (
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="detail-attachment-pdf"
-                >
-                  Open PDF assignment sheet
-                </a>
-              ) : (
-                <img
-                  src={url}
-                  alt="Assignment sheet"
-                  className="detail-attachment-img"
-                />
-              )}
-            </div>
-          );
-        })()}
+        {assignment.attachment_url && (
+          assignment.attachment_url.startsWith("assignment-file:") || assignment.attachment_url.includes("/storage/v1/object/public/assignment-attachments/")
+            ? <PracticeAttachment key={step.assignment_id} assignmentId={step.assignment_id} locator={assignment.attachment_url} />
+            : /^https?:\/\//i.test(assignment.attachment_url) && <a href={assignment.attachment_url} target="_blank" rel="noopener noreferrer">Open assignment resource</a>
+        )}
 
         {showCelebration && (
           <div className="celebration-container">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Renderer, Stave, StaveNote, TabStave, TabNote, Voice, Formatter } from "vexflow";
 import { PitchDetector } from "pitchy";
-import { supabase } from "../lib/supabaseClient";
+import { useWorkspaceClient } from "../lib/familySpaceClient";
 import {
   generateExercise,
   matchesPitch,
@@ -153,6 +153,7 @@ function renderTab(container, exercise, currentFlatIndex, results) {
 // quiet room required), then logs the session so it feeds the same
 // streak/pet-XP pipeline every other practice activity uses.
 export default function SightReading({ studentId, readOnly = false, startImmediately = false }) {
+  const client = useWorkspaceClient();
   const [enabled, setEnabled] = useState(true);
   const [instrument, setInstrument] = useState(null);
   const [notation, setNotation] = useState("staff"); // 'staff' | 'tab'
@@ -195,7 +196,7 @@ export default function SightReading({ studentId, readOnly = false, startImmedia
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
+      const { data } = await client
         .from("students")
         .select("instrument, sightreading_enabled, sightreading_level")
         .eq("id", studentId)
@@ -210,7 +211,7 @@ export default function SightReading({ studentId, readOnly = false, startImmedia
     return () => {
       cancelled = true;
     };
-  }, [studentId]);
+  }, [studentId, client]);
 
   const newExercise = useCallback(() => {
     if (!instrument) return;
@@ -355,7 +356,7 @@ export default function SightReading({ studentId, readOnly = false, startImmedia
   useEffect(() => {
     if (!sessionDone || readOnly) return;
     const correctCount = results.filter(Boolean).length;
-    supabase
+    client
       .from("sightreading_attempts")
       .insert([
         {

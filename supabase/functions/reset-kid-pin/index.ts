@@ -9,10 +9,11 @@
 // Auth: caller's Supabase JWT (verify_jwt is on).
 
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { isSafePinResetTarget } from "./target-safety.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, x-hb-space, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -48,31 +49,21 @@ Deno.serve(async (req) => {
     }
 
     const { student_id, new_pin } = await req.json();
-    if (typeof student_id !== "string" || !/^\d{4}$/.test(String(new_pin))) {
+    if (typeof student_id !== "string" || !/^[0-9a-f-]{36}$/i.test(student_id) || !/^\d{4}$/.test(String(new_pin))) {
       return json(400, { error: "Need student_id and a 4-digit new_pin" });
     }
 
-    const { data: student } = await admin
-      .from("students")
-      .select("id, teacher_id, family_id, auth_user_id, name")
-      .eq("id", student_id)
-      .single();
-    if (!student) {
-      return json(404, { error: "Student not found" });
-    }
-    if (!student.auth_user_id || !student.family_id) {
-      return json(400, { error: "This student doesn't use PIN login" });
-    }
+    const callerDb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader, "x-hb-space": req.headers.get("x-hb-space") || "" } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data: allowed, error: permissionError } = await callerDb.rpc("hb_can_reset_kid", { p_student: student_id });
+    if (permissionError || allowed !== true) return json(403, { error: "Open Parent space or ask your teacher for help." });
 
-    // Caller must be the kid's teacher or a linked parent.
-    const isTeacher = student.teacher_id === caller.id;
-    const { data: links } = await admin
-      .from("parent_students")
-      .select("id")
-      .eq("student_id", student_id)
-      .or(`parent_auth_user_id.eq.${caller.id},parent_email.eq.${caller.email}`);
-    if (!isTeacher && !(links && links.length > 0)) {
-      return json(403, { error: "You're not linked to this student" });
+    const { data: student } = await admin.from("students")
+      .select("id, family_id, auth_user_id, name").eq("id", student_id).maybeSingle();
+    if (!student?.auth_user_id || !student.family_id) {
+      return json(409, { error: "Use Family sign-in for this student." });
     }
 
     const { data: family } = await admin
@@ -84,6 +75,21 @@ Deno.serve(async (req) => {
       return json(400, { error: "No family record for this student" });
     }
 
+    // Legacy records can point at a parent's actual login or at an account
+    // shared by more than one student. Never change either account's password.
+    const { data: targetAuth, error: targetError } = await admin.auth.admin.getUserById(student.auth_user_id);
+    const { data: accountStudents, error: accountStudentsError } = await admin
+      .from("students")
+      .select("id")
+      .eq("auth_user_id", student.auth_user_id);
+    if (targetError || accountStudentsError || !isSafePinResetTarget({
+      studentId: student.id,
+      accountEmail: targetAuth?.user?.email,
+      linkedStudentIds: accountStudents?.map((row) => row.id),
+    })) {
+      return json(409, { error: "This login needs help from the studio before its PIN can be changed." });
+    }
+
     // Must mirror makeKidPassword() in src/lib/familyAuth.js.
     const newPassword = `hb-${family.code.toUpperCase().trim()}-${new_pin}`;
     const { error: updateError } = await admin.auth.admin.updateUserById(
@@ -91,11 +97,11 @@ Deno.serve(async (req) => {
       { password: newPassword }
     );
     if (updateError) {
-      return json(500, { error: updateError.message });
+      return json(500, { error: "Could not update the student PIN." });
     }
 
     return json(200, { ok: true, student: student.name });
-  } catch (err) {
-    return json(500, { error: (err as Error).message ?? "Unexpected error" });
+  } catch {
+    return json(500, { error: "Could not update the student PIN." });
   }
 });

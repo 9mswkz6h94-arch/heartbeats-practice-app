@@ -114,13 +114,13 @@ export default function StudentLogin() {
         <div className="student-note">
           {isSignUp ? (
             <>
-              <p>Parents: create the account here using the email your teacher has on file.</p>
-              <p>Once it's set up, hand the device to your student to start practicing!</p>
+              <p>For an individual account, use your student email and the setup code from your teacher.</p>
+              <p>If your family shares an email, go back and choose Family sign-in.</p>
             </>
           ) : (
             <>
-              <p>Your teacher creates your account and assigns practice goals.</p>
-              <p>Once logged in, you'll see practice cards to work through!</p>
+              <p>Use this sign-in if you have your own student email.</p>
+              <p>If you share a family email, go back and choose Family sign-in to find your name.</p>
             </>
           )}
         </div>

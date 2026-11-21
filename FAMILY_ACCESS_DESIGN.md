@@ -1,0 +1,13 @@
+# Shared family access
+
+Family sign-in uses the guardian’s existing email and password. On first use, an existing guardian gets a one-time setup code from their teacher in **Family & schedule** and chooses a private PIN of 6–10 digits. Families created through the signup form choose their PIN during setup. A guardian approves a device for seven days. Active students can then choose their names and record practice under their original student IDs. Parent space asks for the private PIN on each entry.
+
+The same-origin Netlify family function keeps the Supabase access and refresh tokens inside an encrypted, HttpOnly, Secure, SameSite=Strict cookie. It restricts upstream routes, methods, embedded relations and headers. Its encryption key is a production server environment variable named HB_FAMILY_COOKIE_KEY. Rotating it signs families out of the practice app on their next visit. Teacher and individual student sign-ins continue to use their existing Supabase sessions.
+
+PostgreSQL ties each space to the authenticated user and session. An opaque credential in memory selects one student or permits ten minutes of parent access. Choosing another person rotates that credential. Practice reads and writes check the live guardian relationship and selected student. Parent communications, preferences and student PIN resets check the adult grant. A teacher can issue a one-day setup or recovery code only for a household they teach. Redeeming a recovery code revokes prior device approvals. The database stores a salted bcrypt PIN hash and digests of setup and space credentials. Five unsuccessful PIN attempts trigger a fifteen-minute pause across the guardian’s devices.
+
+Individual logins already linked by auth ID continue directly to practice. A first-time individual login needs a one-time teacher code and the matching roster email. Family signup creates each pending student and guardian link in one transaction. PIN resets apply to the dedicated synthetic login for exactly one student.
+
+The practice attachment function checks assignment visibility, resolves a file within its teacher’s folder, and serves it from the private bucket. Practice cards revoke their local file URLs on close. Existing PDF and image references continue to resolve without rewriting assignments.
+
+Verification includes the local PostgreSQL role matrix in scripts/verify_family_access_isolated.sql, the gateway contract in scripts/family_gateway.test.mjs, and the React family workflow test. The sample family at ?review=family-access is an isolated design fixture.
