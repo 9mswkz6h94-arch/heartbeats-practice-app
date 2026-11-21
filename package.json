@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "sharp": "0.35.5",
     "supabase": "^2.109.1"
   }
 }

@@ -48,7 +48,7 @@ export default function FamilySetupFixture() {
     pronouns: "they / them",
     grade: "4",
     instrument: "Piano",
-    pin: "4827",
+    pin: "",
   }]);
   const [guardians, setGuardians] = useState([{
     ...blankGuardian("guardian-1"),
@@ -233,7 +233,7 @@ export default function FamilySetupFixture() {
                       </label>
 
                       <label className="family-field">
-                        <span>Student PIN</span>
+                        <span>Separate student PIN (optional)</span>
                         <input
                           value={student.pin}
                           onChange={(event) => updateStudent(student.id, {
@@ -243,9 +243,8 @@ export default function FamilySetupFixture() {
                           inputMode="numeric"
                           pattern="\d{4}"
                           maxLength={4}
-                          required
                         />
-                        <small>Used with the family code—no student email needed.</small>
+                        <small>On a device you approve, students can choose their name to practice.</small>
                       </label>
                     </div>
 

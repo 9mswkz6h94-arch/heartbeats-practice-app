@@ -1,8 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Kid accounts are real Supabase users behind the scenes, but kids never see
-// an email or password. Each kid gets a synthetic email derived from their
-// student id, and their password is derived from the family code + their PIN.
+// Independent student PIN sign-in uses a dedicated account tied to one student.
 
 const KID_EMAIL_DOMAIN = "kids.heartbeats.app";
 
@@ -19,7 +17,7 @@ export function makeKidPassword(familyCode, pin) {
 }
 
 export function randomPin() {
-  return String(Math.floor(1000 + Math.random() * 9000));
+  return Array.from(crypto.getRandomValues(new Uint32Array(4)), value => value % 10).join("");
 }
 
 export function normalizeFamilyCode(raw) {
@@ -45,4 +43,17 @@ export function getSecondaryClient() {
     );
   }
   return secondaryClient;
+}
+
+export async function registerIndependentKid(studentId, name, familyCode, pin) {
+  const credentials = { email: makeKidEmail(studentId), password: makeKidPassword(familyCode, pin) };
+  const client = getSecondaryClient();
+  const result = await client.auth.signUp({
+    ...credentials, options: { data: { role: "student", display_name: name.trim() } },
+  });
+  if (result.data?.session) return result.data.session.user.id;
+  // Recover the same student's login if an earlier signup succeeded before the link was saved.
+  const retry = await client.auth.signInWithPassword(credentials);
+  if (retry.error) throw result.error || retry.error;
+  return retry.data.user.id;
 }

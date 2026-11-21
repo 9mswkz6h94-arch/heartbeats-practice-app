@@ -105,6 +105,7 @@ const releaseMigrations = [
   { filename: '030_guardian_and_roster_permissions.sql', required: [/DROP POLICY IF EXISTS parent_insert_own_links/i, /DROP POLICY IF EXISTS parent_update_own_links/i] },
   { filename: '031_family_device_access.sql', required: [/REFERENCES auth\.sessions\(id\) ON DELETE CASCADE/i, /hb_private\.selected_student\(\)/, /REVOKE ALL ON FUNCTION hb_private\.set_space/] },
   { filename: '032_private_assignment_sheets.sql', required: [/SET public=false WHERE id='assignment-attachments'/i] },
+  { filename: '033_shared_family_enrollment.sql', required: [/hb_register_family_student/i, /IS NOT DISTINCT FROM p_account/i, /guardian_session\(\)/i] },
 ];
 
 const errors = [];
@@ -161,5 +162,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021, 027-032).`,
+  `Release migration checks passed for ${releaseMigrations.length} ordered migrations (016-021, 027-033).`,
 );

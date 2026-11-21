@@ -128,6 +128,11 @@ DO $$ DECLARE parent_space jsonb; fid uuid; BEGIN
   PERFORM public.hb_register_family_student(fid,pg_temp.ident(81),pg_temp.ident(8),'{"name":"New student"}','{"name":"Grown-up"}');
   PERFORM public.hb_register_family_student(fid,pg_temp.ident(81),pg_temp.ident(8),'{"name":"New student"}','{"name":"Grown-up"}');
   PERFORM pg_temp.check_it((SELECT count(*)=1 FROM public.students WHERE status='pending'),'atomic signup retry');
+  PERFORM public.hb_register_family_student(fid,pg_temp.ident(82),NULL,'{"name":"Shared student"}','{"name":"Grown-up"}');
+  PERFORM public.hb_register_family_student(fid,pg_temp.ident(82),NULL,'{"name":"Shared student"}','{"name":"Grown-up"}');
+  PERFORM pg_temp.check_it((SELECT count(*)=1 FROM public.students WHERE id=pg_temp.ident(82) AND email=auth.email()
+    AND auth_user_id IS NULL AND family_id=fid AND status='pending'),'shared enrollment with original guardian email');
+  PERFORM pg_temp.check_it((SELECT jsonb_array_length(public.hb_family_state()->'students')=2),'one shared chooser for both login types');
 END $$;
 RESET ROLE;
 UPDATE hb_private.family_devices SET scope_until=now()-interval '1 second' WHERE session_id=pg_temp.ident(107);

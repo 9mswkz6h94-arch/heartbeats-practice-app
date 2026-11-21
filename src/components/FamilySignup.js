@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import {
   AVATARS,
   INSTRUMENTS,
-  makeKidEmail,
-  makeKidPassword,
+  registerIndependentKid,
   randomPin,
-  getSecondaryClient,
   createSignupClient,
 } from "../lib/familyAuth";
 import {
@@ -28,7 +26,8 @@ function blankKid() {
     schoolGrade: "",
     instrument: INSTRUMENTS[0],
     avatar: AVATARS[Math.floor(Math.random() * AVATARS.length)],
-    pin: randomPin(),
+    independent: false,
+    pin: "",
     state: "waiting", // waiting | created | error
     errorMsg: null,
   };
@@ -58,9 +57,10 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [parentPin, setParentPin] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState(false);
   const [primaryRelationship, setPrimaryRelationship] = useState("Parent");
   const [parentPhone, setParentPhone] = useState("");
-  const [kids, setKids] = useState([blankKid()]);
+  const [kids, setKids] = useState(() => [blankKid()]);
   const [guardians, setGuardians] = useState([]);
   const [family, setFamily] = useState(null); // { id, code }
   const [busy, setBusy] = useState(false);
@@ -81,26 +81,17 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
     setError(null);
     setBusy(true);
     try {
-      const { data, error: signUpError } = await signup.auth.signUp({
+      const result = confirmEmail ? await signup.auth.signInWithPassword({ email, password }) : await signup.auth.signUp({
         email,
         password,
         options: { data: { role: "parent", display_name: parentName.trim() } },
       });
-      if (signUpError) {
-        // Returning parent who already has an account — sign them in instead.
-        if (/already registered/i.test(signUpError.message || "")) {
-          const { error: signInError } = await signup.auth.signInWithPassword({ email, password });
-          if (signInError) throw new Error("This email already has an account, but that password didn't match. Use Sign In instead.");
-        } else {
-          throw signUpError;
-        }
-      }
-      if (!data?.session) {
-        const { data: sessionData } = await signup.auth.getSession();
-        if (!sessionData?.session) {
-          throw new Error(
-            "Account created, but email confirmation appears to be turned on in Supabase — the family wizard needs it off. (See SQL_MIGRATIONS/002 notes.)"
-          );
+      if (result.error && (confirmEmail || !/already registered/i.test(result.error.message || ""))) throw result.error;
+      if (!result.data?.session) {
+        const retry = await signup.auth.signInWithPassword({ email, password });
+        if (retry.error || !retry.data?.session) {
+          setConfirmEmail(true);
+          throw new Error("Check your inbox for an email confirmation, then continue here with your family email and password.");
         }
       }
       setStep(2);
@@ -113,22 +104,9 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
 
   const createOneKid = async (kid, familyInfo) => {
     const studentId = kid.localId;
-    const kidEmail = makeKidEmail(studentId);
-    const kidPassword = makeKidPassword(familyInfo.code, kid.pin);
-
-    // 1. Real auth account on the secondary client (keeps parent signed in here)
-    const { data: kidAuth, error: authError } = await getSecondaryClient().auth.signUp({
-      email: kidEmail,
-      password: kidPassword,
-      options: { data: { role: "student", display_name: kid.name.trim() } },
-    });
-    // Reuse this child's account if an earlier attempt ended after signup.
-    let accountId = kidAuth?.session?.user.id;
-    if (!accountId) {
-      const retry = await getSecondaryClient().auth.signInWithPassword({ email: kidEmail, password: kidPassword });
-      if (retry.error) throw authError || retry.error;
-      accountId = retry.data.user.id;
-    }
+    const accountId = kid.independent
+      ? await registerIndependentKid(studentId, kid.name, familyInfo.code, kid.pin)
+      : null;
     const { error: linkError } = await createSignupSpaceClient(familyInfo.token, signup).rpc("hb_register_family_student", {
       p_family: familyInfo.id, p_student: studentId, p_account: accountId,
       p_profile: { name: kid.name.trim(), avatar: kid.avatar, instrument: kid.instrument,
@@ -140,14 +118,15 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
   };
 
   const createAdditionalGuardian = async (guardian, familyInfo) => {
-    const { error: guardianError } = await createSignupSpaceClient(familyInfo.token, signup).from("family_guardians").insert([{
+    const { error: guardianError } = await createSignupSpaceClient(familyInfo.token, signup).from("family_guardians").upsert([{
+      id: guardian.localId,
       family_id: familyInfo.id,
       name: guardian.name.trim(),
       relationship: normalizeOptionalText(guardian.relationship),
       email: normalizeOptionalText(guardian.email)?.toLowerCase() || null,
       phone: normalizeOptionalText(guardian.phone),
       receives_studio_contact: guardian.receivesStudioContact,
-    }]);
+    }], { onConflict: "id", ignoreDuplicates: true });
     if (guardianError) throw guardianError;
   };
 
@@ -160,8 +139,8 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
       setError("Every kid needs a name (or remove the empty row).");
       return;
     }
-    if (kids.some((k) => !/^\d{4}$/.test(k.pin))) {
-      setError("Every PIN must be exactly 4 digits.");
+    if (kids.some((k) => k.independent && !/^\d{4}$/.test(k.pin))) {
+      setError("Choose four digits for each separate student PIN.");
       return;
     }
     const invalidBirthday = kids.find((kid) => birthdayError(kid.birthday));
@@ -247,10 +226,11 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
     finally { setBusy(false); }
   };
 
+  const independentKids = kids.filter(kid => kid.independent && kid.state === "created");
   const copySummary = () => {
     const lines = [
       `Heart Beats family code: ${family.code}`,
-      ...kids.filter((k) => k.state === "created").map((k) => `${k.avatar} ${k.name} — PIN ${k.pin}`),
+      ...independentKids.map((k) => `${k.avatar} ${k.name} — PIN ${k.pin}`),
     ];
     navigator.clipboard?.writeText(lines.join("\n"));
   };
@@ -308,7 +288,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                   id="parent-email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setConfirmEmail(false); }}
                   placeholder="you@example.com"
                   required
                   disabled={busy}
@@ -334,7 +314,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
               </div>
               {error && <div className="error-message" role="alert">{error}</div>}
               <button type="submit" className="btn-submit" disabled={busy}>
-                {busy ? "Creating…" : "Next: add your kids"}
+                {busy ? "Opening your account…" : confirmEmail ? "Continue after email confirmation" : "Next: add your kids"}
               </button>
             </form>
             <div className="toggle-auth">
@@ -352,7 +332,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
           <>
             <h2>Add your kids</h2>
             <p className="wizard-sub">
-              Step 2 of 2 — each kid gets an avatar and a 4-digit PIN they'll use to log in. No email needed for them.
+              Each student gets their own practice space. On a device you approve, they can tap their name to practice.
             </p>
             <form onSubmit={handleKidsSubmit}>
               {kids.map((kid, idx) => (
@@ -454,8 +434,10 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                       </select>
                     </div>
                     <div className="form-group">
-                      <label>Their PIN (4 digits)</label>
-                      <input
+                      <label className="guardian-consent"><input type="checkbox" checked={kid.independent} disabled={busy || kid.state === "created"}
+                        onChange={e => updateKid(kid.localId, { independent: e.target.checked, pin: e.target.checked ? randomPin() : "" })} />
+                        Enable a separate student PIN</label>
+                      {kid.independent && <input
                         aria-label={`Kid ${idx + 1} PIN`}
                         type="text"
                         inputMode="numeric"
@@ -464,7 +446,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
                         value={kid.pin}
                         onChange={(e) => updateKid(kid.localId, { pin: e.target.value.replace(/\D/g, "") })}
                         disabled={busy || kid.state === "created"}
-                      />
+                      />}
                     </div>
                   </div>
 
@@ -610,15 +592,16 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
         {step === 3 && (
           <>
             <h2>Your family is ready</h2>
-            <div className="family-code-card">
-              <p className="family-code-label">Your family code</p>
+            <p className="wizard-sub">Your teacher will approve each student. Then they can choose their name on a device you approve.</p>
+            {independentKids.length > 0 && <><div className="family-code-card">
+              <p className="family-code-label">Code for separate student PIN sign-in</p>
               <p className="family-code-value">{family?.code}</p>
               <p className="family-code-hint">
-                Kids use this once on their device, then tap their name and enter their PIN.
+                Students with a separate PIN can use this code in Student quick access.
               </p>
             </div>
             <div className="pin-recap">
-              {kids.filter((k) => k.state === "created").map((k) => (
+              {independentKids.map((k) => (
                 <div key={k.localId} className="pin-recap-row">
                   <span className="pin-recap-kid">{k.avatar} {k.name}</span>
                   <span className="pin-recap-pin">PIN {k.pin}</span>
@@ -627,10 +610,7 @@ export default function FamilySignup({ onDone, onBackToLogin }) {
             </div>
             <button type="button" className="btn-copy-codes" onClick={copySummary}>
               Copy code and PINs
-            </button>
-            <p className="wizard-sub" style={{ textAlign: "center" }}>
-              Your teacher will see your kids and approve them — assignments show up after that.
-            </p>
+            </button></>}
             {error && <p role="alert">{error}</p>}
             <button type="button" className="btn-submit" disabled={busy} onClick={openFamily}>
               Go to my family dashboard
